@@ -1,1 +1,0 @@
-ok hem mấy ní 
