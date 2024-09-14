@@ -1,0 +1,142 @@
+/* Container for the entire register page */
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Logo section */
+.logo-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+}
+
+.h2 {
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Container for the form (split into two sides) */
+.form-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Left form - Registration fields */
+.form-left {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.form-left h2 {
+  margin-bottom: 15px;
+}
+
+.form-left input,
+.form-left select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Right form - Personal Info fields */
+.form-right {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.form-right h2 {
+  margin-bottom: 15px;
+}
+
+.form-right input,
+.form-right select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Terms and conditions */
+/* Terms and Conditions Style */
+.terms-container {
+  display: flex;
+  align-items: center;
+  margin-top: 80px; /* Space between the form and the checkbox */
+  
+}
+
+
+.terms-container input[type="checkbox"] {
+  margin-right: 8px; /* Adjust space between checkbox and text */
+  cursor: pointer;
+  height: 15px; /* Match the height with input fields for alignment */
+  width: 15px; /* Match the width for consistency */
+}
+
+.terms-container label {
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  align-items: center; /* Vertically align text with checkbox */
+}
+
+.terms-link,
+.privacy-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.terms-link:hover,
+.privacy-link:hover {
+  text-decoration: underline;
+}
+
+/* Button styling */
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 20px;
+  display: block;
+  margin: 20px auto;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Social login buttons */
+.social-login {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.or-login {
+  text-align: center;
+  margin: 20px 0;
+}

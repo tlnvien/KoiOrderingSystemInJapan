@@ -1,0 +1,164 @@
+/* General Container Style */
+.auth-container {
+    display: flex;
+    height: 100vh;
+    background-color: white; /* Background color for the whole container */
+  }
+  
+  /* Logo Section Style */
+  .logo-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white; /* Background color for logo section */
+  }
+  
+  .logo {
+    max-width: 80%; /* Adjust as needed */
+    height: auto;
+  }
+  
+  /* Login Section Style */
+  .login-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Center items horizontally */
+    padding: 20px;
+    background: white; /* Background color for login section */
+    border-left: 1px solid #ddd; /* Optional: border to separate sections */
+  }
+  
+  /* Heading Style */
+  h2 {
+    margin-bottom: 20px;
+    font-size: 40px; /* Adjust font size as needed */
+    color: #333; /* Text color */
+  }
+  
+  /* Form Group Style */
+  .form-group {
+    margin-bottom: 15px;
+    width: 100%; /* Ensure input fields take full width */
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px; /* Adjust font size as needed */
+    color: #333; /* Label text color */
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 14px; /* Adjust font size as needed */
+  }
+  
+  /* Login Button Style */
+  .auth-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Button color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px; /* Adjust font size as needed */
+  }
+  
+  .auth-btn:hover {
+    background-color: #0056b3; /* Button hover color */
+  }
+  
+  .auth-links {
+    margin-top: 20px;
+    display: flex;
+    /* margin-left: 20px; */
+    justify-content: left;
+    /* align-items: center; */
+  }
+  
+  .auth-link {
+    color: #007bff; /* Link color */
+    text-decoration: none;
+    font-size: 16px; /* Adjust font size as needed */
+  }
+
+  .auth-link1 {
+    color: #007bff; /* Link color */
+    text-decoration: none;
+    font-size: 16px; /* Adjust font size as needed */
+    margin-left: 50px;
+  }
+  
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+
+  .auth-link1:hover {
+    text-decoration: underline;
+  }
+
+  .or-login {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  .or-login p {
+    margin-top: 10px;
+    font-size: 20px; /* Adjust font size as needed */
+    color: #333; /* Text color */
+  }
+  
+  /* Social Login Buttons Style */
+  .social-login {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between social buttons */
+    margin-top: 10px; /* Space between the text and the social buttons */
+  }
+  
+  .social-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .social-logo {
+    width: 50px;
+    margin-left: 50px; /* Khoảng cách giữa hai logo sẽ là 20px */
+    margin-right: 50px;
+    cursor: pointer;
+  }
+  
+  .social-btn:hover .social-logo {
+    opacity: 0.8; /* Hover effect for social logos */
+  }
+
+  .password-input-container {
+    position: relative;
+  }
+  
+  .password-input-container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .password-toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+    font-size: 18px;
+  }
+  
