@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Login.css";
 import logo from "./assets/logo.jpg";
 import googleLogo from "./assets/google-logo.png";
@@ -71,7 +71,7 @@ function Login() {
             Forgot Password?
           </Link>
           <Link to="/register" className="auth-link1">
-            Don't have an account? Sign up now
+            Do not have an account? Sign up now
           </Link>
         </div>
         <div className="or-login">
