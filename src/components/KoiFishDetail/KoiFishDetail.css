@@ -1,3 +1,7 @@
+.koi-details-container {
+  font-family: Rokkitt;
+}
+
 .koi-item {
   display: flex;
   margin-bottom: 20px;

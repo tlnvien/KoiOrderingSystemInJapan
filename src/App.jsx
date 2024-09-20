@@ -10,6 +10,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google"; // Thêm GoogleOAuthP
 import Dashboard from "./components/Dashboard/Dashboard"; // Adjust path as needed
 import KoiFishDetail from "./components/KoiFishDetail/KoiFishDetail";
 import FarmDetail from "./components/FarmDetail/FarmDetail";
+import Search from "./components/SearchPage/SearchPage";
 function App() {
   return (
     // Bọc toàn bộ ứng dụng trong GoogleOAuthProvider
@@ -26,6 +27,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/koi-fish" element={<KoiFishDetail />} />
           <Route path="/farm" element={<FarmDetail />} />
+          <Route path="/search" element={<Search />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

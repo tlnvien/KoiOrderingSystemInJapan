@@ -72,7 +72,9 @@ const HomePage = () => {
             </select>
           </div>
 
-          <button className="search">Tìm kiếm</button>
+          <Link to="/search" className="search">
+            Tìm kiếm
+          </Link>
         </div>
       </div>
 
