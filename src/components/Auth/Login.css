@@ -32,7 +32,7 @@
   }
   
   /* Heading Style */
-  h2 {
+  h1 {
     margin-bottom: 20px;
     font-size: 40px; /* Adjust font size as needed */
     color: #333; /* Text color */
@@ -114,31 +114,48 @@
     color: #333; /* Text color */
   }
   
-  /* Social Login Buttons Style */
-  .social-login {
-    display: flex;
-    justify-content: center;
-    gap: 10px; /* Space between social buttons */
-    margin-top: 10px; /* Space between the text and the social buttons */
-  }
-  
-  .social-btn {
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 0;
-  }
-  
-  .social-logo {
-    width: 50px;
-    margin-left: 50px; /* Khoảng cách giữa hai logo sẽ là 20px */
-    margin-right: 50px;
-    cursor: pointer;
-  }
-  
-  .social-btn:hover .social-logo {
-    opacity: 0.8; /* Hover effect for social logos */
-  }
+ /* Social Login Buttons Style */
+.social-login1 {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 10px; /* Khoảng cách giữa chữ và logo */
+  margin-top: 10px; /* Khoảng cách giữa văn bản và các nút xã hội */
+}
+
+.social-btn1 {
+  display: flex;
+  align-items: center; /* Căn giữa văn bản và logo theo chiều dọc */
+  border: 1px solid #ddd; /* Khung bao quanh nút */
+  border-radius: 5px; /* Bo góc cho khung */
+  background-color: #f8f9fa; /* Màu nền của nút */
+  cursor: pointer;
+  padding: 10px 15px; /* Padding để tạo khoảng cách bên trong nút */
+  gap: 10px; /* Khoảng cách giữa văn bản và logo */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+}
+
+.social-btn1:hover {
+  background-color: #e9ecef; /* Màu nền khi hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+}
+
+.social-logo1 {
+  width: 24px; /* Kích thước của logo xã hội */
+  cursor: pointer;
+  transition: opacity 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+}
+
+.social-logo1:hover {
+  opacity: 0.8; /* Hiệu ứng hover cho các logo xã hội */
+}
+
+.social-text1 {
+  font-size: 16px; /* Kích thước chữ */
+  color: #333; /* Màu chữ */
+}
+
+
 
   .password-input-container {
     position: relative;

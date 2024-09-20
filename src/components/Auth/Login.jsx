@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { GoogleLogin } from "@react-oauth/google";
+import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+import { jwtDecode } from "jwt-decode";
 import "./Login.css";
 import logo from "./assets/logo.jpg";
-import googleLogo from "./assets/google-logo.png";
+// import googleLogo from "./assets/google-logo.png";
 import facebookLogo from "./assets/facebook-logo.png";
 import { Link } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing eye icons
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -16,12 +19,21 @@ function Login() {
     console.log("Logging in with", { email, password });
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Logging in with Google");
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    const decoded = jwtDecode(credentialResponse.credential);
+    console.log("Google user:", decoded);
   };
 
-  const handleFacebookLogin = () => {
-    console.log("Logging in with Facebook");
+  const handleGoogleLoginFailure = (error) => {
+    console.error("Google login failed:", error);
+  };
+
+  const handleFacebookLogin = (response) => {
+    if (response.accessToken) {
+      console.log("Facebook user:", response);
+    } else {
+      console.error("Facebook login failed");
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -34,7 +46,7 @@ function Login() {
         <img src={logo} alt="Logo" className="logo" />
       </div>
       <div className="login-section">
-        <h2>Login</h2>
+        <h1>Login</h1>
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>Username/Email/Phone:</label>
@@ -77,17 +89,28 @@ function Login() {
         <div className="or-login">
           <p>Or login with</p>
         </div>
-        <div className="social-login">
-          <button onClick={handleGoogleLogin} className="social-btn">
-            <img src={googleLogo} alt="Google Logo" className="social-logo" />
-          </button>
-          <button onClick={handleFacebookLogin} className="social-btn">
-            <img
-              src={facebookLogo}
-              alt="Facebook Logo"
-              className="social-logo"
-            />
-          </button>
+        <div className="social-login1">
+          {/* Google Login */}
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={handleGoogleLoginFailure}
+            useOneTap
+          />
+          {/* Facebook Login */}
+          <FacebookLogin
+            appId="875093550843749"
+            callback={handleFacebookLogin}
+            render={(renderProps) => (
+              <button onClick={renderProps.onClick} className="social-btn1">
+                <span className="social-text1">Login with Facebook</span>
+                <img
+                  src={facebookLogo}
+                  alt="Facebook Logo"
+                  className="social-logo1"
+                />
+              </button>
+            )}
+          />
         </div>
       </div>
     </div>

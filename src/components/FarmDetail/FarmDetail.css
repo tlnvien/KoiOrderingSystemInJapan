@@ -1,0 +1,48 @@
+.h1 {
+    color:blue;
+}
+
+.farm-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .farm-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .farm-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .farm-image {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 10px;
+  }
+  
+  .farm-right {
+    flex: 1;
+    padding-left: 20px;
+  }
+  
+  .farm-right h2 {
+    font-size: 28px;
+    color: #007bff;
+    margin-bottom: 15px;
+  }
+  
+  .farm-right p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: black;
+  }
+  

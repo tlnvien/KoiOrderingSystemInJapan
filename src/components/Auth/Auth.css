@@ -4,6 +4,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  background-color: white;
 }
 
 /* Logo section */
@@ -17,7 +18,7 @@
   height: auto;
 }
 
-.h2 {
+.h1 {
   font-size: 40px;
   text-align: center;
   margin-bottom: 20px;
@@ -33,8 +34,8 @@
 
 /* Left form - Registration fields */
 .form-left {
-  flex: 1;
-  margin-right: 20px;
+  /* flex: 1; */
+  margin-right: 30px;
 }
 
 .form-left h2 {
@@ -44,7 +45,7 @@
 .form-left input,
 .form-left select {
   width: 100%;
-  padding: 10px;
+  /* padding: 10px; */
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -122,19 +123,47 @@
   background-color: #0056b3;
 }
 
-/* Social login buttons */
+/* Social Login Buttons Style */
 .social-login {
   display: flex;
-  justify-content: space-evenly;
-  margin-top: 15px;
-  gap: 15px;
+  justify-content: center;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 10px; /* Khoảng cách giữa chữ và logo */
+  margin-top: 10px; /* Khoảng cách giữa văn bản và các nút xã hội */
 }
 
-.social-icon {
-  width: 40px;
-  height: 40px;
+.social-btn {
+  display: flex;
+  align-items: center;  /* Căn giữa văn bản và logo theo chiều dọc */
+  border: 1px solid #ddd; /* Khung bao quanh nút */
+  border-radius: 5px; /* Bo góc cho khung */
+  background-color: #f8f9fa; /* Màu nền của nút */
   cursor: pointer;
+  padding: 10px 15px; /* Padding để tạo khoảng cách bên trong nút */
+  gap: 10px; /* Khoảng cách giữa văn bản và logo */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
 }
+
+.social-btn:hover {
+  background-color: #e9ecef; /* Màu nền khi hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+}
+
+.social-logo {
+  width: 24px; /* Kích thước của logo xã hội */
+  cursor: pointer;
+  transition: opacity 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+}
+
+.social-logo:hover {
+  opacity: 0.8; /* Hiệu ứng hover cho các logo xã hội */
+}
+
+.social-text {
+  font-size: 16px; /* Kích thước chữ */
+  color: #333; /* Màu chữ */
+}
+
 
 .or-login {
   text-align: center;

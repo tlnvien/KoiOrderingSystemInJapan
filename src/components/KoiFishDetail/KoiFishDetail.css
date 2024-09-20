@@ -1,0 +1,35 @@
+.koi-item {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.koi-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.koi-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+}
+
+.koi-right {
+  flex: 1;
+  padding-left: 20px;
+}
+
+.koi-right h2 {
+  font-size: 24px;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.koi-right p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+}
