@@ -173,11 +173,29 @@
   
   .result-content span {
     font-weight: bold;
-    color: #007bff;
+    color: blue;
     font-size: 16px;
   }
   .react-datepicker__day--highlighted {
     font-weight: bold;
     color: red; /* Màu đỏ để làm nổi bật các ngày */
   }
+
+  .result-content .ant-btn-primary {
+    margin-top: 15px;
+    width: 150px;
+    background-color: rgb(190, 245, 207);
+    border: none;
+  }
+  
+  /* .result-content .ant-btn-primary:hover {
+    background-color: rgb(190, 245, 207);
+  } */
+  
+  .result-content .ant-btn-primary:focus {
+    background-color: rgb(190, 245, 207);
+    outline: none;
+    box-shadow: none;
+  }
+  
   

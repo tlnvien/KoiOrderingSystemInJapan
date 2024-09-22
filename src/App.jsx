@@ -11,6 +11,21 @@ import Dashboard from "./components/Dashboard/Dashboard"; // Adjust path as need
 import KoiFishDetail from "./components/KoiFishDetail/KoiFishDetail";
 import FarmDetail from "./components/FarmDetail/FarmDetail";
 import Search from "./components/SearchPage/SearchPage";
+import TourDetail from "./components/TourDetail/TourDetail";
+import ViewProfile from "./components/ViewAndUpdateProfile/ViewProfile";
+import UpdateProfile from "./components/ViewAndUpdateProfile/UpdateProfile";
+
+const user = {
+  username: "john_doe",
+  email: "john@example.com",
+  yearOfBirth: 1990,
+};
+
+const updateUser = (updatedUser) => {
+  console.log("Updated User:", updatedUser);
+  // Cập nhật logic lưu trữ người dùng
+};
+
 function App() {
   return (
     // Bọc toàn bộ ứng dụng trong GoogleOAuthProvider
@@ -28,6 +43,12 @@ function App() {
           <Route path="/koi-fish" element={<KoiFishDetail />} />
           <Route path="/farm" element={<FarmDetail />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/tour/:id" element={<TourDetail />} />
+          <Route path="/view-profile" element={<ViewProfile user={user} />} />
+          <Route
+            path="/update-profile"
+            element={<UpdateProfile user={user} updateUser={updateUser} />}
+          />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

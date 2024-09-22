@@ -4,24 +4,49 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 import { jwtDecode } from "jwt-decode";
 import "./Login.css";
 import logo from "./assets/logo.jpg";
-// import googleLogo from "./assets/google-logo.png";
 import facebookLogo from "./assets/facebook-logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Logging in with", { email, password });
+    console.log("Logging in with", { username, password });
+
+    // Fetch users to check credentials
+    fetch("https://66e1d268c831c8811b5672e8.mockapi.io/Login")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .then((users) => {
+        const user = users.find(
+          (u) => u.username === username && u.password === password
+        );
+        if (user) {
+          alert("Login successful!");
+          navigate("/");
+        } else {
+          alert("Invalid username or password");
+        }
+      })
+      .catch((error) => {
+        console.error("Login error", error);
+        alert("Error during login. Please try again.");
+      });
   };
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
     console.log("Google user:", decoded);
+    navigate("/");
   };
 
   const handleGoogleLoginFailure = (error) => {
@@ -31,6 +56,7 @@ function Login() {
   const handleFacebookLogin = (response) => {
     if (response.accessToken) {
       console.log("Facebook user:", response);
+      navigate("/");
     } else {
       console.error("Facebook login failed");
     }
@@ -49,11 +75,11 @@ function Login() {
         <h1>Login</h1>
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label>Username/Email/Phone:</label>
+            <label>Username:</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
@@ -90,13 +116,11 @@ function Login() {
           <p>Or login with</p>
         </div>
         <div className="social-login1">
-          {/* Google Login */}
           <GoogleLogin
             onSuccess={handleGoogleLoginSuccess}
             onError={handleGoogleLoginFailure}
             useOneTap
           />
-          {/* Facebook Login */}
           <FacebookLogin
             appId="875093550843749"
             callback={handleFacebookLogin}

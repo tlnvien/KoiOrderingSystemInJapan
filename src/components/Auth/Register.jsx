@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 import { jwtDecode } from "jwt-decode";
-// import googleLogo from "./assets/google-logo.png";
 import facebookLogo from "./assets/facebook-logo.png";
 import logo from "./assets/logo.jpg";
 import "./Auth.css";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +20,8 @@ const Register = () => {
     dob: "",
   });
 
+  const navigate = useNavigate();
+
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   const handleChange = (e) => {
@@ -33,14 +35,53 @@ const Register = () => {
     setAgreeToTerms(e.target.checked);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!agreeToTerms) {
       alert("You must agree to the terms and conditions.");
       return;
     }
-    // Handle form submission logic
-    console.log("Form Data:", formData);
+
+    // Kiểm tra nếu mật khẩu và xác nhận mật khẩu không trùng khớp
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Gửi dữ liệu đến MockAPI
+    try {
+      const response = await fetch(
+        "https://66e1d268c831c8811b5672e8.mockapi.io/User", // Thay bằng endpoint MockAPI của bạn
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            username: formData.username,
+            password: formData.password,
+            fullName: formData.fullName,
+            phoneNumber: formData.phoneNumber,
+            address: formData.address,
+            gender: formData.gender,
+            dob: formData.dob,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // console.log("User registered successfully:", data);
+        // alert("Registration successful!");
+        navigate("/verify-account");
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error registering user:", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
 
   const handleGoogleLoginSuccess = (credentialResponse) => {

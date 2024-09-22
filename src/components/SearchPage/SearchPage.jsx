@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SearchPage.css";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -13,8 +14,15 @@ import Tour8 from "./assets/tour8.jpg";
 import Tour9 from "./assets/tour9.jpg";
 import Tour10 from "./assets/tour10.jpg";
 import Image from "./assets/image.jpg";
+import { Button } from "antd";
 
 const SearchPage = () => {
+  const navigate = useNavigate();
+
+  const handleDetailClick = (id) => {
+    navigate(`/tour/${id}`);
+  };
+
   // Danh sách kết quả gốc (initialResults)
   const initialResults = [
     {
@@ -255,6 +263,12 @@ const SearchPage = () => {
                     <p key={index}>{line}</p>
                   ))}
                   <span>{result.price.toLocaleString()} VND</span>
+                  <Button
+                    type="primary"
+                    onClick={() => handleDetailClick(result.id)}
+                  >
+                    Chi tiết
+                  </Button>
                 </div>
               </div>
             ))}
