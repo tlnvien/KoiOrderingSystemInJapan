@@ -14,6 +14,8 @@ import Search from "./components/SearchPage/SearchPage";
 import TourDetail from "./components/TourDetail/TourDetail";
 import ViewProfile from "./components/ViewAndUpdateProfile/ViewProfile";
 import UpdateProfile from "./components/ViewAndUpdateProfile/UpdateProfile";
+import Admin from "./components/Admin/Admin";
+import { Switch } from "antd";
 
 const user = {
   username: "john_doe",
@@ -44,6 +46,7 @@ function App() {
           <Route path="/farm" element={<FarmDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/tour/:id" element={<TourDetail />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/view-profile" element={<ViewProfile user={user} />} />
           <Route
             path="/update-profile"

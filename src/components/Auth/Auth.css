@@ -161,7 +161,7 @@
 }
 
 .social-text {
-  font-size: 16px; /* Kích thước chữ */
+  font-size: 18px; /* Kích thước chữ */
   color: #333; /* Màu chữ */
 }
 
@@ -169,4 +169,8 @@
 .or-login {
   text-align: center;
   margin: 20px 0;
+}
+
+.error {
+  color: red;
 }

@@ -1,0 +1,17 @@
+/* Admin.css */
+.admin-container {
+    padding: 20px;
+  }
+  
+  .admin-button {
+    margin-bottom: 16px;
+  }
+  
+  .admin-modal {
+    width: 400px;
+  }
+  
+  .admin-table {
+    margin-top: 20px;
+  }
+  
