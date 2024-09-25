@@ -57,3 +57,23 @@
     margin-left: 8px; /* Adjust space between the icon and the text */
     color: black; /* Same color as the text */
   }
+
+  .user-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .logout-link {
+    color: #007bff; /* Màu chữ */
+    text-decoration: none; /* Bỏ gạch chân */ 
+    transition: color 0.3s; /* Hiệu ứng chuyển đổi màu chữ */
+  }
+
+  .separator {
+    margin: 0 5px; /* Giảm khoảng cách giữa icon và chữ */
+    font-size: 20px; /* Kích thước của icon phân cách */
+    color: #333; /* Màu của icon phân cách */
+    line-height: 30px; /* Căn giữa với icon người dùng */
+  }
+  

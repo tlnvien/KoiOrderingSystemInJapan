@@ -19,7 +19,7 @@ function Login() {
     console.log("Logging in with", { username, password });
 
     // Fetch users to check credentials
-    fetch("https://66e1d268c831c8811b5672e8.mockapi.io/Login")
+    fetch("https://66e1d268c831c8811b5672e8.mockapi.io/User")
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -31,6 +31,8 @@ function Login() {
           (u) => u.username === username && u.password === password
         );
         if (user) {
+          localStorage.setItem("token", user.token);
+          localStorage.setItem("userId", user.id);
           alert("Login successful!");
           navigate("/");
         } else {
@@ -46,6 +48,8 @@ function Login() {
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
     console.log("Google user:", decoded);
+    localStorage.setItem("token", credentialResponse.credential);
+    localStorage.setItem("userId", decoded.sub);
     navigate("/");
   };
 
@@ -56,6 +60,8 @@ function Login() {
   const handleFacebookLogin = (response) => {
     if (response.accessToken) {
       console.log("Facebook user:", response);
+      localStorage.setItem("token", response.accessToken);
+      localStorage.setItem("userId", response.userID);
       navigate("/");
     } else {
       console.error("Facebook login failed");
