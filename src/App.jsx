@@ -15,6 +15,7 @@ import TourDetail from "./components/TourDetail/TourDetail";
 import ViewProfile from "./components/ViewAndUpdateProfile/ViewProfile";
 import Admin from "./components/Admin/Admin";
 import GoogleProfile from "./components/ViewAndUpdateProfile/GoogleProfile";
+import FacebookProfile from "./components/ViewAndUpdateProfile/FacebookProfile";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/view-profile" element={<ViewProfile />} />
           <Route path="/google-profile" element={<GoogleProfile />} />
+          <Route path="/facebook-profile" element={<FacebookProfile />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

@@ -55,10 +55,37 @@ function Login() {
 
   const handleFacebookLogin = (response) => {
     if (response.accessToken) {
+      const facebookId = response.userID;
+
       console.log("Facebook user:", response);
-      localStorage.setItem("token", response.accessToken);
-      localStorage.setItem("userId", response.userID);
-      navigate("/"); // Change to your desired route
+
+      // Fetch the user from your API using facebookId
+      fetch(`https://66f19ed541537919155193cf.mockapi.io/FacebookProfile`)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to fetch Facebook profile");
+          }
+          return res.json();
+        })
+        .then((users) => {
+          if (users.length > 0) {
+            const user = users.find((user) => user.facebookId === facebookId);
+            if (user) {
+              localStorage.setItem("token", response.accessToken);
+              localStorage.setItem("facebookId", facebookId);
+              localStorage.setItem("userId", user.id); // Store user ID
+              localStorage.setItem("loginType", "facebook");
+              alert("Facebook login successful!");
+              navigate("/"); // Navigate to Facebook profile page
+            } else {
+              alert("Facebook login failed. No user found.");
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Facebook login error", error);
+          alert("Error during Facebook login. Please try again.");
+        });
     } else {
       console.error("Facebook login failed");
     }
@@ -83,6 +110,7 @@ function Login() {
         if (user) {
           localStorage.setItem("token", user.token);
           localStorage.setItem("userId", user.id);
+          localStorage.setItem("loginType", "username");
           alert("Login successful!");
           navigate("/");
         } else {

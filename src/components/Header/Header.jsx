@@ -30,8 +30,10 @@ const Header = () => {
     const loginType = localStorage.getItem("loginType");
     if (loginType === "google") {
       navigate("/google-profile"); // Navigate to Google profile
-    } else {
+    } else if (loginType === "username") {
       navigate("/view-profile"); // Navigate to user profile
+    } else {
+      navigate("/facebook-profile"); // Navigate to Facebook profile
     }
   };
 
