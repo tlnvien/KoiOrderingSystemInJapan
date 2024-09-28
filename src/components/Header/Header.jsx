@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "./logo.jpg"; // Thay đổi đường dẫn nếu cần
+import logo from "./logo.jpg"; // Change the path if needed
 import "./Header.css";
 import { FaUserCircle } from "react-icons/fa";
 
@@ -9,7 +9,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Kiểm tra token trong localStorage
+    // Check for token in localStorage
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
@@ -17,10 +17,22 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    // Xóa token và điều hướng đến trang đăng nhập
+    // Remove token and navigate to homepage
     localStorage.removeItem("token");
+    localStorage.removeItem("userId"); // Optional: clear userId if necessary
+    localStorage.removeItem("googleId"); // Optional: clear googleId if necessary
+    localStorage.removeItem("loginType"); // Clear login type
     setIsLoggedIn(false);
     navigate("/");
+  };
+
+  const handleUserIconClick = () => {
+    const loginType = localStorage.getItem("loginType");
+    if (loginType === "google") {
+      navigate("/google-profile"); // Navigate to Google profile
+    } else {
+      navigate("/view-profile"); // Navigate to user profile
+    }
   };
 
   return (
@@ -37,9 +49,7 @@ const Header = () => {
             <a href="#gioi-thieu">Giới thiệu</a>
           </li>
           <li>
-            <li>
-              <Link to="/farm">Trang trại</Link>
-            </li>
+            <Link to="/farm">Trang trại</Link>
           </li>
           <li>
             <Link to="/koi-fish">Cá Koi</Link>
@@ -58,9 +68,8 @@ const Header = () => {
               <li>
                 <button
                   className="user-icon"
-                  onClick={() => navigate("/view-profile")}
+                  onClick={handleUserIconClick} // Use the modified click handler
                 >
-                  {/* Sử dụng icon FaUserCircle từ react-icons */}
                   <FaUserCircle size={30} />
                 </button>
                 <span className="separator">|</span>

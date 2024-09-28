@@ -14,6 +14,7 @@ import Search from "./components/SearchPage/SearchPage";
 import TourDetail from "./components/TourDetail/TourDetail";
 import ViewProfile from "./components/ViewAndUpdateProfile/ViewProfile";
 import Admin from "./components/Admin/Admin";
+import GoogleProfile from "./components/ViewAndUpdateProfile/GoogleProfile";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/tour/:id" element={<TourDetail />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/view-profile" element={<ViewProfile />} />
+          <Route path="/google-profile" element={<GoogleProfile />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

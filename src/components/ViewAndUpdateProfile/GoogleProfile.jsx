@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Profile.css"; // Import CSS cho trang
+import "./Profile.css"; // Import CSS chung nếu cần
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
-import {
-  UserOutlined,
-  ShoppingCartOutlined,
-  StarOutlined,
-  LockOutlined,
-} from "@ant-design/icons";
 
-const ViewProfile = () => {
+const GoogleProfile = () => {
   const [userData, setUserData] = useState({
     fullName: "",
     email: "",
@@ -21,37 +15,39 @@ const ViewProfile = () => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // Thêm state để kiểm tra xem có đang ở chế độ chỉnh sửa không
-  const userId = localStorage.getItem("userId");
+  const [isEditing, setIsEditing] = useState(false);
   const googleId = localStorage.getItem("googleId");
+  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserProfile();
+    fetchGoogleProfile(); // Gọi hàm để lấy thông tin người dùng
   }, []);
 
-  // Lấy thông tin người dùng từ API
-  const fetchUserProfile = async () => {
+  // Lấy thông tin người dùng từ MockAPI bằng googleId
+  const fetchGoogleProfile = async () => {
     try {
       const response = await fetch(
-        `https://66e1d268c831c8811b5672e8.mockapi.io/User/${userId}`, // Fetch thông tin từ userId
+        `https://66f19ed541537919155193cf.mockapi.io/Login?googleId=${googleId}`,
         {
           method: "GET",
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch user profile");
+        throw new Error("Failed to fetch Google profile");
       }
 
       const result = await response.json();
-      if (result) {
-        setUserData(result); // Lưu dữ liệu người dùng vào state
-        setIsLoading(false);
+      if (result.length > 0) {
+        setUserData(result[0]);
+      } else {
+        alert("Không tìm thấy hồ sơ Google.");
       }
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      alert("Không thể tải dữ liệu người dùng.");
+      console.error("Error fetching Google user data:", error);
+      alert("Không thể tải dữ liệu người dùng từ Google.");
     }
   };
 
@@ -61,28 +57,30 @@ const ViewProfile = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    console.log("Updating user with ID:", userId);
+    console.log("User data to update:", userData);
     try {
       const response = await fetch(
-        `https://66e1d268c831c8811b5672e8.mockapi.io/User/${userId}`,
+        `https://66f19ed541537919155193cf.mockapi.io/Login/${userId}`,
         {
-          method: "PUT", // Sử dụng PUT để cập nhật thông tin
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(userData), // Chuyển đổi dữ liệu thành JSON
+          body: JSON.stringify(userData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update user profile");
+        throw new Error("Failed to update Google user profile");
       }
 
       const updatedUser = await response.json();
-      setUserData(updatedUser); // Cập nhật dữ liệu người dùng
-      setIsEditing(false); // Đóng chế độ chỉnh sửa
+      setUserData(updatedUser);
+      setIsEditing(false);
       alert("Cập nhật thông tin thành công!");
     } catch (error) {
-      console.error("Error updating user data:", error);
+      console.error("Error updating Google user data:", error);
       alert("Cập nhật thông tin không thành công.");
     }
   };
@@ -91,7 +89,7 @@ const ViewProfile = () => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
-      [name]: value, // Cập nhật dữ liệu khi người dùng nhập
+      [name]: value,
     }));
   };
 
@@ -103,26 +101,8 @@ const ViewProfile = () => {
     <div className="profile-container">
       <Header />
       <div className="profile-content">
-        <div className="sidebar-profile">
-          <ul>
-            <li onClick={() => navigate("/profile")}>
-              <UserOutlined style={{ marginRight: "10px" }} /> Tài khoản
-            </li>
-            <li onClick={() => navigate("/orders")}>
-              <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
-              hàng
-            </li>
-            <li onClick={() => navigate("/reviews")}>
-              <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
-            </li>
-            <li onClick={() => navigate("/change-password")}>
-              <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
-            </li>
-          </ul>
-        </div>
-        {/* Profile Form */}
         <div className="profile-form">
-          <h1>Thông tin cá nhân</h1>
+          <h1>Thông tin cá nhân (Google)</h1>
           <form onSubmit={isEditing ? handleSave : null}>
             <div className="form-group">
               <label>Tên:</label>
@@ -131,7 +111,7 @@ const ViewProfile = () => {
                 name="fullName"
                 value={userData.fullName}
                 onChange={handleChange}
-                readOnly={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
+                readOnly={!isEditing}
               />
             </div>
             <div className="form-group">
@@ -140,7 +120,7 @@ const ViewProfile = () => {
                 name="gender"
                 value={userData.gender}
                 onChange={handleChange}
-                disabled={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
+                disabled={!isEditing}
               >
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
@@ -186,14 +166,12 @@ const ViewProfile = () => {
                 readOnly={!isEditing}
               />
             </div>
-            {/* Chỉ hiển thị nút lưu khi ở chế độ chỉnh sửa */}
             {isEditing && (
               <button type="submit" className="button button-save">
                 Lưu thay đổi
               </button>
             )}
           </form>
-          {/* Nút chỉnh sửa */}
           {!isEditing && (
             <button onClick={handleEdit} className="button button-edit">
               Chỉnh sửa thông tin
@@ -206,4 +184,4 @@ const ViewProfile = () => {
   );
 };
 
-export default ViewProfile;
+export default GoogleProfile;

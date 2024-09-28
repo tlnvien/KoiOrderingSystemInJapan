@@ -12,13 +12,63 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false); // New state for login type
+
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log("Logging in with", { username, password });
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    const decoded = jwtDecode(credentialResponse.credential);
+    const googleId = decoded.sub;
 
-    // Fetch users to check credentials
+    console.log("Google user:", decoded);
+
+    // Fetch the user from your API using googleId
+    fetch(`https://66f19ed541537919155193cf.mockapi.io/Login`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch Google profile");
+        }
+        return res.json();
+      })
+      .then((users) => {
+        if (users.length > 0) {
+          const user = users.find((user) => user.googleId === googleId);
+          localStorage.setItem("token", credentialResponse.credential);
+          localStorage.setItem("googleId", googleId);
+          localStorage.setItem("userId", user.id); // Store user ID
+          localStorage.setItem("loginType", "google");
+          alert("Google login successful!");
+          navigate("/");
+        } else {
+          alert("Google login failed.");
+        }
+      })
+      .catch((error) => {
+        console.error("Google login error", error);
+        alert("Error during Google login. Please try again.");
+      });
+  };
+
+  const handleGoogleLoginFailure = (error) => {
+    console.error("Google login failed:", error);
+  };
+
+  const handleFacebookLogin = (response) => {
+    if (response.accessToken) {
+      console.log("Facebook user:", response);
+      localStorage.setItem("token", response.accessToken);
+      localStorage.setItem("userId", response.userID);
+      navigate("/"); // Change to your desired route
+    } else {
+      console.error("Facebook login failed");
+    }
+  };
+
+  const handleUsernamePasswordLogin = (e) => {
+    e.preventDefault();
+    setIsGoogleLogin(false); // Set to false for username/password login
+
+    // Username/password login logic
     fetch("https://66e1d268c831c8811b5672e8.mockapi.io/User")
       .then((res) => {
         if (!res.ok) {
@@ -45,29 +95,6 @@ function Login() {
       });
   };
 
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log("Google user:", decoded);
-    localStorage.setItem("token", credentialResponse.credential);
-    localStorage.setItem("userId", decoded.sub);
-    navigate("/");
-  };
-
-  const handleGoogleLoginFailure = (error) => {
-    console.error("Google login failed:", error);
-  };
-
-  const handleFacebookLogin = (response) => {
-    if (response.accessToken) {
-      console.log("Facebook user:", response);
-      localStorage.setItem("token", response.accessToken);
-      localStorage.setItem("userId", response.userID);
-      navigate("/");
-    } else {
-      console.error("Facebook login failed");
-    }
-  };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -79,7 +106,7 @@ function Login() {
       </div>
       <div className="login-section">
         <h1>Login</h1>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleUsernamePasswordLogin}>
           <div className="form-group">
             <label>Username:</label>
             <input
