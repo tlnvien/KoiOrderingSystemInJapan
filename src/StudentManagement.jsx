@@ -2,12 +2,14 @@ import { Button, Form, Input, InputNumber, Modal, Select, Table } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 function StudentManagement() {
   // Quản lí sinh viên (CRUD)
   // Tạo, sửa, xóa sinh viên, lưu trữ và hiển thị danh sách sinh viên
   const [students, setStudents] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form] = useForm();
 
   const api = "https://66e79651b17821a9d9d95a2b.mockapi.io/Student"; // biến lưu trữ api
@@ -75,15 +77,19 @@ function StudentManagement() {
 
     // quăng data cho BE
     try {
+      setSubmitting(true);
       const response = await axios.post(api, values);
-      alert("Successfully create a new student");
-    } catch (error) {
-      console.log(error);
-    }
-    setOpenModal(false);
+      toast.success("Successfully create a new student");
+      setOpenModal(false);
 
-    //fetchStudent(); // lấy dữ liệu từ BE và hiển thị lại
-    setStudents([...students, values]);
+      form.resetFields();
+      //fetchStudent(); // lấy dữ liệu từ BE và hiển thị lại
+      setStudents([...students, values]);
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleOk = () => {
@@ -170,7 +176,6 @@ function StudentManagement() {
           >
             <Input />
           </Form.Item>
-          
         </Form>
       </Modal>
     </div>
