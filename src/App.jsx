@@ -1,18 +1,15 @@
-import { useState } from "react";
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import TourManagement from "./pages/sale-staff/TourManagement";
 
-const App = () => {
-  const [number, setNumber] = useState(10);
-
-  const handleAddNumber = () => {
-    setNumber(number + 1);
-  };
-
-  return (
-    <div>  
-      <h1>Number: {number}</h1>
-      <button onClick={handleAddNumber}>Add</button>
-    </div>
-  );
-};
+function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <TourManagement />,
+    },
+  ]);
+  return <RouterProvider router={router} />;
+}
 
 export default App;
