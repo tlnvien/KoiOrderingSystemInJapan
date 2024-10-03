@@ -14,21 +14,16 @@ const ForgotPassword = () => {
 
   return (
     <div className="forgot-password-container">
-      {/* Left Section - Logo */}
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
-
       {/* Right Section - Form */}
       <div className="form-section">
         <h2>Find Your Account</h2>
         <form onSubmit={handleSubmit}>
-          <label>Enter your email or phone number:</label>
+          <label>Enter your email:</label>
           <input
             type="text"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
-            placeholder="Email or Phone Number"
+            placeholder="Email"
             required
           />
           <button type="submit" className="search-btn">

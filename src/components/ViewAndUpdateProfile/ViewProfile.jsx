@@ -112,10 +112,10 @@ const ViewProfile = () => {
               <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
               hàng
             </li>
-            <li onClick={() => navigate("/reviews")}>
+            <li onClick={() => navigate("/feedback")}>
               <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
             </li>
-            <li onClick={() => navigate("/change-password")}>
+            <li onClick={() => navigate("/reset-password")}>
               <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
             </li>
           </ul>
@@ -144,6 +144,7 @@ const ViewProfile = () => {
               >
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
+                <option value="other">Khác</option>
               </select>
             </div>
             <div className="form-group">

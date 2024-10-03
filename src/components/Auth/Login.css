@@ -1,182 +1,172 @@
-/* General Container Style */
+/* Login.css */
 .auth-container {
-    display: flex;
-    height: 100vh;
-    background-color: white; /* Background color for the whole container */
-    font-family: Rokkitt;
-  }
-  
-  /* Logo Section Style */
-  .logo-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: white; /* Background color for logo section */
-  }
-  
-  .logo1 {
-    max-width: 80%; /* Adjust as needed */
-    height: auto;
-  }
-  
-  /* Login Section Style */
-  .login-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center; /* Center items horizontally */
-    padding: 20px;
-    background: white; /* Background color for login section */
-    border-left: 1px solid #ddd; /* Optional: border to separate sections */
-  }
-  
-  /* Heading Style */
-  h1 {
-    margin-bottom: 20px;
-    font-size: 40px; /* Adjust font size as needed */
-    color: #333; /* Text color */
-  }
-  
-  /* Form Group Style */
-  .form-group {
-    margin-bottom: 15px;
-    width: 100%; /* Ensure input fields take full width */
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 16px; /* Adjust font size as needed */
-    color: #333; /* Label text color */
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    font-size: 14px; /* Adjust font size as needed */
-  }
-  
-  /* Login Button Style */
-  .auth-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff; /* Button color */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 20px; /* Adjust font size as needed */
-  }
-  
-  .auth-btn:hover {
-    background-color: #0056b3; /* Button hover color */
-  }
-  
-  .auth-links {
-    margin-top: 20px;
-    display: flex;
-    /* margin-left: 20px; */
-    justify-content: left;
-    /* align-items: center; */
-  }
-  
-  .auth-link {
-    color: #007bff; /* Link color */
-    text-decoration: none;
-    font-size: 16px; /* Adjust font size as needed */
-  }
+  background-image: url('./assets/background.gif'); /* Add your image path here */
+  background-size: cover; /* Ensure the background covers the entire container */
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh; /* Make sure it takes the full height of the viewport */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Rokkitt;
+}
 
-  .auth-link1 {
-    color: #007bff; /* Link color */
-    text-decoration: none;
-    font-size: 16px; /* Adjust font size as needed */
-    margin-left: 50px;
-  }
-  
-  .auth-link:hover {
-    text-decoration: underline;
-  }
+.login-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* Center items horizontally */
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.797); /* Slightly transparent white background */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  max-width: 465px; /* Limit width */
+  width: 100%; /* Full width on smaller screens */
+}
 
-  .auth-link1:hover {
-    text-decoration: underline;
-  }
+/* Heading Style */
+h1 {
+  margin-bottom: 30px;
+  font-size: 32px; /* Adjust font size */
+  color: #333; /* Text color */
+  text-align: center; /* Center heading */
+}
 
-  .or-login {
-    margin: 20px 0;
-    text-align: center;
-  }
-  
-  .or-login p {
-    margin-top: 10px;
-    font-size: 20px; /* Adjust font size as needed */
-    color: #333; /* Text color */
-  }
-  
- /* Social Login Buttons Style */
+/* Form Group Style */
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px; 
+  color: #333; 
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Login Button Style */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s ease;
+}
+
+.auth-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Auth Links */
+.auth-links {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between; /* Distribute links */
+  width: 100%;
+}
+
+.auth-link, .auth-link1 {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.auth-link:hover, .auth-link1:hover {
+  text-decoration: underline;
+}
+
+/* Or Login Section */
+.or-login {
+  /* margin: 20px 0; */
+  text-align: center;
+  margin-top: 10px;
+  font-size: 18px; /* Slightly smaller font size */
+  color: #333;
+}
+
+/* .or-login p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #333;
+} */
+
+/* Social Login Buttons Style */
 .social-login1 {
   display: flex;
-  justify-content: center;
-  align-items: center; /* Căn giữa theo chiều dọc */
-  gap: 10px; /* Khoảng cách giữa chữ và logo */
-  margin-top: 10px; /* Khoảng cách giữa văn bản và các nút xã hội */
+  justify-content: space-between; /* Ensure buttons are spaced out */
+  align-items: center;
+  gap:20px;
+  margin-top: 20px;
 }
 
 .social-btn1 {
   display: flex;
-  align-items: center; /* Căn giữa văn bản và logo theo chiều dọc */
-  border: 1px solid #ddd; /* Khung bao quanh nút */
-  border-radius: 5px; /* Bo góc cho khung */
-  background-color: #f8f9fa; /* Màu nền của nút */
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   cursor: pointer;
-  padding: 10px 15px; /* Padding để tạo khoảng cách bên trong nút */
-  gap: 10px; /* Khoảng cách giữa văn bản và logo */
-  transition: background-color 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+  gap: 10px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  justify-content: center;
 }
 
 .social-btn1:hover {
-  background-color: #e9ecef; /* Màu nền khi hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+  background-color: #e9ecef;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .social-logo1 {
-  width: 24px; /* Kích thước của logo xã hội */
-  cursor: pointer;
-  transition: opacity 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+  width: 20px;
+  transition: opacity 0.3s;
 }
 
 .social-logo1:hover {
-  opacity: 0.8; /* Hiệu ứng hover cho các logo xã hội */
+  opacity: 0.8;
 }
 
 .social-text1 {
-  font-size: 16px; /* Kích thước chữ */
-  color: #333; /* Màu chữ */
+  font-size: 16px;
+  color: #333;
 }
 
+/* Password Input Style */
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
 
+.password-input-container input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
 
-  .password-input-container {
-    position: relative;
-  }
-  
-  .password-input-container input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .password-toggle-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #333;
-    font-size: 18px;
-  }
-  
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #333;
+  font-size: 18px;
+}

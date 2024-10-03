@@ -3,72 +3,55 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Center vertically */
   padding: 20px;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.799);
   font-family: Rokkitt;
+  height: 100vh; /* Full screen height */
+  box-sizing: border-box; /* Include padding in height calculation */
+  width: 1600px;
 }
 
-/* Logo section */
-.logo-section {
+
+.heading {
   text-align: center;
   margin-bottom: 20px;
-}
-
-.logo {
-  /* width: 200px; */
-  height: auto;
-}
-
-.h1 {
   font-size: 40px;
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 /* Container for the form (split into two sides) */
 .form-container {
   display: flex;
   justify-content: space-between;
-  max-width: 900px;
+  max-width: 1000px;
   width: 100%;
 }
 
-/* Left form - Registration fields */
-.form-left {
-  /* flex: 1; */
-  margin-right: 30px;
+/* Thêm styling đồng bộ cho các label */
+.form-left label,
+.form-right label {
+  display: block;
+  margin-bottom: 5px; /* Khoảng cách giữa label và input */
 }
 
-.form-left h2 {
-  margin-bottom: 15px;
-}
-
+/* Thêm khoảng cách và padding đồng đều giữa các input */
 .form-left input,
-.form-left select {
-  width: 100%;
-  /* padding: 10px; */
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Right form - Personal Info fields */
-.form-right {
-  flex: 1;
-  margin-left: 20px;
-}
-
-.form-right h2 {
-  margin-bottom: 15px;
-}
-
 .form-right input,
+.form-left select,
 .form-right select {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  box-sizing: border-box; /* Đảm bảo padding không làm ảnh hưởng đến chiều rộng */
+}
+
+/* Đảm bảo các label và input có chiều rộng đồng đều */
+.form-left,
+.form-right {
+  flex: 1;
+  margin: 0 10px; /* Khoảng cách đều hai bên */
 }
 
 /* Terms and conditions */
@@ -76,7 +59,7 @@
 .terms-container {
   display: flex;
   align-items: center;
-  margin-top: 80px; /* Space between the form and the checkbox */
+  margin-top: 20px; /* Space between the form and the checkbox */
   
 }
 
@@ -140,7 +123,7 @@
   border-radius: 5px; /* Bo góc cho khung */
   background-color: #f8f9fa; /* Màu nền của nút */
   cursor: pointer;
-  padding: 10px 15px; /* Padding để tạo khoảng cách bên trong nút */
+  padding: 10px 12px; /* Padding để tạo khoảng cách bên trong nút */
   gap: 10px; /* Khoảng cách giữa văn bản và logo */
   transition: background-color 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
 }
@@ -161,14 +144,16 @@
 }
 
 .social-text {
-  font-size: 18px; /* Kích thước chữ */
+  font-size: 16px; /* Kích thước chữ */
   color: #333; /* Màu chữ */
 }
 
 
-.or-login {
+.or-login1 {
   text-align: center;
-  margin: 20px 0;
+  /* margin: 20px 0; */
+  font-size: 20px;
+
 }
 
 .error {

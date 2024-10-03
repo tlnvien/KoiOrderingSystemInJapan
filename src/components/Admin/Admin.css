@@ -1,17 +1,57 @@
-/* Admin.css */
-.admin-container {
-    padding: 20px;
-  }
-  
-  .admin-button {
-    margin-bottom: 16px;
-  }
-  
-  .admin-modal {
-    width: 400px;
-  }
-  
-  .admin-table {
-    margin-top: 20px;
-  }
-  
+.admin {
+  display: flex;
+}
+
+.admin-content {
+  margin-left: 120px; /* Để lại khoảng trống cho sidebar */
+  padding: 20px;
+  flex: 1; /* Chiếm hết không gian còn lại */
+  background-color: #f8f9fa; /* Màu nền cho nội dung */
+  min-height: 100vh; /* Chiều cao tối thiểu để không bị ngắn */
+}
+
+.sidebar {
+  width: 230px;
+  background-color: rgba(0, 0, 0, 0.808);
+  padding: 20px;
+  position: fixed; /* Giữ sidebar cố định khi cuộn trang */
+  height: 100%; /* Chiều cao của sidebar */
+  overflow-y: auto; /* Thêm thanh cuộn nếu nội dung dài */
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  color: white;
+}
+
+.sidebar ul {
+  list-style-type: none; /* Loại bỏ dấu chấm cho danh sách */
+  padding: 0; /* Xóa padding mặc định */
+}
+
+.sidebar li {
+  margin: 10px 0; /* Khoảng cách giữa các mục */
+}
+
+.sidebar a {
+  text-decoration: none; /* Bỏ gạch chân cho liên kết */
+}
+
+.menu-items {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  font-size: 18px;
+  color: white; /* Màu chữ cho menu items */
+  cursor: pointer; /* Con trỏ cho biết có thể click */
+  border-radius: 10px; /* Bo góc cho các mục */
+  transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển động */
+}
+
+.menu-items:hover {
+  background: rgba(255, 255, 255, 0.2); /* Màu nền khi hover */
+  transform: translateX(5px); /* Hiệu ứng di chuyển khi hover */
+}
+
+
+

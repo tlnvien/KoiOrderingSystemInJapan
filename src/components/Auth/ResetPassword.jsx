@@ -32,11 +32,6 @@ const ResetPassword = () => {
 
   return (
     <div className="reset-password-container">
-      {/* Left Section - Logo */}
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
-
       {/* Right Section - Form */}
       <div className="form-section">
         <h2>Reset Your Password</h2>

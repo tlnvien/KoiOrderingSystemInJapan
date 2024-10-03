@@ -27,8 +27,12 @@ const HomePage = () => {
       {/* Form Section */}
       <div className="tour-form-container">
         <div className="tour-form-row">
-          <strong className="tour-label">Tour trọn gói</strong>
-          <strong className="tour-label1">Đặt tour</strong>
+          <Link to="/search" className="tour-label">
+            Tour trọn gói
+          </Link>
+          <Link to="/search" className="tour-label1">
+            Đặt tour
+          </Link>
         </div>
 
         <div className="tour-form-row">

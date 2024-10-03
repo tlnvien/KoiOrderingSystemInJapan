@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./TourDetail.css";
@@ -130,10 +130,15 @@ const koiVarieties = [
 const TourDetailPage = () => {
   const { id } = useParams(); // Get the tour ID from the URL
   const tour = tourData.find((tour) => tour.id === Number(id));
+  const navigate = useNavigate();
 
   if (!tour) {
     return <div>Tour not found</div>;
   }
+
+  const handleBooking = () => {
+    navigate(`/booking/${tour.id}`); // Điều hướng sang trang đặt tour với ID của tour
+  };
 
   return (
     <div className="tour-detail-container">
@@ -160,21 +165,27 @@ const TourDetailPage = () => {
               </p>
               <p>Giá: {tour.price.toLocaleString()} VND</p>
             </div>
-            <button className="tour-button">Đặt Tour</button>
+            <button className="tour-button" onClick={handleBooking}>
+              Đặt Tour
+            </button>
           </form>
         </div>
       </div>
+
       {/* New Section for Koi Fish Varieties */}
-      <div className="koi-varieties-section">
-        <h2 className="koi-title">Các Giống Cá Koi Nổi Bật</h2>
-        <div className="koi-varieties">
+      <div className="koi-varieties-section1">
+        <h2 className="koi-title1">Các Giống Cá Koi Nổi Bật</h2>
+        <div className="koi-varieties1">
           {koiVarieties.map((koi, index) => (
-            <div key={index} className="koi-item">
-              <img src={koi.image} alt={koi.name} className="koi-image" />
-              <p className="koi-name">{koi.name}</p>
+            <div key={index} className="koi-item1">
+              <img src={koi.image} alt={koi.name} className="koi-image1" />
+              <p className="koi-name1">{koi.name}</p>
             </div>
           ))}
         </div>
+        <Link to="/search" className="back-button">
+          Quay lại danh sách
+        </Link>
       </div>
       <Footer />
     </div>

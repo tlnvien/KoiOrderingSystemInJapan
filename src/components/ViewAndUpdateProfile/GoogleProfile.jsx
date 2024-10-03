@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./Profile.css"; // Import CSS chung nếu cần
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
+import {
+  UserOutlined,
+  ShoppingCartOutlined,
+  StarOutlined,
+  LockOutlined,
+} from "@ant-design/icons";
 
 const GoogleProfile = () => {
   const [userData, setUserData] = useState({
@@ -101,8 +107,25 @@ const GoogleProfile = () => {
     <div className="profile-container">
       <Header />
       <div className="profile-content">
+        <div className="sidebar-profile">
+          <ul>
+            <li onClick={() => navigate("/profile")}>
+              <UserOutlined style={{ marginRight: "10px" }} /> Tài khoản
+            </li>
+            <li onClick={() => navigate("/orders")}>
+              <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
+              hàng
+            </li>
+            <li onClick={() => navigate("/reviews")}>
+              <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
+            </li>
+            <li onClick={() => navigate("/change-password")}>
+              <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
+            </li>
+          </ul>
+        </div>
         <div className="profile-form">
-          <h1>Thông tin cá nhân (Google)</h1>
+          <h1>Thông tin cá nhân</h1>
           <form onSubmit={isEditing ? handleSave : null}>
             <div className="form-group">
               <label>Tên:</label>
@@ -124,6 +147,7 @@ const GoogleProfile = () => {
               >
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
+                <option value="other">Khác</option>
               </select>
             </div>
             <div className="form-group">

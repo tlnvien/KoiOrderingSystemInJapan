@@ -23,6 +23,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const navigate = useNavigate();
+  const api = "http://localhost:8081/register";
 
   const handleChange = (e) => {
     setFormData({
@@ -174,25 +175,22 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(
-        "https://66e1d268c831c8811b5672e8.mockapi.io/User",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            username: formData.username,
-            password: formData.password,
-            fullName: formData.fullName,
-            phoneNumber: formData.phoneNumber,
-            address: formData.address,
-            gender: formData.gender,
-            dob: formData.dob,
-          }),
-        }
-      );
+      const response = await fetch(api, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+          fullName: formData.fullName,
+          phoneNumber: formData.phoneNumber,
+          address: formData.address,
+          gender: formData.gender,
+          dob: formData.dob,
+        }),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -225,10 +223,7 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
-      <h1>Register</h1>
+      <h1 className="heading">Register</h1>
       <div className="form-container">
         <div className="form-left">
           <form onSubmit={handleSubmit}>
@@ -301,7 +296,7 @@ const Register = () => {
               Register
             </button>
           </form>
-          <div className="or-login">
+          <div className="or-login1">
             <p>Or login with</p>
           </div>
           <div className="social-login">
@@ -320,7 +315,7 @@ const Register = () => {
                     alt="Facebook Logo"
                     className="social-logo"
                   />
-                  Login with Facebook
+                  <span className="social-text">Login with Facebook</span>
                 </button>
               )}
             />

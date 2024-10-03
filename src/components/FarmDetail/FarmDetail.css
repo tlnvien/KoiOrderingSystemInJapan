@@ -1,49 +1,93 @@
-.h1 {
-    color:blue;
+/* FarmDetail.css */
+.farm-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* padding: 20px; */
+  font-family: Rokkitt, sans-serif;
+  background-color: #f9f9f9; /* Nền xám nhạt cho trang chi tiết */
 }
 
-.farm-list-container {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    font-family: Rokkitt;
-  }
-  
-  .farm-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    margin-top: 20px;
-  }
-  
-  .farm-left {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .farm-image {
-    width: 100%;
-    max-width: 500px;
-    border-radius: 10px;
-  }
-  
-  .farm-right {
-    flex: 1;
-    padding-left: 20px;
-  }
-  
-  .farm-right h2 {
-    font-size: 28px;
-    color: #007bff;
-    margin-bottom: 15px;
-  }
-  
-  .farm-right p {
-    font-size: 18px;
-    line-height: 1.6;
-    color: black;
-  }
-  
+.farm-detail {
+  background-color: #fff; /* Nền trắng cho phần chi tiết */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+.farm-detail h1 {
+  font-size: 32px;
+  color: #007bff; /* Màu xanh cho tiêu đề */
+  margin-bottom: 15px;
+}
+
+.farm-detail-content {
+  display: flex; /* Sử dụng flexbox cho ảnh và mô tả nằm bên cạnh nhau */
+  margin-bottom: 20px; /* Khoảng cách giữa nội dung và phần giống cá nổi tiếng */
+}
+
+.farm-detail-image {
+  width: 200px; /* Đặt chiều rộng cho ảnh trại nhỏ hơn */
+  height: 200px; /* Chiều cao tự động */
+  border-radius: 10px; /* Đường viền tròn */
+  margin-right: 20px; /* Khoảng cách giữa ảnh và mô tả */
+}
+
+.farm-description {
+  flex: 1; /* Cho phép phần mô tả chiếm phần còn lại */
+}
+
+.farm-detail p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #333; /* Màu chữ tối hơn */
+}
+
+.famous-varieties-title {
+  margin-top: 50px; /* Khoảng cách rõ ràng giữa tiêu đề và phần mô tả trên */
+  text-align: flex-start;
+}
+
+.famous-varieties {
+  display: flex;
+  flex-wrap: wrap; /* Chia hàng nếu có nhiều giống cá */
+  justify-content: space-evenly;
+  gap: 20px; /* Khoảng cách giữa các giống cá */
+  margin-top: 20px; /* Khoảng cách giữa tiêu đề và các giống cá */
+}
+
+.variety-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 150px; /* Giới hạn chiều rộng giống cá */
+}
+
+.variety-image {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 5px; /* Khoảng cách dưới ảnh giống cá */
+  transition: transform 0.3s ease;
+}
+
+.variety-image:hover {
+  transform: scale(1.05); /* Hiệu ứng khi hover */
+}
+
+
+
+
+.back-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #007bff; /* Nền xanh */
+  color: white; /* Chữ trắng */
+  text-decoration: none; /* Bỏ gạch chân */
+  border-radius: 5px; /* Bo tròn góc */
+  transition: background-color 0.3s; /* Hiệu ứng hover */
+}
+
+.back-button:hover {
+  background-color: #0056b3; /* Màu tối hơn khi hover */
+}

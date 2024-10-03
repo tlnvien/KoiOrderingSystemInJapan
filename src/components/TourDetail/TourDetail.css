@@ -1,12 +1,12 @@
-.tour-detail-container {
-    padding: 20px;
-}
+
 
 .tour-title {
     text-align: left;
     margin-bottom: 20px;
     color: blue;
     font-size: 32px;
+    margin-left: 20px;
+    text-decoration: none;
 }
 
 .tour-detail-content {
@@ -81,19 +81,20 @@
 
 .koi-varieties-section1 {
     margin-top: 50px;
-    text-align: center;
+    text-align: left;
+    margin-left: 20px;
   }
   
   .koi-title1 {
     font-size: 28px;
     font-weight: bold;
-    color: #ff4500; /* Highlighting color */
+    color: blue; /* Highlighting color */
     margin-bottom: 20px;
   }
   
   .koi-varieties1 {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     gap: 20px;
   }
@@ -106,6 +107,7 @@
   .koi-image1 {
     width: 100%;
     height: auto;
+    aspect-ratio: 3/5;
     border-radius: 10px;
     transition: transform 0.3s ease;
   }
@@ -119,4 +121,6 @@
     font-weight: bold;
     margin-top: 10px;
   }
+
+  
   

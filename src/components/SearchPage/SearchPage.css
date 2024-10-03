@@ -123,8 +123,8 @@
   }
   
   .search-results h2 {
-    margin-bottom: 20px;
-    font-size: 22px;
+    margin-bottom: 26px;
+    font-size: 26px;
     color: #333;
   }
   
@@ -162,7 +162,8 @@
   .result-content h3 {
     font-size: 18px;
     margin: 0 0 10px;
-    color: #333;
+    color: #007bff;
+
   }
   
   .result-content p {
@@ -171,10 +172,10 @@
     margin-bottom: 10px;
   }
   
-  .result-content span {
+  .result-content .money {
     font-weight: bold;
     color: blue;
-    font-size: 16px;
+    font-size: 20px;
   }
   .react-datepicker__day--highlighted {
     font-weight: bold;
@@ -184,7 +185,7 @@
   .result-content .ant-btn-primary {
     margin-top: 15px;
     width: 150px;
-    background-color: rgb(190, 245, 207);
+    background-color: #007bff;
     border: none;
   }
   
@@ -193,7 +194,7 @@
   } */
   
   .result-content .ant-btn-primary:focus {
-    background-color: rgb(190, 245, 207);
+    background-color: #007bff;
     outline: none;
     box-shadow: none;
   }

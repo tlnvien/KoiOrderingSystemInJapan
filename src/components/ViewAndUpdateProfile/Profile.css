@@ -12,7 +12,7 @@
   
   .sidebar-profile {
     width: 250px;
-    background: #007bff; /* Màu nền sáng */
+    background: rgba(0, 0, 0, 0.808);; /* Màu nền sáng */
     color: white; /* Màu chữ tối để tương phản với nền sáng */
     padding: 20px;
     border-radius: 8px; /* Bo góc cho sidebar */
@@ -30,7 +30,7 @@
   
   .sidebar-profile li svg {
     font-size: 20px; /* Kích thước của icon */
-    color: #333; /* Màu của icon */
+    color: white; /* Màu của icon */
   }
   
   .profile-form {

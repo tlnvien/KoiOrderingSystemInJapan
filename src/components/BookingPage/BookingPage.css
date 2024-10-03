@@ -1,0 +1,119 @@
+.booking-page {
+  font-family: Arial, sans-serif;
+  max-width: 1600px; /* Adjusted max width for better responsiveness */
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* padding: 20px; */
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.booking-process {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.process-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.process-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px; /* Increased margin for better spacing */
+}
+
+.circle-icon {
+  width: 50px; /* Slightly larger circle */
+  height: 50px; /* Slightly larger circle */
+  border-radius: 50%;
+  background-color: #007bff; /* Màu xanh */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px; /* Increased font size for better visibility */
+}
+
+.arrow {
+  font-size: 24px; /* Kích thước mũi tên */
+  margin: 0 10px;
+}
+
+.booking-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+section {
+  margin-bottom: 30px; /* Increased margin for better spacing */
+}
+
+h2 {
+  color: #007bff; /* Màu tiêu đề */
+  margin-bottom: 15px; /* Increased margin for better spacing */
+  font-size: 22px; /* Slightly larger font size */
+}
+
+.form-group-book input {
+  margin-bottom: 20px; /* Increased margin for better spacing */
+  display: flex;
+  flex-direction: column; /* Changed to column for better alignment */
+}
+
+label {
+  margin-bottom: 5px; /* Added margin for spacing */
+  color: #333;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px; /* Increased padding for better touch targets */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+textarea {
+  height: 100px;
+}
+
+input[type="radio"] {
+  margin-right: 10px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff; /* Màu nút */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.submit-button:hover {
+  background-color: #0056b3; /* Màu nút khi hover */
+}
+
+.notes-section {
+  margin-top: 20px; /* Increased margin for better spacing */
+}

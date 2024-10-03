@@ -262,7 +262,9 @@ const SearchPage = () => {
                   {result.description.split("\n").map((line, index) => (
                     <p key={index}>{line}</p>
                   ))}
-                  <span>{result.price.toLocaleString()} VND</span>
+                  <span className="money">
+                    {result.price.toLocaleString()} VND
+                  </span>
                   <Button
                     type="primary"
                     onClick={() => handleDetailClick(result.id)}

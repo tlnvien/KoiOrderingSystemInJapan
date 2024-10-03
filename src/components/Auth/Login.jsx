@@ -129,11 +129,8 @@ function Login() {
 
   return (
     <div className="auth-container">
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
       <div className="login-section">
-        <h1>Login</h1>
+        <h1 className="heading">Login</h1>
         <form onSubmit={handleUsernamePasswordLogin}>
           <div className="form-group">
             <label>Username:</label>

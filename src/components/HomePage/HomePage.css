@@ -55,12 +55,42 @@ body {
 
 .tour-label {
   margin-right: 100px;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .tour-label1 {
   margin-left: 100px;
-  font-size: 30px;
+  font-size: 20px;
+}
+
+.tour-label {
+  display: inline-block; /* Để liên kết có thể nhận padding và margin */
+  padding: 10px 10px; /* Khoảng cách bên trong */
+  background-color: #007bff; /* Màu nền xanh */
+  color: white; /* Màu chữ trắng */
+  text-decoration: none; /* Bỏ gạch chân */
+  border-radius: 5px; /* Bo tròn góc */
+  transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+.tour-label:hover {
+  background-color: #0056b3; /* Màu nền tối hơn khi hover */
+  color: #fff; /* Giữ nguyên màu chữ khi hover */
+}
+
+.tour-label1 {
+  display: inline-block; /* Để liên kết có thể nhận padding và margin */
+  padding: 10px 10px; /* Khoảng cách bên trong */
+  background-color: #007bff; /* Màu nền xanh */
+  color: white; /* Màu chữ trắng */
+  text-decoration: none; /* Bỏ gạch chân */
+  border-radius: 5px; /* Bo tròn góc */
+  transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+.tour-label1:hover {
+  background-color: #0056b3; /* Màu nền tối hơn khi hover */
+  color: #fff; /* Giữ nguyên màu chữ khi hover */
 }
 
 .search{

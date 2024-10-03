@@ -1,0 +1,65 @@
+/* FarmList.css */
+.farm-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    font-family: Rokkitt, sans-serif;
+    /* padding: 20px; */
+}
+
+.farm-container {
+    display: flex;
+    justify-content: flex-start; /* Căn trái */
+    align-items: flex-start; /* Căn đầu trên */
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #ddd; /* Khung cho mỗi trang trại */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    background-color: #fff; /* Nền trắng */
+    transition: transform 0.3s; /* Hiệu ứng hover */
+}
+
+.farm-container:hover {
+    transform: scale(1.02); /* Hiệu ứng phóng to khi hover */
+}
+
+.farm-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px; /* Khoảng cách giữa ảnh và mô tả */
+}
+
+.farm-image {
+    width: 100%;
+    max-width: 300px; /* Kích thước tối đa cho ảnh */
+    border-radius: 10px;
+}
+
+.farm-right {
+    flex: 1;
+}
+
+.farm-right h2 {
+    font-size: 24px;
+    color: #007bff; /* Màu xanh cho tiêu đề */
+    margin-bottom: 10px;
+}
+
+.farm-right p {
+    font-size: 16px; /* Kích thước chữ nhỏ hơn */
+    line-height: 1.6;
+    color: #333; /* Màu chữ tối hơn */
+}
+
+/* Thêm kiểu cho liên kết trong danh sách */
+.farm-link {
+    text-decoration: none; /* Bỏ gạch chân */
+    color: inherit; /* Thừa hưởng màu chữ */
+}
+
+/* Căn chỉnh tổng thể */
+.farm-container {
+    display: flex; /* Đảm bảo là flexbox */
+}
