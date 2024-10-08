@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://14.225.206.168:8080/api/", 
+    baseURL: "", 
 });
 
 const handleBefore = (config) => {

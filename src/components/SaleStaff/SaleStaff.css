@@ -1,0 +1,18 @@
+/* SalesStaffPage.css */
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #f0f2f5; /* Slightly off-white background */
+  }
+  
+  .site-layout-background {
+    background: #9CEEB5; /* Dark background for header */
+  }
+  
+  .site-layout-background h1 {
+    color: white; /* White text for header */
+  }
+  
