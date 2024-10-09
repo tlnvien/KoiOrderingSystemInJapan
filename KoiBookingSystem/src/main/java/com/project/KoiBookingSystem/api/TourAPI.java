@@ -7,12 +7,18 @@ import com.project.KoiBookingSystem.service.TourService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
 import org.springframework.format.annotation.DateTimeFormat;
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+<<<<<<< HEAD
 import java.time.LocalDate;
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import java.util.List;
 
 @RestController
@@ -25,7 +31,11 @@ public class TourAPI {
     TourService tourService;
 
     @PostMapping
+<<<<<<< HEAD
     @PreAuthorize("hasAnyAuthority('SALES')")
+=======
+    @PreAuthorize("hasAuthority('MANAGER')")
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     public ResponseEntity createNewTour(@Valid @RequestBody TourRequest tour) {
         TourResponse newTour = tourService.createNewTour(tour);
         return ResponseEntity.ok(newTour);
@@ -37,6 +47,7 @@ public class TourAPI {
         return ResponseEntity.ok(tours);
     }
 
+<<<<<<< HEAD
     @PutMapping("{tourId}")
     @PreAuthorize("hasAuthority('SALES')")
     public ResponseEntity updateTour(@Valid @RequestBody TourRequest tour, @PathVariable String tourId) {
@@ -81,4 +92,19 @@ public class TourAPI {
         tourService.denyTour(tourId);
         return ResponseEntity.noContent().build();
     }
+=======
+    @PutMapping("{tourID}")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity updateTour(@Valid @RequestBody TourRequest tour, @PathVariable String tourID) {
+        TourResponse updatedTour = tourService.updateTour(tour, tourID);
+        return ResponseEntity.ok(updatedTour);
+    }
+
+    @DeleteMapping("{tourID}")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity deleteTour(@PathVariable String tourID) {
+        Tour deletedTour = tourService.deleteTour(tourID);
+        return ResponseEntity.ok(deletedTour);
+    }
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }

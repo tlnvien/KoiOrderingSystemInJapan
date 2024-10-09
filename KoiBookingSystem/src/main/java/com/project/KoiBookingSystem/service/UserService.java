@@ -1,7 +1,10 @@
 package com.project.KoiBookingSystem.service;
 
 import com.project.KoiBookingSystem.entity.Account;
+<<<<<<< HEAD
 import com.project.KoiBookingSystem.enums.Role;
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import com.project.KoiBookingSystem.exception.NotFoundException;
 import com.project.KoiBookingSystem.model.request.UserRequest;
 import com.project.KoiBookingSystem.model.response.UserResponse;
@@ -42,6 +45,12 @@ public class UserService {
         if (account.getAddress() != null && !account.getAddress().isEmpty()) {
             updatedAccount.setAddress(account.getAddress());
         }
+<<<<<<< HEAD
+=======
+        if (account.getCitizenID() != null && !account.getCitizenID().isEmpty() && updatedAccount.getCitizenID() == null && !updatedAccount.getRole().name().equals("CUSTOMER")) {
+            updatedAccount.setCitizenID(account.getCitizenID());
+        }
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
         if (account.getNote() != null && !account.getNote().isEmpty()) {
             updatedAccount.setNote(account.getNote());
         }
@@ -67,6 +76,7 @@ public class UserService {
         return users;
     }
 
+<<<<<<< HEAD
     public List<UserResponse> getAllUsersByRole(String role) {
         List<Account> accounts = accountRepository.findAccountByRole(role);
         if (accounts.isEmpty()) {
@@ -75,6 +85,8 @@ public class UserService {
         return accounts.stream().map(account -> modelMapper.map(account, UserResponse.class)).collect(Collectors.toList());
     }
 
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     public Account getAccountByUsername(String username) {
         Account account = accountRepository.findAccountByUsername(username);
         if (account == null) {

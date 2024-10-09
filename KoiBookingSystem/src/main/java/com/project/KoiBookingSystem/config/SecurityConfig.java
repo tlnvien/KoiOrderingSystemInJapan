@@ -15,11 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+<<<<<<< HEAD
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
 @Configuration
 @EnableMethodSecurity
@@ -49,6 +52,7 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+<<<<<<< HEAD
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -62,11 +66,17 @@ public class SecurityConfig {
         return source;
     }
 
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
     // định nghĩa cho Spring Security biết đâu là authenticationService và lớp Filter của project
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+<<<<<<< HEAD
         httpSecurity
+=======
+        return httpSecurity
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
@@ -79,9 +89,13 @@ public class SecurityConfig {
                 .sessionManagement(
                         session -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+<<<<<<< HEAD
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
+=======
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class).build();
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     }
 
 }

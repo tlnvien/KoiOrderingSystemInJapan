@@ -11,10 +11,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+=======
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
 @Data
 @Entity
@@ -32,8 +39,14 @@ public class Account implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+<<<<<<< HEAD
     @Pattern(regexp = "(84[35789]\\d{8}|0[35789]\\d{8})", message = "Invalid phone number")
     @Column(unique = true)
+=======
+    @NotBlank(message = "Phone number can not be empty!")
+    @Pattern(regexp = "(84|0[3|5|7|8|9])\\d{8}", message = "Invalid phone number")
+    @Column(unique = true , nullable = false)
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     private String phone;
 
     @NotBlank(message = "Email can not be empty")
@@ -46,11 +59,19 @@ public class Account implements UserDetails {
     private Role role;
 
     @Column(nullable = false)
+<<<<<<< HEAD
     private LocalDate createdDate;
 
     @Pattern(regexp = "^CU\\d+$|^SS\\d+$|^CS\\d+$|^DS\\d+$|^MG\\d+$", message = "Invalid user ID")
     @Column(unique = true, nullable = false)
     private String userId;
+=======
+    private LocalDateTime createdDate;
+
+    @Pattern(regexp = "^CU\\d+$|^SS\\d+$|^CS\\d+$|^DS\\d+$|^MG\\d+$", message = "Invalid user ID")
+    @Column(unique = true, nullable = false)
+    private String userID;
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "First name can not contain number")
     private String firstName;
@@ -67,11 +88,19 @@ public class Account implements UserDetails {
 
     private String address;
 
+<<<<<<< HEAD
+=======
+    @Pattern(regexp = "^0\\d{11}$", message = "Invalid citizen ID")
+    @Column(unique = true)
+    private String citizenID;
+
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     private String note;
 
     @Column(nullable = false)
     private boolean status;
 
+<<<<<<< HEAD
     @OneToMany(mappedBy = "consulting", cascade = CascadeType.ALL)
     private Set<Tour> consulting;
 
@@ -87,6 +116,8 @@ public class Account implements UserDetails {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<Orders> orders;
 
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     @Override
     // Định nghĩa những quyền hạn mà account có thể làm được
     public Collection<? extends GrantedAuthority> getAuthorities() {

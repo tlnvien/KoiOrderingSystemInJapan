@@ -15,7 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
 import java.time.LocalDate;
+=======
+import java.time.LocalDateTime;
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,19 +39,33 @@ public class KoiService {
     ModelMapper modelMapper;
 
     public KoiResponse createNewKoi(KoiRequest koiRequest) {
+<<<<<<< HEAD
         if (koiRequest.getKoiId() == null || koiRequest.getKoiId().isEmpty()) {
             throw new IllegalArgumentException("Koi ID can not be empty!");
         }
         Account manager = authenticationService.getCurrentAccount();
+=======
+        if (koiRequest.getKoiID() == null || koiRequest.getKoiID().isEmpty()) {
+            throw new IllegalArgumentException("Koi ID can not be empty!");
+        }
+        Account manager = authenticationService.getCurrentAccountUsername();
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
         if (manager == null) {
             throw new NotFoundException("Invalid Activity!");
         }
         try {
             Koi koi = new Koi();
+<<<<<<< HEAD
             koi.setKoiId(koiRequest.getKoiId());
             koi.setSpecies(koiRequest.getSpecies());
             koi.setDescription(koiRequest.getDescription());
             koi.setCreatedDate(LocalDate.now());
+=======
+            koi.setKoiID(koiRequest.getKoiID());
+            koi.setSpecies(koiRequest.getSpecies());
+            koi.setDescription(koiRequest.getDescription());
+            koi.setCreatedDate(LocalDateTime.now());
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
             koi.setStatus(true);
             koi.setManager(manager);
             Koi newKoi = koiRepository.save(koi);
@@ -84,6 +102,7 @@ public class KoiService {
         return koiImages;
     }
 
+<<<<<<< HEAD
     public List<KoiImage> getKoiImagesByKoiId(String koiId) {
         List<KoiImage> images = koiImageRepository.findByKoi_KoiId(koiId);
         if (images.isEmpty()) {
@@ -94,6 +113,10 @@ public class KoiService {
 
     public KoiResponse updateKoi(KoiRequest koiRequest, String koiId) {
         Koi updatedKoi = getKoiByKoiId(koiId);
+=======
+    public KoiResponse updateKoi(KoiRequest koiRequest, String koiID) {
+        Koi updatedKoi = getKoiByKoiID(koiID);
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
         if (koiRequest.getSpecies() != null && !koiRequest.getSpecies().isEmpty()) {
             updatedKoi.setSpecies(koiRequest.getSpecies());
@@ -104,7 +127,11 @@ public class KoiService {
 
         updatedKoi = koiRepository.save(updatedKoi);
         if (koiRequest.getImageLinks() != null && !koiRequest.getImageLinks().isEmpty()) {
+<<<<<<< HEAD
             List<KoiImage> koiImages = koiImageRepository.findByKoi_KoiId(koiId);
+=======
+            List<KoiImage> koiImages = koiImageRepository.findByKoi_KoiID(koiID);
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
             if (koiImages != null && !koiImages.isEmpty()) {
                 for (KoiImage koiImage : koiImages) {
                     koiImage.setStatus(false);
@@ -123,16 +150,26 @@ public class KoiService {
         return koiResponse;
     }
 
+<<<<<<< HEAD
     public KoiResponse deleteKoi(String koiId) {
         Koi deletedKoi = getKoiByKoiId(koiId);
+=======
+    public KoiResponse deleteKoi(String koiID) {
+        Koi deletedKoi = getKoiByKoiID(koiID);
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
         deletedKoi.setStatus(false);
         koiRepository.save(deletedKoi);
         return modelMapper.map(deletedKoi, KoiResponse.class);
     }
 
+<<<<<<< HEAD
     public Koi getKoiByKoiId(String koiId) {
         Koi koi = koiRepository.findKoiByKoiId(koiId);
+=======
+    public Koi getKoiByKoiID(String koiID) {
+        Koi koi = koiRepository.findKoiByKoiID(koiID);
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
         if (koi == null) {
             throw new NotFoundException("Koi Not Found!");
         }

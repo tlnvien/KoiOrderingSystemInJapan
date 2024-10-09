@@ -16,7 +16,13 @@ services:
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "12345"
     depends_on:
+<<<<<<< HEAD
       - mysql_container
     ports:
       - "8080:8080"
+=======
+      - mysql_db_container
+    ports:
+      - "8081:8080"
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 

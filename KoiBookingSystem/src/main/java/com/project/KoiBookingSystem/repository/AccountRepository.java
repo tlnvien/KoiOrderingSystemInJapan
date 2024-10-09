@@ -11,11 +11,18 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // lấy Account của người dùng
     Account findAccountByUsername(String username);
 
+<<<<<<< HEAD
     Account findAccountByUserId(String userId);
+=======
+    Account findAccountByUserID(String userID);
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
     long countByRole(Role role);
 
     List<Account> findAccountByStatusTrue();
+<<<<<<< HEAD
 
     List<Account> findAccountByRole(String role);
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }

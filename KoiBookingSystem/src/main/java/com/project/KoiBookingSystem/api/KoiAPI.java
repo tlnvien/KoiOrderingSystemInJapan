@@ -41,6 +41,7 @@ public class KoiAPI {
         return ResponseEntity.ok(koiImages);
     }
 
+<<<<<<< HEAD
     @GetMapping("/images/{koiId}")
     public ResponseEntity getKoiImagesByKoiId(@PathVariable String koiId) {
         List<KoiImage> koiImages = koiService.getKoiImagesByKoiId(koiId);
@@ -58,6 +59,19 @@ public class KoiAPI {
     @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity deleteKoi(@PathVariable String koiId) {
         KoiResponse deletedKoi = koiService.deleteKoi(koiId);
+=======
+    @PutMapping("{koiID}")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity updateKoi(@Valid @RequestBody KoiRequest koi, @PathVariable String koiID) {
+        KoiResponse updatedKoi = koiService.updateKoi(koi, koiID);
+        return ResponseEntity.ok(updatedKoi);
+    }
+
+    @DeleteMapping("{koiID}")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity deleteKoi(@PathVariable String koiID) {
+        KoiResponse deletedKoi = koiService.deleteKoi(koiID);
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
         return ResponseEntity.ok(deletedKoi);
     }
 

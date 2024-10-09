@@ -1,5 +1,6 @@
 package com.project.KoiBookingSystem.model.response;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.KoiBookingSystem.entity.Account;
 import com.project.KoiBookingSystem.enums.TourType;
@@ -15,6 +16,16 @@ import java.util.List;
 public class TourResponse {
 
     private String tourId;
+=======
+import com.project.KoiBookingSystem.entity.Account;
+import com.project.KoiBookingSystem.enums.TourType;
+
+import java.time.LocalDateTime;
+
+public class TourResponse {
+
+    private String tourID;
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
     private String tourName;
 
@@ -22,6 +33,7 @@ public class TourResponse {
 
     private int remainSeat;
 
+<<<<<<< HEAD
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate departureDate;
 
@@ -42,4 +54,20 @@ public class TourResponse {
     private String salesId;
 
     private List<TourScheduleResponse> tourSchedules;
+=======
+    private LocalDateTime departureDate;
+
+    private LocalDateTime endDate;
+
+    private String description;
+
+    private Account consulting;
+
+    private TourType tourType;
+
+    private double price;
+
+    private Account manager;
+
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }

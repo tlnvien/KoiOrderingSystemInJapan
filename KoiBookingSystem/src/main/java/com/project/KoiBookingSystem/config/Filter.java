@@ -1,7 +1,11 @@
 package com.project.KoiBookingSystem.config;
 
 import com.project.KoiBookingSystem.entity.Account;
+<<<<<<< HEAD
 import com.project.KoiBookingSystem.exception.AuthenticationException;
+=======
+import com.project.KoiBookingSystem.exception.AuthException;
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import com.project.KoiBookingSystem.service.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -41,6 +45,7 @@ public class Filter extends OncePerRequestFilter {
             "/swagger-resources/**",
             "/api/login",
             "/api/register",
+<<<<<<< HEAD
             "/api/register/manager",
             "/api/koi/list",
             "/api/koi/images/**",
@@ -51,6 +56,15 @@ public class Filter extends OncePerRequestFilter {
             "/api/koiFarm/listFarm/**",
             "/api/tour/search/**",
             "/api/payment/initiate"
+=======
+            "/api/koi/list",
+            "/api/koi/images",
+            "/api/farm/list",
+            "/api/farm/images",
+            "/api/tour/schedule/all/**",
+            "/api/koiFarm/listKoi/**",
+            "/api/koiFarm/listFarm/**"
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     );
 
     public boolean checkIsPublicAPI(String uri) {
@@ -71,7 +85,11 @@ public class Filter extends OncePerRequestFilter {
             String token = getToken(request);
             if (token == null) {
                 // không có token => không được phép truy cập
+<<<<<<< HEAD
                 handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException("Token is empty!"));
+=======
+                handlerExceptionResolver.resolveException(request, response, null, new AuthException("Token is empty!"));
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
                 return;
             }
             // check xem token có đúng không?
@@ -81,11 +99,19 @@ public class Filter extends OncePerRequestFilter {
                 account = tokenService.getAccountByToken(token);
             } catch (ExpiredJwtException expiredJwtException) {
                 // token hết hạn
+<<<<<<< HEAD
                 handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException("Token is expired!"));
                 return;
             } catch (MalformedJwtException malformedJwtException) {
                 // Token không hợp lệ, token ma quỷ thần thánh nào đó
                 handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException("Invalid Token"));
+=======
+                handlerExceptionResolver.resolveException(request, response, null, new AuthException("Token is expired!"));
+                return;
+            } catch (MalformedJwtException malformedJwtException) {
+                // Token không hợp lệ, token ma quỷ thần thánh nào đó
+                handlerExceptionResolver.resolveException(request, response, null, new AuthException("Invalid Token"));
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
                 return;
             }
 
@@ -112,4 +138,9 @@ public class Filter extends OncePerRequestFilter {
         return authHeader.substring(7); // vì API được đưa về từ backend có thêm ký tự Bearer ở đằng trước
         // => mình không cần đến cái ký tự đó => bỏ qua và lấy index từ số 7
     }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }

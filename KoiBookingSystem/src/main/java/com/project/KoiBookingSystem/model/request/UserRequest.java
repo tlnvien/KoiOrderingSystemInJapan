@@ -13,10 +13,17 @@ import java.time.LocalDate;
 @Data
 public class UserRequest {
 
+<<<<<<< HEAD
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "First name can not contain number")
     private String firstName;
 
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Last name can not contain number")
+=======
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "First name can not contain number")
+    private String firstName;
+
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Last name can not contain number")
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     private String lastName;
 
     @Enumerated(EnumType.STRING)
@@ -28,5 +35,11 @@ public class UserRequest {
 
     private String address;
 
+<<<<<<< HEAD
+=======
+    @Pattern(regexp = "^0\\d{11}$", message = "Invalid citizen ID")
+    private String citizenID;
+
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     private String note;
 }

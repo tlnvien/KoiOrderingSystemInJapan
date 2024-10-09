@@ -22,6 +22,10 @@ public class KoiImage {
 
     @ManyToOne
     @JsonBackReference
+<<<<<<< HEAD
     @JoinColumn(name = "koi_id", nullable = false, referencedColumnName = "koiID")
+=======
+    @JoinColumn(name = "koi_id", nullable = false, referencedColumnName = "koiid")
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     private Koi koi;
 }

@@ -13,7 +13,11 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+<<<<<<< HEAD
       <module name="KoiBookingSystem" options="-parameters -Xlint:unchecked" />
+=======
+      <module name="KoiBookingSystem" options="-parameters" />
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     </option>
   </component>
 </project>

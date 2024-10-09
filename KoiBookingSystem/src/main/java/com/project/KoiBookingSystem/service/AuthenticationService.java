@@ -2,7 +2,10 @@ package com.project.KoiBookingSystem.service;
 
 import com.project.KoiBookingSystem.entity.Account;
 import com.project.KoiBookingSystem.enums.Role;
+<<<<<<< HEAD
 import com.project.KoiBookingSystem.exception.AuthenticationException;
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import com.project.KoiBookingSystem.exception.DuplicatedEntity;
 import com.project.KoiBookingSystem.exception.NotFoundException;
 import com.project.KoiBookingSystem.model.request.LoginRequest;
@@ -23,7 +26,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
 import java.time.LocalDate;
+=======
+import java.time.LocalDateTime;
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -43,15 +50,19 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     TokenService tokenService;
 
+<<<<<<< HEAD
     @Autowired
     EmailService emailService;
 
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     public RegisterResponse registerAccount(RegisterRequest registerRequest) {
         // Sử dụng modelmapper để map RegisterRequest => Account
         Account account = modelMapper.map(registerRequest, Account.class);
         try {
             String passwordStr = account.getPassword(); // Password do người dùng nhập
             account.setPassword(passwordEncoder.encode(passwordStr)); // mã hóa Password do người dùng nhập trước khi lưu xuống database
+<<<<<<< HEAD
             account.setRole(Role.CUSTOMER);
             String userId = generateUserID(account.getRole());
             account.setUserId(userId);
@@ -115,6 +126,23 @@ public class AuthenticationService implements UserDetailsService {
             handleDuplicateData(e, account);
         }
         return null;
+=======
+            String userID = generateUserID(account.getRole());
+            account.setUserID(userID);
+            account.setCreatedDate(LocalDateTime.now());
+            account.setStatus(true);
+            Account newAccount = accountRepository.save(account);
+            return modelMapper.map(newAccount, RegisterResponse.class);
+        } catch (DataIntegrityViolationException exception) {
+            if (exception.getMessage().contains(account.getUsername())) {
+                throw new DuplicatedEntity("Duplicated Username!");
+            } else if (exception.getMessage().contains(account.getPhone())) {
+                throw new DuplicatedEntity("Duplicated Phone number!");
+            } else {
+                throw new DuplicatedEntity("Duplicated Email!");
+            }
+        }
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     }
 
     public LoginResponse loginAccount(LoginRequest loginRequest) {
@@ -163,6 +191,7 @@ public class AuthenticationService implements UserDetailsService {
         return prefix + (countRole + 1);
     }
 
+<<<<<<< HEAD
     public Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (Account) authentication.getPrincipal();
@@ -185,4 +214,10 @@ public class AuthenticationService implements UserDetailsService {
 //        emailDetail.setLink("https://google.com");
 //        emailService.sendEmail(emailDetail);
 //    }
+=======
+    public Account getCurrentAccountUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Account) authentication.getPrincipal();
+    }
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }

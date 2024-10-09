@@ -32,9 +32,12 @@ public class ValidationHandler {
         return ResponseEntity.ok(exception.getMessage());
     }
 
+<<<<<<< HEAD
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFound(NotFoundException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }

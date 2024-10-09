@@ -9,7 +9,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.security.access.prepost.PreAuthorize;
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +30,7 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(newAccount);
     }
 
+<<<<<<< HEAD
     @PostMapping("/register/staff")
     @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity registerAccountByManager(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -40,6 +44,8 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(newAccount);
     }
 
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     @PostMapping("/login")
     public ResponseEntity loginAccount(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse thisAccount = authenticationService.loginAccount(loginRequest);

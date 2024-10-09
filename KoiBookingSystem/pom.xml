@@ -6,7 +6,11 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.3.4</version>
+<<<<<<< HEAD
 		<relativePath/>
+=======
+		<relativePath/> <!-- lookup parent from repository -->
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 	</parent>
 	<groupId>com.project</groupId>
 	<artifactId>KoiBookingSystem</artifactId>
@@ -91,6 +95,7 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
+<<<<<<< HEAD
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>
@@ -104,6 +109,9 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.13</version>
 		</dependency>
+=======
+
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 	</dependencies>
 
 	<build>
@@ -120,6 +128,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
+<<<<<<< HEAD
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -132,6 +141,8 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 		</plugins>
 	</build>
 

@@ -27,6 +27,10 @@ public class UserAPI {
         return ResponseEntity.ok(updatedAccount);
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
     @DeleteMapping
     public ResponseEntity deleteUser() {
         UserResponse deletedAccount = userService.deleteUser();
@@ -41,9 +45,12 @@ public class UserAPI {
         return ResponseEntity.ok(users);
     }
 
+<<<<<<< HEAD
     @GetMapping("/{role}")
     public ResponseEntity getUsersByRole(@PathVariable String role) {
         List<UserResponse> userResponses = userService.getAllUsersByRole(role);
         return ResponseEntity.ok(userResponses);
     }
+=======
+>>>>>>> c32ecad3e7b477f322ad177700c02f3ed07bb1ec
 }
