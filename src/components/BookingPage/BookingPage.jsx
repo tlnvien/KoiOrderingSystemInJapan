@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./BookingPage.css";
-import { FaCreditCard, FaMobileAlt, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaCreditCard,
+  FaMobileAlt,
+  FaMoneyBillWave,
+  FaPaypal,
+} from "react-icons/fa";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 
 const BookingPage = () => {
@@ -61,7 +66,7 @@ const BookingPage = () => {
         <section className="contact-info">
           <h2>Thông tin liên hệ</h2>
           <div className="form-group-book">
-            <label>Họ và tên</label>
+            <label>Họ và tên:</label>
             <input
               type="text"
               name="fullName"
@@ -71,7 +76,7 @@ const BookingPage = () => {
             />
           </div>
           <div className="form-group-book">
-            <label>Số điện thoại</label>
+            <label>Số điện thoại:</label>
             <input
               type="tel"
               name="phone"
@@ -81,7 +86,7 @@ const BookingPage = () => {
             />
           </div>
           <div className="form-group-book">
-            <label>Email</label>
+            <label>Email:</label>
             <input
               type="email"
               name="email"
@@ -91,7 +96,7 @@ const BookingPage = () => {
             />
           </div>
           <div className="form-group-book">
-            <label>Địa chỉ</label>
+            <label>Địa chỉ:</label>
             <input
               type="text"
               name="address"
@@ -118,20 +123,6 @@ const BookingPage = () => {
               ))}
             </select>
           </div>
-          <div className="form-group-book">
-            <label>Trẻ em</label>
-            <select
-              name="numberOfChildren"
-              value={formData.numberOfChildren}
-              onChange={handleChange}
-            >
-              {[...Array(10).keys()].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </div>
         </section>
 
         <section className="payment-method">
@@ -145,8 +136,8 @@ const BookingPage = () => {
                 checked={formData.paymentMethod === "credit"}
                 onChange={handleChange}
               />
-              <FaCreditCard style={{ marginRight: "15px" }} />
-              Thẻ tín dụng
+              <FaPaypal style={{ marginRight: "15px" }} />
+              Paypal
             </label>
           </div>
           <div className="form-group-book">

@@ -1,90 +1,126 @@
-import React, { useState } from "react";
-import { Table, Button, Input, Modal, Form } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Modal, Form, Input, Select } from "antd";
+import axios from "axios";
 import Sidebar from "./Admin.jsx";
 
-const ManageUsers = () => {
-  const [users, setUsers] = useState([
-    {
-      key: "1",
-      name: "Người dùng 1",
-      email: "user1@example.com",
-      role: "Admin",
-    },
-    {
-      key: "2",
-      name: "Người dùng 2",
-      email: "user2@example.com",
-      role: "Nhân viên",
-    },
-  ]);
-
+const UserManagement = () => {
+  const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [searchText, setSearchText] = useState("");
 
-  const handleAddEditUser = (values) => {
-    if (currentUser) {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.key === currentUser.key ? { ...user, ...values } : user
-        )
-      );
-    } else {
-      setUsers((prevUsers) => [
-        ...prevUsers,
-        {
-          key: (users.length + 1).toString(),
-          ...values,
+  const apiUrl = "http://localhost:8080/api/info"; // URL API
+  const token = localStorage.getItem("token");
+
+  // Fetch user data when component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "*/*",
         },
-      ]);
+      });
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      alert("Có lỗi xảy ra khi lấy dữ liệu người dùng.");
     }
-    setIsModalVisible(false);
-    setCurrentUser(null);
   };
 
-  const handleDeleteUser = (key) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.key !== key));
-  };
-
-  const handleEditUser = (user) => {
-    setCurrentUser(user);
+  const handleEdit = (record) => {
+    setEditingRecord(record);
     setIsModalVisible(true);
   };
 
-  const handleModalClose = () => {
-    setIsModalVisible(false);
-    setCurrentUser(null);
+  const handleDelete = (userID) => {
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn xóa người dùng này không?",
+      okText: "Có",
+      okType: "danger",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          await axios.delete(`${apiUrl}/${userID}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          fetchData();
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          alert("Có lỗi xảy ra khi xóa người dùng.");
+        }
+      },
+    });
   };
 
+  const handleOk = async (values) => {
+    try {
+      // Nếu không có editingRecord, đảm bảo userID không để trống
+      if (!editingRecord && !values.userID) {
+        alert("Vui lòng nhập User ID!");
+        return;
+      }
+
+      const dataToSend = { ...values };
+
+      if (editingRecord) {
+        // Cập nhật một bản ghi hiện tại
+        await axios.put(`${apiUrl}/${editingRecord.userID}`, dataToSend, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("Cập nhật thành công");
+      } else {
+        // Tạo một bản ghi mới
+        await axios.post(apiUrl, dataToSend, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      setIsModalVisible(false);
+      fetchData(); // Làm mới dữ liệu sau khi thực hiện thao tác
+    } catch (error) {
+      console.error("Error saving user data:", error);
+      alert("Có lỗi xảy ra khi lưu dữ liệu người dùng.");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSearch = (value) => {
+    setSearchText(value);
+  };
+
+  const filteredData = data.filter((record) =>
+    record.username.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   const columns = [
+    { title: "User ID", dataIndex: "userID", key: "userID" },
+    { title: "Username", dataIndex: "username", key: "username" },
+    { title: "Phone", dataIndex: "phone", key: "phone" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Role", dataIndex: "role", key: "role" },
+    { title: "First Name", dataIndex: "firstName", key: "firstName" },
+    { title: "Last Name", dataIndex: "lastName", key: "lastName" },
+    { title: "Gender", dataIndex: "gender", key: "gender" },
+    { title: "Address", dataIndex: "address", key: "address" },
+    { title: "Note", dataIndex: "note", key: "note" },
     {
-      title: "Tên",
-      dataIndex: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      sorter: (a, b) => a.email.localeCompare(b.email),
-    },
-    {
-      title: "Vai Trò",
-      dataIndex: "role",
-    },
-    {
-      title: "Hành động",
-      render: (text, user) => (
-        <div>
-          <Button type="primary" onClick={() => handleEditUser(user)}>
-            Edit
-          </Button>
-          <Button
-            type="danger"
-            onClick={() => handleDeleteUser(user.key)}
-            style={{ marginLeft: 8 }}
-          >
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <>
+          <Button onClick={() => handleEdit(record)}>Edit</Button>
+          <Button onClick={() => handleDelete(record.userID)} danger>
             Delete
           </Button>
-        </div>
+        </>
       ),
     },
   ];
@@ -92,50 +128,45 @@ const ManageUsers = () => {
   return (
     <div className="admin">
       <Sidebar />
-
       <div className="admin-content">
-        <h2>Quản lý Người Dùng</h2>
+        <h2>Quản lý người dùng</h2>
+
         <Input.Search
-          placeholder="Tìm kiếm người dùng"
-          onSearch={(value) => {
-            const filteredUsers = users.filter((user) =>
-              user.name.toLowerCase().includes(value.toLowerCase())
-            );
-            setUsers(filteredUsers);
-          }}
+          placeholder="Tìm kiếm người dùng theo tên"
+          onSearch={handleSearch}
           style={{ marginBottom: 16, width: 300 }}
           allowClear
         />
-        <Button
-          type="primary"
-          onClick={() => setIsModalVisible(true)}
-          style={{ marginBottom: 16 }}
-        >
-          Thêm Người Dùng
-        </Button>
+
         <Table
+          dataSource={filteredData}
           columns={columns}
-          dataSource={users}
+          rowKey="userID"
           pagination={{ pageSize: 5 }}
-          rowKey="key"
         />
 
         <Modal
-          title={currentUser ? "Sửa Người Dùng" : "Thêm Người Dùng"}
+          title="Edit User"
           visible={isModalVisible}
-          onCancel={handleModalClose}
+          onCancel={handleCancel}
           footer={null}
+          key={editingRecord ? editingRecord.userID : "edit"}
         >
           <Form
+            initialValues={editingRecord ? { ...editingRecord } : {}}
+            onFinish={handleOk}
             layout="vertical"
-            initialValues={
-              currentUser || { name: "", email: "", role: "Nhân viên" }
-            }
-            onFinish={handleAddEditUser}
           >
             <Form.Item
-              label="Tên"
-              name="name"
+              name="userID"
+              label="User ID"
+              rules={[{ required: true, message: "Vui lòng nhập User ID!" }]}
+            >
+              <Input disabled={!!editingRecord} />
+            </Form.Item>
+            <Form.Item
+              name="username"
+              label="Username"
               rules={[
                 { required: true, message: "Vui lòng nhập tên người dùng!" },
               ]}
@@ -143,22 +174,67 @@ const ManageUsers = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label="Email"
+              name="phone"
+              label="Phone"
+              rules={[
+                { required: true, message: "Vui lòng nhập số điện thoại!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               name="email"
+              label="Email"
               rules={[{ required: true, message: "Vui lòng nhập email!" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label="Vai Trò"
               name="role"
+              label="Role"
               rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+            >
+              <Select>
+                <Select.Option value="MANAGER">Manager</Select.Option>
+                <Select.Option value="SALES">Sales</Select.Option>
+                <Select.Option value="CONSULTING">Consulting</Select.Option>
+                <Select.Option value="DELIVERING">Delivering</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="firstName"
+              label="First Name"
+              rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
             >
               <Input />
             </Form.Item>
+            <Form.Item
+              name="lastName"
+              label="Last Name"
+              rules={[{ required: true, message: "Vui lòng nhập họ!" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="gender"
+              label="Gender"
+              rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+            >
+              <Select>
+                <Select.Option value="MALE">Male</Select.Option>
+                <Select.Option value="FEMALE">Female</Select.Option>
+                <Select.Option value="OTHER">Other</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item name="address" label="Address">
+              <Input />
+            </Form.Item>
+            <Form.Item name="note" label="Note">
+              <Input.TextArea />
+            </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                {currentUser ? "Cập Nhật" : "Thêm"}
+                {editingRecord ? "Cập nhật" : "Tạo mới"}
               </Button>
             </Form.Item>
           </Form>
@@ -168,4 +244,4 @@ const ManageUsers = () => {
   );
 };
 
-export default ManageUsers;
+export default UserManagement;

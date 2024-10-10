@@ -23,8 +23,14 @@ import UserManagement from "./components/Admin/UserManagement";
 import GoogleProfile from "./components/ViewAndUpdateProfile/GoogleProfile";
 import FacebookProfile from "./components/ViewAndUpdateProfile/FacebookProfile";
 import Feedback from "./components/Feedback/Feedback";
+import KoiManagement from "./components/Admin/KoiManagement";
+import FarmManagement from "./components/Admin/FarmManagement";
 import BookingPage from "./components/BookingPage/BookingPage";
+import AboutUs from "./components/AboutUs/AboutUs";
+import LoginTest from "./components/Auth/LoginTest";
 import React from "react";
+import PaymentPage from "./components/Payment/Payment";
+import PaymentSuccessPage from "./components/Payment/PaymentSuccess";
 
 function App() {
   return (
@@ -55,7 +61,13 @@ function App() {
           <Route path="/reviews" element={<ReviewManagement />} />
           <Route path="/users" element={<UserManagement />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/koies" element={<KoiManagement />} />
+          <Route path="/farm-management" element={<FarmManagement />} />
           <Route path="/booking/:id" element={<BookingPage />} />
+          <Route path="/aboutUs" element={<AboutUs />} />
+          <Route path="/login-test" element={<LoginTest />} />
+          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/payment-success" element={<PaymentSuccessPage />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

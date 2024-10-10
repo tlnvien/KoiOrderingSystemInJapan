@@ -1,6 +1,6 @@
 /* Login.css */
 .auth-container {
-  background-image: url('./assets/background.gif'); /* Add your image path here */
+  background-image: url('./assets/background.gif');
   background-size: cover; /* Ensure the background covers the entire container */
   background-position: center;
   background-repeat: no-repeat;
@@ -169,4 +169,8 @@ h1 {
   cursor: pointer;
   color: #333;
   font-size: 18px;
+}
+
+.error-message {
+  color:red;
 }

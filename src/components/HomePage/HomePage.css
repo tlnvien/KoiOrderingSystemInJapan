@@ -116,13 +116,13 @@ body {
   margin-right: 10px;
 }
 
-.form-input {
+/* .form-input {
   width: 100%;
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-}
+} */
 
 /* About Us Section */
 .about-us-section {
@@ -229,14 +229,14 @@ body {
 
 
 .see-more-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
+
+  padding: 6px 20px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 20px;
   text-decoration: none;
 }
 
@@ -264,23 +264,4 @@ body {
   display: flex;
   justify-content: space-around;
   gap: 20px; /* Adjust spacing between images */
-}
-
-.variety-item {
-  flex: 1;
-  max-width: 300px;
-  text-align: center;
-}
-
-.variety-item img {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-  aspect-ratio: 3/5;
-}
-
-.variety-item h3 {
-  margin-top: 10px;
-  font-size: 20px;
-  color: #333;
 }

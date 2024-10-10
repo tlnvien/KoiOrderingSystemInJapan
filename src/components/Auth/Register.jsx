@@ -23,7 +23,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const navigate = useNavigate();
-  const api = "http://localhost:8081/register";
+  const api = "http://localhost:8080/register";
 
   const handleChange = (e) => {
     setFormData({

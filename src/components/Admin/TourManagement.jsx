@@ -1,31 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, DatePicker } from "antd"; // Import DatePicker từ Ant Design
+import { Table, Button, Modal, Form, Input, DatePicker, Select } from "antd";
 import axios from "axios";
-import Sidebar from "./Admin.jsx"; // Đảm bảo Sidebar đã được định nghĩa đúng
-import moment from "moment"; // Import moment để xử lý ngày giờ
+import Sidebar from "./Admin.jsx";
+import moment from "moment";
 
 const TourManagement = () => {
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
-  const [nextId, setNextId] = useState(1); // Biến để quản lý id tự động
   const [searchText, setSearchText] = useState("");
 
+  const apiUrl = "http://localhost:8081/api/tour";
+  const token = localStorage.getItem("token");
+
+  // Fetch tour data when component mounts
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await axios.get(
-      "https://66f97d4dafc569e13a98ee5e.mockapi.io/Management"
-    );
-    const tours = response.data.filter((item) => item.type === "tour");
-
-    // Tìm id lớn nhất trong dữ liệu hiện tại
-    const maxId = Math.max(...tours.map((tour) => parseInt(tour.id)), 0);
-    setNextId(maxId + 1); // Cập nhật id tiếp theo dựa trên id lớn nhất
-
-    setData(tours);
+    try {
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "*/*",
+        },
+      });
+      console.log("Response:", response.data);
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching tour data:", error);
+      alert("Có lỗi xảy ra khi lấy dữ liệu tour.");
+    }
   };
 
   const handleAdd = () => {
@@ -38,17 +44,25 @@ const TourManagement = () => {
     setIsModalVisible(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (tourID) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this tour?",
-      okText: "Yes",
+      title: "Bạn có chắc chắn muốn xóa tour này không?",
+      okText: "Có",
       okType: "danger",
-      cancelText: "No",
+      cancelText: "Không",
       onOk: async () => {
-        await axios.delete(
-          `https://66f97d4dafc569e13a98ee5e.mockapi.io/Management/${id}`
-        );
-        fetchData();
+        try {
+          await axios.delete(`${apiUrl}/${tourID}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          fetchData();
+        } catch (error) {
+          console.error(
+            "Error deleting tour:",
+            error.response || error.message
+          );
+          alert("Có lỗi xảy ra khi xóa tour.");
+        }
       },
     });
   };
@@ -56,26 +70,37 @@ const TourManagement = () => {
   const handleOk = async (values) => {
     const dataToSend = {
       ...values,
-      type: "tour",
-      startDate: values.startDate.format("YYYY-MM-DD"), // Định dạng ngày trước khi gửi
+      departureDate: values.departureDate.format("YYYY-MM-DDTHH:mm:ss"),
+      endDate: values.endDate.format("YYYY-MM-DDTHH:mm:ss"),
     };
 
-    // Nếu đang chỉnh sửa thì giữ nguyên id, nếu thêm mới thì dùng nextId
-    if (editingRecord) {
-      await axios.put(
-        `https://66f97d4dafc569e13a98ee5e.mockapi.io/Management/${editingRecord.id}`,
-        dataToSend
+    console.log("Data to send:", dataToSend); // Log data before sending
+
+    try {
+      if (editingRecord) {
+        // Edit an existing record
+        await axios.put(`${apiUrl}/${editingRecord.tourID}`, dataToSend, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        // Create a new record
+        await axios.post(apiUrl, dataToSend, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      setIsModalVisible(false);
+      fetchData(); // Refresh data after operation
+    } catch (error) {
+      // Log error details
+      console.error(
+        "Error saving tour data:",
+        error.response?.data || error.message
       );
-    } else {
-      dataToSend.id = nextId; // Thêm id tự động vào khi tạo mới
-      setNextId(nextId + 1); // Tăng id cho lần tiếp theo
-      await axios.post(
-        "https://66f97d4dafc569e13a98ee5e.mockapi.io/Management",
-        dataToSend
+      alert(
+        "Có lỗi xảy ra khi lưu dữ liệu tour. Chi tiết: " +
+          (error.response?.data.message || error.message)
       );
     }
-    setIsModalVisible(false);
-    fetchData();
   };
 
   const handleCancel = () => {
@@ -86,21 +111,63 @@ const TourManagement = () => {
     setSearchText(value);
   };
 
-  // Lọc dữ liệu dựa trên từ khóa tìm kiếm
-  const filteredData = data.filter((record) => {
-    return (
-      record.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      record.location.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
+  const filteredData = data.filter((record) =>
+    record.tourName.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
+    { title: "Tour ID", dataIndex: "tourID", key: "tourID" },
     {
       title: "Tour Name",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      dataIndex: "tourName",
+      key: "tourName",
+      sorter: (a, b) => a.tourName.localeCompare(b.tourName),
+    },
+    {
+      title: "Max Participants",
+      dataIndex: "maxParticipants",
+      key: "maxParticipants",
+      sorter: (a, b) => a.maxParticipants - b.maxParticipants,
+    },
+    {
+      title: "Remaining Seats",
+      dataIndex: "remainSeat",
+      key: "remainSeat",
+      sorter: (a, b) => a.remainSeat - b.remainSeat,
+    },
+    {
+      title: "Departure Date",
+      dataIndex: "departureDate",
+      key: "departureDate",
+      sorter: (a, b) => new Date(a.departureDate) - new Date(b.departureDate),
+      render: (text) => moment(text).format("YYYY-MM-DDTHH:mm:ss"),
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      key: "endDate",
+      sorter: (a, b) => new Date(a.endDate) - new Date(b.endDate),
+      render: (text) => moment(text).format("YYYY-MM-DDTHH:mm:ss"),
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Consulting ID",
+      dataIndex: "consulting",
+      key: "consulting",
+    },
+    {
+      title: "Tour Type",
+      dataIndex: "type",
+      key: "type",
+      filters: [
+        { text: "Available Tour", value: "AVAILABLE_TOUR" },
+        { text: "Unavailable Tour", value: "UNAVAILABLE_TOUR" },
+      ],
+      onFilter: (value, record) => record.type.includes(value),
     },
     {
       title: "Price",
@@ -109,23 +176,9 @@ const TourManagement = () => {
       sorter: (a, b) => a.price - b.price,
     },
     {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-      sorter: (a, b) => a.location.localeCompare(b.location),
-    },
-    {
-      title: "Seats",
-      dataIndex: "seats",
-      key: "seats",
-      sorter: (a, b) => a.seats - b.seats,
-    },
-    {
-      title: "Start Date", // Cột mới cho startDate
-      dataIndex: "startDate",
-      key: "startDate",
-      sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate),
-      render: (text) => moment(text).format("YYYY-MM-DD"), // Hiển thị ngày đúng định dạng
+      title: "Manager ID",
+      dataIndex: "manager",
+      key: "manager",
     },
     {
       title: "Action",
@@ -133,7 +186,7 @@ const TourManagement = () => {
       render: (_, record) => (
         <>
           <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button onClick={() => handleDelete(record.id)} danger>
+          <Button onClick={() => handleDelete(record.tourID)} danger>
             Delete
           </Button>
         </>
@@ -147,37 +200,38 @@ const TourManagement = () => {
       <div className="admin-content">
         <h2>Quản lý tour</h2>
 
-        {/* Thêm ô tìm kiếm */}
         <Input.Search
-          placeholder="Tìm kiếm tour theo tên hoặc địa điểm"
+          placeholder="Tìm kiếm tour theo tên"
           onSearch={handleSearch}
           style={{ marginBottom: 16, width: 300 }}
-          allowClear // Cho phép xóa tìm kiếm
+          allowClear
         />
 
-        <Button type="primary" onClick={handleAdd}>
-          Add Tour
+        <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
+          Thêm Tour
         </Button>
+
         <Table
           dataSource={filteredData}
           columns={columns}
-          rowKey="id"
-          pagination={{ pageSize: 5 }} // Giới hạn số lượng bản ghi trên mỗi trang
+          rowKey="tourID"
+          pagination={{ pageSize: 5 }}
         />
 
         <Modal
-          title={editingRecord ? "Edit Tour" : "Add Tour"}
+          title={editingRecord ? "Chỉnh sửa Tour" : "Thêm Tour"}
           visible={isModalVisible}
           onCancel={handleCancel}
           footer={null}
-          key={editingRecord ? editingRecord.id : "add-tour"}
+          key={editingRecord ? editingRecord.tourID : "new"}
         >
           <Form
             initialValues={
               editingRecord
                 ? {
                     ...editingRecord,
-                    startDate: moment(editingRecord.startDate),
+                    departureDate: moment(editingRecord.departureDate),
+                    endDate: moment(editingRecord.endDate),
                   }
                 : {}
             }
@@ -185,63 +239,88 @@ const TourManagement = () => {
             layout="vertical"
           >
             <Form.Item
-              name="name"
+              name="tourID"
+              label="Tour ID"
+              rules={[{ required: true, message: "Vui lòng nhập Tour ID!" }]}
+            >
+              <Input disabled={!!editingRecord} />
+            </Form.Item>
+            <Form.Item
+              name="tourName"
               label="Tour Name"
-              rules={[
-                { required: true, message: "Please input the tour name!" },
-              ]}
+              rules={[{ required: true, message: "Vui lòng nhập tên tour!" }]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item
+              name="maxParticipants"
+              label="Max Participants"
+              rules={[
+                { required: true, message: "Vui lòng nhập số lượng tối đa!" },
+              ]}
+            >
+              <Input type="number" />
+            </Form.Item>
+            <Form.Item
+              name="remainSeat"
+              label="Remaining Seats"
+              rules={[
+                { required: true, message: "Vui lòng nhập số chỗ còn lại!" },
+              ]}
+            >
+              <Input type="number" />
+            </Form.Item>
+            <Form.Item
+              name="departureDate"
+              label="Departure Date"
+              rules={[
+                { required: true, message: "Vui lòng chọn ngày khởi hành!" },
+              ]}
+            >
+              <DatePicker showTime format="YYYY-MM-DDTHH:mm:ss" />
+            </Form.Item>
+            <Form.Item
+              name="endDate"
+              label="End Date"
+              rules={[
+                { required: true, message: "Vui lòng chọn ngày kết thúc!" },
+              ]}
+            >
+              <DatePicker showTime format="YYYY-MM-DDTHH:mm:ss" />
+            </Form.Item>
+            <Form.Item name="description" label="Description">
+              <Input.TextArea />
+            </Form.Item>
+            <Form.Item name="consulting" label="Consulting ID">
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="type"
+              label="Tour Type"
+              rules={[{ required: true, message: "Vui lòng chọn loại tour!" }]}
+            >
+              <Select>
+                <Select.Option value="AVAILABLE_TOUR">
+                  Available Tour
+                </Select.Option>
+                <Select.Option value="UNAVAILABLE_TOUR">
+                  Unavailable Tour
+                </Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item
               name="price"
               label="Price"
-              rules={[{ required: true, message: "Please input the price!" }]}
+              rules={[{ required: true, message: "Vui lòng nhập giá!" }]}
             >
               <Input type="number" />
             </Form.Item>
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                { required: true, message: "Please input the description!" },
-              ]}
-            >
-              <Input.TextArea />
-            </Form.Item>
-            <Form.Item
-              name="location"
-              label="Location"
-              rules={[
-                { required: true, message: "Please input the location!" },
-              ]}
-            >
+            <Form.Item name="manager" label="Manager ID">
               <Input />
-            </Form.Item>
-            <Form.Item
-              name="seats"
-              label="Seats"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the number of seats!",
-                },
-              ]}
-            >
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item
-              name="startDate"
-              label="Start Date"
-              rules={[
-                { required: true, message: "Please select the start date!" },
-              ]}
-            >
-              <DatePicker format="YYYY-MM-DD" />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Submit
+                {editingRecord ? "Cập nhật" : "Tạo mới"}
               </Button>
             </Form.Item>
           </Form>

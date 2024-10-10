@@ -1,0 +1,47 @@
+.slider-container1 {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Đặt giới hạn chiều rộng cho slider */
+  overflow: hidden; /* Ẩn các phần tử tràn ra ngoài */
+  margin: 0 auto; /* Căn giữa slider */
+}
+
+.slider-content1 {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  width: calc(100% * 3); /* Đảm bảo chiều rộng đủ cho tất cả ảnh */
+}
+
+.slider-item1 {
+  flex: 0 0 calc(100% / 3); /* Hiển thị 3 ảnh */
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+.slider-item1 img {
+  width: 80%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.arrow-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.arrow-left1 {
+  left: 10px;
+}
+
+.arrow-right1 {
+  right: 10px;
+}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input } from "antd";
+import { Table, Button, Modal, Form, Input, notification } from "antd";
 import axios from "axios";
 import { Link } from "react-router-dom"; // Thêm Link cho sidebar
 import "./Admin.css"; // Import CSS cho layout
@@ -11,20 +11,26 @@ const CustomerManagement = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  const apiUrl = "http://localhost:8081/api/info";
+  const token =
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMSIsImlhdCI6MTcyODMyMTk4OSwiZXhwIjoxNzI4NDA4Mzg5fQ.YG8AFw5VhUM3iHlINXqO3waYcdKHlXQcpHx2ouXoWlA";
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await axios.get(
-      "https://66e1d268c831c8811b5672e8.mockapi.io/User"
-    );
-    setData(response.data);
-  };
-
-  const handleAdd = () => {
-    setEditingRecord(null);
-    setIsModalVisible(true);
+    try {
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Accept: "*/*",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setData(response.data);
+    } catch (error) {
+      notification.error({ message: "Failed to fetch farm list" });
+    }
   };
 
   const handleEdit = (record) => {
@@ -33,23 +39,15 @@ const CustomerManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(
-      `https://66e1d268c831c8811b5672e8.mockapi.io/User/${id}`
-    );
+    await axios.delete(`${apiUrl}/${id}`);
     fetchData();
   };
 
   const handleOk = async (values) => {
     if (editingRecord) {
-      await axios.put(
-        `https://66e1d268c831c8811b5672e8.mockapi.io/User/${editingRecord.id}`,
-        values
-      );
+      await axios.put(`${apiUrl}/${editingRecord.id}`, values);
     } else {
-      await axios.post(
-        "https://66e1d268c831c8811b5672e8.mockapi.io/User",
-        values
-      );
+      await axios.post(apiUrl, values);
     }
     setIsModalVisible(false);
     fetchData();
@@ -71,7 +69,7 @@ const CustomerManagement = () => {
   });
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
+    { title: "UserID", dataIndex: "userID", key: "id" },
     {
       title: "Username",
       dataIndex: "username",
@@ -79,10 +77,35 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.username.localeCompare(b.username),
     },
     {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
       title: "Email",
       dataIndex: "email",
       key: "email",
       sorter: (a, b) => a.email.localeCompare(b.email),
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "First Name",
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: "Gneder",
+      dataIndex: "gender",
+      key: "gender",
     },
     {
       title: "Action",

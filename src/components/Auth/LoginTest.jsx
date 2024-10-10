@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Login.css";
-import logo from "./assets/logo.jpg";
 import React from "react";
+import { message } from "antd";
 
-function Login() {
+function LoginTest() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +20,7 @@ function Login() {
     setErrorMessage("");
 
     // Username/password login logic
-    fetch("https://66e1d268c831c8811b5672e8.mockapi.io/User")
+    fetch("https://66e1d268c831c8811b5672e8.mockapi.io/Login")
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -33,13 +33,11 @@ function Login() {
         );
         if (user) {
           localStorage.setItem("token", user.token);
-          localStorage.setItem("userId", user.id);
-          localStorage.setItem("loginType", "username");
           alert("Login successful!");
+          // message("Login successful!");
           navigate("/");
         } else {
-          // setErrorMessage("Invalid username or password");
-          alert("Invalid username or password");
+          setErrorMessage("Invalid username or password");
         }
       })
       .catch((error) => {
@@ -54,9 +52,6 @@ function Login() {
 
   return (
     <div className="auth-container">
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
       <div className="login-section">
         <h1>Login</h1>
         <form onSubmit={handleUsernamePasswordLogin}>
@@ -94,7 +89,11 @@ function Login() {
             Login
           </button>
         </form>
-        {errorMessage && <p role="alert">{errorMessage}</p>}{" "}
+        {errorMessage && (
+          <p role="alert" className="error-message">
+            {errorMessage}
+          </p>
+        )}{" "}
         {/* Display error message */}
         <div className="auth-links">
           <Link to="/forgot-password" className="auth-link">
@@ -108,5 +107,4 @@ function Login() {
     </div>
   );
 }
-
-export default Login;
+export default LoginTest;

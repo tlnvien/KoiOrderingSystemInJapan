@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import Axios
 import "./Profile.css"; // Import CSS cho trang
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -12,9 +13,10 @@ import {
 
 const ViewProfile = () => {
   const [userData, setUserData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    phoneNumber: "",
+    citizenID: "",
     gender: "",
     dob: "",
     address: "",
@@ -23,34 +25,30 @@ const ViewProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false); // Thêm state để kiểm tra xem có đang ở chế độ chỉnh sửa không
   const userId = localStorage.getItem("userId");
-  const googleId = localStorage.getItem("googleId");
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
   const navigate = useNavigate();
+  const apiUrl = "http://localhost:8080/api/info";
 
   useEffect(() => {
     fetchUserProfile();
   }, []);
 
-  // Lấy thông tin người dùng từ API
+  // Lấy thông tin người dùng từ API bằng Axios
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch(
-        `https://66e1d268c831c8811b5672e8.mockapi.io/User/${userId}`, // Fetch thông tin từ userId
-        {
-          method: "GET",
-        }
-      );
+      const response = await axios.get(`${apiUrl}/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch user profile");
-      }
-
-      const result = await response.json();
-      if (result) {
-        setUserData(result); // Lưu dữ liệu người dùng vào state
+      if (response.data) {
+        setUserData(response.data); // Lưu dữ liệu người dùng vào state
         setIsLoading(false);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error fetching user data:", error.response || error);
       alert("Không thể tải dữ liệu người dùng.");
     }
   };
@@ -62,27 +60,20 @@ const ViewProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        `https://66e1d268c831c8811b5672e8.mockapi.io/User/${userId}`,
-        {
-          method: "PUT", // Sử dụng PUT để cập nhật thông tin
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData), // Chuyển đổi dữ liệu thành JSON
-        }
-      );
+      const response = await axios.put(`${apiUrl}/${userId}`, userData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to update user profile");
+      if (response.data) {
+        setUserData(response.data); // Cập nhật dữ liệu người dùng
+        setIsEditing(false); // Đóng chế độ chỉnh sửa
+        alert("Cập nhật thông tin thành công!");
       }
-
-      const updatedUser = await response.json();
-      setUserData(updatedUser); // Cập nhật dữ liệu người dùng
-      setIsEditing(false); // Đóng chế độ chỉnh sửa
-      alert("Cập nhật thông tin thành công!");
     } catch (error) {
-      console.error("Error updating user data:", error);
+      console.error("Error updating user data:", error.response || error);
       alert("Cập nhật thông tin không thành công.");
     }
   };
@@ -125,11 +116,21 @@ const ViewProfile = () => {
           <h1>Thông tin cá nhân</h1>
           <form onSubmit={isEditing ? handleSave : null}>
             <div className="form-group">
-              <label>Tên:</label>
+              <label>Last Name:</label>
               <input
                 type="text"
-                name="fullName"
-                value={userData.fullName}
+                name="lastName"
+                value={userData.lastName}
+                onChange={handleChange}
+                readOnly={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
+              />
+            </div>
+            <div className="form-group">
+              <label>First Name:</label>
+              <input
+                type="text"
+                name="firstName"
+                value={userData.firstName}
                 onChange={handleChange}
                 readOnly={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
               />
@@ -142,15 +143,16 @@ const ViewProfile = () => {
                 onChange={handleChange}
                 disabled={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
               >
-                <option value="male">Nam</option>
-                <option value="female">Nữ</option>
-                <option value="other">Khác</option>
+                <option value="MALE">MALE</option>
+                <option value="FEMALE">FEMALE</option>
+                <option value="OTHER">OTHER</option>
               </select>
             </div>
             <div className="form-group">
               <label>Ngày sinh:</label>
               <input
                 type="date"
+                format="yyyy-MM-dd"
                 name="dob"
                 value={userData.dob}
                 onChange={handleChange}
@@ -163,16 +165,6 @@ const ViewProfile = () => {
                 type="email"
                 name="email"
                 value={userData.email}
-                onChange={handleChange}
-                readOnly={!isEditing}
-              />
-            </div>
-            <div className="form-group">
-              <label>Số điện thoại:</label>
-              <input
-                type="text"
-                name="phoneNumber"
-                value={userData.phoneNumber}
                 onChange={handleChange}
                 readOnly={!isEditing}
               />

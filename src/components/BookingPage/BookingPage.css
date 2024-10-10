@@ -51,47 +51,43 @@ h1 {
 
 .booking-form {
   background-color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Khoảng cách giữa các nhóm */
+  max-width: 800px; /* Giới hạn chiều rộng của form */
+  margin: 0 auto; /* Canh giữa form */
 }
 
 section {
-  margin-bottom: 30px; /* Increased margin for better spacing */
+  margin-bottom: 20px;
 }
 
 h2 {
-  color: #007bff; /* Màu tiêu đề */
-  margin-bottom: 15px; /* Increased margin for better spacing */
-  font-size: 22px; /* Slightly larger font size */
+  color: #007bff;
+  margin-bottom: 15px;
+  font-size: 22px;
 }
 
-.form-group-book input {
-  margin-bottom: 20px; /* Increased margin for better spacing */
+.form-group-book {
   display: flex;
-  flex-direction: column; /* Changed to column for better alignment */
+  flex-direction: column;
+  gap: 10px; /* Khoảng cách giữa label và input */
 }
 
-label {
-  margin-bottom: 5px; /* Added margin for spacing */
-  color: #333;
-}
-
-input[type="text"],
-input[type="tel"],
-input[type="email"],
+.form-group-book input[type="text"],
+.form-group-book input[type="tel"],
+.form-group-book input[type="email"],
 textarea,
 select {
   width: 100%;
-  padding: 12px; /* Increased padding for better touch targets */
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
-  box-sizing: border-box; /* Ensures padding is included in width */
-}
-
-textarea {
-  height: 100px;
+  box-sizing: border-box;
 }
 
 input[type="radio"] {
@@ -101,19 +97,24 @@ input[type="radio"] {
 .submit-button {
   width: 100%;
   padding: 15px;
-  background-color: #007bff; /* Màu nút */
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   font-size: 18px;
   cursor: pointer;
-  transition: background-color 0.3s; /* Smooth transition */
+  transition: background-color 0.3s;
 }
 
 .submit-button:hover {
-  background-color: #0056b3; /* Màu nút khi hover */
+  background-color: #0056b3;
 }
+
 
 .notes-section {
   margin-top: 20px; /* Increased margin for better spacing */
+}
+
+.form-group-book label {
+  margin-top: 10px;
 }

@@ -1,0 +1,47 @@
+/* Định dạng cho slider nhiều ảnh */
+.slider-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .slider-content {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+  
+  .slider-item {
+    flex: 0 0 33.33%; /* Điều chỉnh để hiển thị 4 ảnh cùng lúc (25%) */
+    box-sizing: border-box;
+    padding: 5px; /* Khoảng cách giữa các ảnh */
+
+  }
+
+  .slider-item img {
+    width: 90%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của slider-item */
+    height: auto; /* Giữ tỉ lệ ảnh */
+    border-radius: 8px; /* Thêm bo góc nếu muốn */
+    aspect-ratio: 1;
+  }
+  
+  /* Định dạng cho nút điều hướng */
+  .arrow-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+  }
+  
+  .arrow-left {
+    left: 10px;
+  }
+  
+  .arrow-right {
+    right: 10px;
+  }
+  

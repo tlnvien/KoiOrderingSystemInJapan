@@ -9,6 +9,8 @@ import {
   DashboardOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import { FaFish } from "react-icons/fa";
+import { GiFarmer, GiFarmTractor, GiHouse } from "react-icons/gi";
 
 const Admin = () => {
   return (
@@ -49,6 +51,24 @@ const Admin = () => {
             <Link to="/users" className="menu-items">
               <UserOutlined style={{ marginRight: "8px" }} />
               Quản lý người dùng
+            </Link>
+          </li>
+          <li>
+            <Link to="/koies" className="menu-items">
+              <FaFish style={{ marginRight: "8px" }} />
+              Quản lý cá Koi
+            </Link>
+          </li>
+          <li>
+            <Link to="/farm-management" className="menu-items">
+              <GiHouse style={{ marginRight: "8px" }} />
+              Quản lý trang trại
+            </Link>
+          </li>
+          <li>
+            <Link to="/tourSchedule-management" className="menu-items">
+              <GiHouse style={{ marginRight: "8px" }} />
+              Quản lý lịch trình tour
             </Link>
           </li>
         </ul>

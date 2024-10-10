@@ -10,7 +10,7 @@ import HeroImage from "./assets/hero-image.jpg";
 import aboutImage1 from "./assets/about-us1.jpg";
 import aboutImage2 from "./assets/about-us2.jpg";
 import { Link } from "react-router-dom";
-// import { Link } from "react-router-dom";
+import Slider from "./Slider";
 
 const HomePage = () => {
   return (
@@ -116,7 +116,8 @@ const HomePage = () => {
 
       <div className="famous-koi-farms-section">
         <h2>Các Trang Trại Cá Koi Nổi Tiếng</h2>
-        <div className="farms-gallery">
+        <Slider />
+        {/* <div className="farms-gallery">
           <div className="farm-item">
             <img src={koiFarmImage} alt="Farm 1" />
             <h3>Trang Trại 1</h3>
@@ -129,7 +130,7 @@ const HomePage = () => {
             <img src={aboutImage2} alt="Farm 3" />
             <h3>Trang Trại 3</h3>
           </div>
-        </div>
+        </div> */}
         <Link to="/farm" className="see-more-btn">
           Xem thêm
         </Link>
@@ -137,7 +138,8 @@ const HomePage = () => {
 
       <div className="famous-koi-varieties-section">
         <h2>Các Giống Cá Koi Nổi Tiếng</h2>
-        <div className="varieties-gallery">
+        <Slider />
+        {/* <div className="varieties-gallery">
           <div className="variety-item">
             <img src={koiVarietyImage1} alt="Variety 1" />
             <h3>Kohaku Koi</h3>
@@ -150,7 +152,7 @@ const HomePage = () => {
             <img src={koiVarietyImage3} alt="Variety 3" />
             <h3>Senke Koi</h3>
           </div>
-        </div>
+        </div> */}
         <Link to="/koi-fish" className="see-more-btn">
           Xem thêm
         </Link>

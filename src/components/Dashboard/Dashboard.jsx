@@ -44,7 +44,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className="sidebar1">
         <div className="menu-item">
           <HomeOutlined /> <span>Home</span>
         </div>

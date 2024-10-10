@@ -7,6 +7,7 @@ import logo from "./assets/logo.jpg";
 import facebookLogo from "./assets/facebook-logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -15,6 +16,8 @@ function Login() {
   const [isGoogleLogin, setIsGoogleLogin] = useState(false); // New state for login type
 
   const navigate = useNavigate();
+
+  const apiUrl = "http://localhost:8080/api/login";
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
@@ -91,36 +94,26 @@ function Login() {
     }
   };
 
-  const handleUsernamePasswordLogin = (e) => {
+  const handleUsernamePasswordLogin = async (e) => {
     e.preventDefault();
-    setIsGoogleLogin(false); // Set to false for username/password login
+    setIsGoogleLogin(false);
 
-    // Username/password login logic
-    fetch("https://66e1d268c831c8811b5672e8.mockapi.io/User")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      })
-      .then((users) => {
-        const user = users.find(
-          (u) => u.username === username && u.password === password
-        );
-        if (user) {
-          localStorage.setItem("token", user.token);
-          localStorage.setItem("userId", user.id);
-          localStorage.setItem("loginType", "username");
-          alert("Login successful!");
-          navigate("/");
-        } else {
-          alert("Invalid username or password");
-        }
-      })
-      .catch((error) => {
-        console.error("Login error", error);
-        alert("Error during login. Please try again.");
+    try {
+      const response = await axios.post(apiUrl, {
+        username: username, // Payload with username
+        password: password, // Payload with password
       });
+
+      // Assuming response data contains the token, userId, and role
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userId", response.data.userId);
+      localStorage.setItem("role", response.data.role);
+      localStorage.setItem("loginType", "username");
+      navigate("/");
+    } catch (error) {
+      console.error("Login error", error);
+      alert("Invalid username or password");
+    }
   };
 
   const togglePasswordVisibility = () => {

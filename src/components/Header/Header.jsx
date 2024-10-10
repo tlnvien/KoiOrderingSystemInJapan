@@ -48,7 +48,7 @@ const Header = () => {
             <Link to="/">Trang chủ</Link>
           </li>
           <li>
-            <a href="#gioi-thieu">Giới thiệu</a>
+            <a href="/aboutUs">Giới thiệu</a>
           </li>
           <li>
             <Link to="/farm">Trang trại</Link>

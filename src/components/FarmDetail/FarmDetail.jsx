@@ -12,6 +12,7 @@ import koiImage3 from "./assets/koi-fish3.jpg";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import { useParams, Link } from "react-router-dom";
+import Slider from "./Slider"; // Import Slider component
 
 const farms = [
   {
@@ -21,9 +22,9 @@ const farms = [
       "Matsue Nishikigoi Center là một trong các trại cá Koi Nhật Bản nổi tiếng với quy mô lớn. Matsue Nishikigoi được thành lập bởi ông Shoichi Iizuka vào tháng 4 năm 1996. Các dòng cá Koi tại trung tâm Matsue rất đa dạng như Kohaku, Showa, Sanke, Doitsu. Nhưng trung tâm được biết đến rộng rãi là nhờ dòng cá Koi Jumbo Kohaku.",
     image: farmImage1,
     famousVarieties: [
-      { name: "Kohaku", image: koiImage },
-      { name: "Showa", image: koiImage1 },
-      { name: "Sanke", image: koiImage2 },
+      { name: "Kohaku", images: [koiImage, koiImage1, koiImage2, koiImage3] },
+      { name: "Showa", images: [koiImage1, koiImage2, koiImage3, koiImage] },
+      { name: "Sanke", images: [koiImage2, koiImage, koiImage1, koiImage3] },
     ],
   },
   {
@@ -92,20 +93,14 @@ const FarmDetail = () => {
               <p>{farm.description}</p>
             </div>
           </div>
-          {/* Di chuyển phần giống cá nổi tiếng dưới ảnh */}
           <h2 className="famous-varieties-title">Giống Cá Nổi Tiếng</h2>
-          <div className="famous-varieties">
-            {farm.famousVarieties.map((variety, index) => (
-              <div key={index} className="variety-item">
-                <img
-                  src={variety.image}
-                  alt={variety.name}
-                  className="variety-image"
-                />
-                <h3>{variety.name}</h3>
-              </div>
-            ))}
-          </div>
+          {farm.famousVarieties.map((variety, index) => (
+            <div key={index} className="variety-section">
+              <h3>{variety.name}</h3>
+              <Slider />
+              {/* Sử dụng Slider component */}
+            </div>
+          ))}
           <Link to="/farm" className="back-button">
             Quay lại danh sách
           </Link>
