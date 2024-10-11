@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Button, Modal, Form, Input, notification, Upload } from "antd";
 import { storage } from "../../config/firebase.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import necessary functions
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Sidebar from "./Admin.jsx";
 
 const KoiManagement = () => {
@@ -10,8 +10,8 @@ const KoiManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentKoi, setCurrentKoi] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8082/api/koi";
-  const getApi = "http://localhost:8082/api/koi/list";
+  const apiUrl = "http://localhost:8082/api/koi"; // Adjust your API URL
+  const getApi = "http://localhost:8082/api/koi/list"; // Adjust your API URL
   const token = localStorage.getItem("token");
   const [fileList, setFileList] = useState([]);
 
@@ -34,13 +34,25 @@ const KoiManagement = () => {
   };
 
   const handleEdit = (koi) => {
-    setCurrentKoi(koi);
-    setIsModalVisible(true);
-    form.setFieldsValue(koi);
-    setFileList(koi.imageLinks.map((link) => ({ url: link }))); // Set file list for editing
+    try {
+      setCurrentKoi(koi);
+      setIsModalVisible(true);
+      form.setFieldsValue(koi);
+
+      setFileList(
+        Array.isArray(koi.imageLinks)
+          ? koi.imageLinks
+              .filter((link) => typeof link === "string")
+              .map((link) => ({ url: link }))
+          : []
+      );
+    } catch (error) {
+      console.error("Error in handleEdit:", error);
+      notification.error({ message: "Failed to load edit form" });
+    }
   };
 
-  const handleDelete = (koiId) => {
+  const handleDelete = (koiID) => {
     Modal.confirm({
       title: "Are you sure you want to delete this Koi?",
       okText: "Yes",
@@ -48,7 +60,7 @@ const KoiManagement = () => {
       cancelText: "No",
       onOk: async () => {
         try {
-          await axios.delete(`${apiUrl}/${koiId}`, {
+          await axios.delete(`${apiUrl}/${koiID}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -64,49 +76,65 @@ const KoiManagement = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const imageLinks = await uploadImages(fileList); // Upload images and get links
-      const koiDataWithImages = {
-        ...values,
-        imageLinks, // Include the uploaded image links
-      };
+      const updatedFileList = await uploadImage(fileList);
+
+      const formattedImageLinks = updatedFileList.map((file) => ({
+        imageLink: file.url,
+      }));
+
+      const koiData = { ...values, imageLinks: formattedImageLinks };
 
       if (currentKoi) {
-        await axios.put(`${apiUrl}/${currentKoi.koiId}`, koiDataWithImages, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        await axios.put(`${apiUrl}/${currentKoi.koiId}`, koiData, {
+          headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post(apiUrl, koiDataWithImages, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        await axios.post(apiUrl, koiData, {
+          headers: { Authorization: `Bearer ${token}` },
         });
       }
 
       fetchKoiList();
       setIsModalVisible(false);
       form.resetFields();
-      setFileList([]); // Reset file list
+      setFileList(updatedFileList);
       notification.success({ message: "Koi saved successfully" });
     } catch (error) {
+      console.error(
+        "Error in handleSubmit:",
+        error.response ? error.response.data : error
+      );
       notification.error({ message: "Failed to save koi" });
     }
   };
 
-  const uploadImages = async (files) => {
+  const uploadImage = async (files) => {
     const promises = files.map(async (file) => {
-      const storageRef = ref(storage, `koies/${file.name}`);
-      await uploadBytes(storageRef, file.originFileObj, {
-        contentType: "image/jpeg",
-      });
-      const downloadURL = await getDownloadURL(storageRef);
-      console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`); // Log the URL
-      return downloadURL;
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        console.error(`File ${file.name} is not an image. Skipping upload.`);
+        return null;
+      }
+
+      try {
+        const storageRef = ref(storage, `koi/${file.name}`); // Change the storage path
+        await uploadBytes(storageRef, file.originFileObj, {
+          contentType: "image/jpeg",
+        });
+        const downloadURL = await getDownloadURL(storageRef);
+        console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`);
+        return {
+          uid: file.uid,
+          name: file.name,
+          status: "done",
+          url: downloadURL,
+        };
+      } catch (error) {
+        console.error(`Error uploading ${file.name}:`, error);
+        return null;
+      }
     });
-    return await Promise.all(promises);
+    return (await Promise.all(promises)).filter(Boolean);
   };
 
   return (
@@ -120,7 +148,7 @@ const KoiManagement = () => {
             setIsModalVisible(true);
             setCurrentKoi(null);
             form.resetFields();
-            setFileList([]); // Reset file list for new entry
+            setFileList([]);
           }}
         >
           Add Koi
@@ -131,7 +159,7 @@ const KoiManagement = () => {
           pagination={{ pageSize: 5 }}
           columns={[
             { title: "Koi ID", dataIndex: "koiId" },
-            { title: "Species", dataIndex: "species" },
+            { title: "Koi Specie", dataIndex: "species" },
             { title: "Description", dataIndex: "description" },
             {
               title: "Image Links",
@@ -142,7 +170,7 @@ const KoiManagement = () => {
                     ? imageLinks.map((link, index) => (
                         <img
                           key={index}
-                          src={link}
+                          src={link.imageLink}
                           alt={`Koi ${index + 1}`}
                           style={{
                             width: "50px",
@@ -180,8 +208,8 @@ const KoiManagement = () => {
             </Form.Item>
             <Form.Item
               name="species"
-              label="Species"
-              rules={[{ required: true, message: "Please enter koi species" }]}
+              label="Koi Species"
+              rules={[{ required: true, message: "Please enter koi specie" }]}
             >
               <Input />
             </Form.Item>
@@ -202,8 +230,16 @@ const KoiManagement = () => {
               <Upload
                 fileList={fileList}
                 beforeUpload={(file) => {
+                  const isJpgOrPng =
+                    file.type === "image/jpeg" || file.type === "image/png";
+                  if (!isJpgOrPng) {
+                    notification.error({
+                      message: "You can only upload JPG/PNG files!",
+                    });
+                    return Upload.LIST_IGNORE;
+                  }
                   setFileList((prev) => [...prev, file]);
-                  return false; // Prevent automatic upload
+                  return false;
                 }}
                 onRemove={(file) => {
                   setFileList((prev) => prev.filter((f) => f.uid !== file.uid));

@@ -77,12 +77,12 @@ const FarmManagement = () => {
 
   const handleSubmit = async (values) => {
     try {
-      // Upload images and get their URLs
-      const imageLinks = await uploadImage(fileList); // Call uploadImage with fileList directly
+      // Upload images and get their URLs in the required format
+      const updatedFileList = await uploadImage(fileList); // Call uploadImage with fileList
 
-      // Transform imageLinks to match the expected structure
-      const formattedImageLinks = imageLinks.map((link) => ({
-        imageLink: link,
+      // Format image links for database
+      const formattedImageLinks = updatedFileList.map((file) => ({
+        imageLink: file.url,
       }));
 
       const farmData = { ...values, imageLinks: formattedImageLinks }; // Ensure `imageLinks` is formatted correctly
@@ -100,28 +100,44 @@ const FarmManagement = () => {
       fetchFarmList();
       setIsModalVisible(false);
       form.resetFields();
-      setFileList([]); // Reset fileList after submission
+      setFileList(updatedFileList); // Set updated file list with uploaded images
       notification.success({ message: "Farm saved successfully" });
     } catch (error) {
       console.error(
         "Error in handleSubmit:",
         error.response ? error.response.data : error
-      ); // Log the error for debugging
+      );
       notification.error({ message: "Failed to save farm" });
     }
   };
 
   const uploadImage = async (files) => {
     const promises = files.map(async (file) => {
-      const storageRef = ref(storage, `farms/${file.name}`);
-      await uploadBytes(storageRef, file.originFileObj, {
-        contentType: "image/jpeg",
-      });
-      const downloadURL = await getDownloadURL(storageRef);
-      console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`); // Log the URL
-      return downloadURL; // Return the URL
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        console.error(`File ${file.name} is not an image. Skipping upload.`);
+        return null; // Bỏ qua nếu không phải tệp hình ảnh
+      }
+
+      try {
+        const storageRef = ref(storage, `farms/${file.name}`);
+        await uploadBytes(storageRef, file.originFileObj, {
+          contentType: "image/jpeg",
+        });
+        const downloadURL = await getDownloadURL(storageRef);
+        console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`);
+        return {
+          uid: file.uid,
+          name: file.name,
+          status: "done",
+          url: downloadURL,
+        };
+      } catch (error) {
+        console.error(`Error uploading ${file.name}:`, error);
+        return null;
+      }
     });
-    return await Promise.all(promises);
+    return (await Promise.all(promises)).filter(Boolean); // Lọc bỏ các tệp lỗi
   };
 
   return (
@@ -157,7 +173,7 @@ const FarmManagement = () => {
                     ? imageLinks.map((link, index) => (
                         <img
                           key={index}
-                          src={link}
+                          src={link.imageLink}
                           alt={`Farm ${index + 1}`}
                           style={{
                             width: "50px",
@@ -221,6 +237,14 @@ const FarmManagement = () => {
               <Upload
                 fileList={fileList}
                 beforeUpload={(file) => {
+                  const isJpgOrPng =
+                    file.type === "image/jpeg" || file.type === "image/png";
+                  if (!isJpgOrPng) {
+                    notification.error({
+                      message: "You can only upload JPG/PNG files!",
+                    });
+                    return Upload.LIST_IGNORE; // Hoặc return false;
+                  }
                   setFileList((prev) => [...prev, file]);
                   return false; // Prevent automatic upload
                 }}
