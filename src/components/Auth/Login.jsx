@@ -17,7 +17,7 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const apiUrl = "http://localhost:8080/api/login";
+  const apiUrl = "http://localhost:8082/api/login";
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);

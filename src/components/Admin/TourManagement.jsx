@@ -3,14 +3,19 @@ import { Table, Button, Modal, Form, Input, DatePicker, Select } from "antd";
 import axios from "axios";
 import Sidebar from "./Admin.jsx";
 import moment from "moment";
+import { Navigate } from "react-router-dom";
 
 const TourManagement = () => {
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const role = localStorage.getItem("role");
+  if (role !== "SALES") {
+    Navigate("/");
+  }
 
-  const apiUrl = "http://localhost:8081/api/tour";
+  const apiUrl = "http://localhost:8080/api/tour";
   const token = localStorage.getItem("token");
 
   // Fetch tour data when component mounts
@@ -116,7 +121,7 @@ const TourManagement = () => {
   );
 
   const columns = [
-    { title: "Tour ID", dataIndex: "tourID", key: "tourID" },
+    { title: "Tour ID", dataIndex: "tourId", key: "tourId" },
     {
       title: "Tour Name",
       dataIndex: "tourName",
@@ -143,6 +148,11 @@ const TourManagement = () => {
       render: (text) => moment(text).format("YYYY-MM-DDTHH:mm:ss"),
     },
     {
+      title: "Duration",
+      dataIndex: "duration",
+      key: "duration",
+    },
+    {
       title: "End Date",
       dataIndex: "endDate",
       key: "endDate",
@@ -161,8 +171,8 @@ const TourManagement = () => {
     },
     {
       title: "Tour Type",
-      dataIndex: "type",
-      key: "type",
+      dataIndex: "tourType",
+      key: "tourType",
       filters: [
         { text: "Available Tour", value: "AVAILABLE_TOUR" },
         { text: "Unavailable Tour", value: "UNAVAILABLE_TOUR" },
@@ -176,9 +186,9 @@ const TourManagement = () => {
       sorter: (a, b) => a.price - b.price,
     },
     {
-      title: "Manager ID",
-      dataIndex: "manager",
-      key: "manager",
+      title: "Sales ID",
+      dataIndex: "salesId",
+      key: "salesId",
     },
     {
       title: "Action",
@@ -239,7 +249,7 @@ const TourManagement = () => {
             layout="vertical"
           >
             <Form.Item
-              name="tourID"
+              name="tourId"
               label="Tour ID"
               rules={[{ required: true, message: "Vui lòng nhập Tour ID!" }]}
             >
@@ -295,7 +305,7 @@ const TourManagement = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              name="type"
+              name="tourType"
               label="Tour Type"
               rules={[{ required: true, message: "Vui lòng chọn loại tour!" }]}
             >

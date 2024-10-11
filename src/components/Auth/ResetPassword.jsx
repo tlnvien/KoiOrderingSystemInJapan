@@ -34,16 +34,32 @@ const ResetPassword = () => {
     <div className="reset-password-container">
       {/* Right Section - Form */}
       <div className="form-section">
-        <h2>Reset Your Password</h2>
+        <h2>Đổi mật khẩu</h2>
         <form onSubmit={handleSubmit}>
-          {/* New Password */}
-          <label>New Password:</label>
+          <label>Mật khẩu cũ:</label>
           <div className="password-input-container">
             <input
               type={showNewPassword ? "text" : "password"}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="New Password"
+              placeholder="Mật khẩu cũ"
+              required
+            />
+            <span
+              className="password-toggle-icon"
+              onClick={toggleNewPasswordVisibility}
+            >
+              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+          {/* New Password */}
+          <label>Mật khẩu mới:</label>
+          <div className="password-input-container">
+            <input
+              type={showNewPassword ? "text" : "password"}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Mật khẩu mới"
               required
             />
             <span
@@ -55,13 +71,13 @@ const ResetPassword = () => {
           </div>
 
           {/* Confirm Password */}
-          <label>Confirm Password:</label>
+          <label>Nhập lại mật khẩu:</label>
           <div className="password-input-container">
             <input
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm New Password"
+              placeholder="Nhập lại mật khẩu mới"
               required
             />
             <span
@@ -73,7 +89,7 @@ const ResetPassword = () => {
           </div>
 
           <button type="submit" className="reset-btn">
-            Change Password
+            Xác nhận
           </button>
         </form>
       </div>

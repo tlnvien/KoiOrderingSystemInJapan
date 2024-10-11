@@ -1,25 +1,34 @@
-// PaymentPage.js
 import React, { useState } from "react";
+import axios from "axios";
 import "./Payment.css";
 
 const PaymentPage = () => {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!amount || !description) {
       alert("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
-    const paymentUrl = `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=${
-      amount * 100
-    }&vnp_TxnRef=${Date.now()}&vnp_OrderInfo=${description}&vnp_Locale=vn&vnp_ReturnUrl=http://localhost:3000/payment-success&vnp_Version=2.1.0&vnp_Command=pay&vnp_CurrCode=VND&vnp_TmnCode=YOUR_TMNCODE_HERE&vnp_IpAddr=127.0.0.1&vnp_CreateDate=${new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", "")}`;
+    try {
+      // Gửi yêu cầu tới backend để lấy URL thanh toán
+      const response = await axios.post("http://localhost:8080/api/payment", {
+        amount: amount * 100, // VNPay yêu cầu giá trị là đơn vị VND * 100
+        description: description,
+      });
 
-    window.location.href = paymentUrl;
+      if (response.data && response.data.paymentUrl) {
+        // Điều hướng đến URL thanh toán
+        window.location.href = response.data.paymentUrl;
+      } else {
+        alert("Không thể khởi tạo URL thanh toán!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo yêu cầu thanh toán:", error);
+      alert("Đã xảy ra lỗi khi tạo yêu cầu thanh toán!");
+    }
   };
 
   return (

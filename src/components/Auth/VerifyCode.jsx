@@ -1,41 +1,48 @@
 import React, { useState } from "react";
-import logo from "./assets/logo.jpg"; // Assuming you have a logo in the assets folder
 import "./ForgotPassword.css";
 
 const ForgotPassword = () => {
-  const [identifier, setIdentifier] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your logic to search for account using identifier (email/phone)
-    console.log("Searching account for:", identifier);
+    // Thêm logic xử lý xác minh mã code
+    console.log("Verifying code:", verificationCode);
+  };
+
+  const handleResendCode = () => {
+    // Logic gửi lại mã xác minh
+    console.log("Resending verification code");
   };
 
   return (
     <div className="forgot-password-container">
-      {/* Left Section - Logo */}
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
-
-      {/* Right Section - Form */}
+      {/* Verification Form Section */}
       <div className="form-section">
-        <h2>Find Your Account</h2>
+        <h2>Nhập mã xác minh</h2>
+        <p>Vui lòng nhập mã gồm 6 chữ số được gửi đến email của bạn</p>
         <form onSubmit={handleSubmit}>
-          <label>
-            Enter the verification code sent to your email (phone number)
-            xxx@xxx.com (0xxxxxxxxx)
-          </label>
           <input
             type="text"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            maxLength="6"
+            className="verification-input"
             required
+            placeholder="* * * * * *"
           />
-          <button type="submit" className="search-btn">
-            Submit
+          <button type="submit" className="submit-btn">
+            Verify
           </button>
         </form>
+
+        {/* Resend Code Option */}
+        <div className="resend-section">
+          <p>Không nhận được mã?</p>
+          <button onClick={handleResendCode} className="search-btn">
+            Gửi lại mã
+          </button>
+        </div>
       </div>
     </div>
   );

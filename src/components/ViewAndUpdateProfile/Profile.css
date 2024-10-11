@@ -17,7 +17,8 @@
     padding: 20px;
     border-radius: 8px; /* Bo góc cho sidebar */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-    height: calc(60vh);
+    height: calc(100vh);
+
   }
 
   .sidebar-profile li {
@@ -34,11 +35,12 @@
   }
   
   .profile-form {
-    flex: 1; /* Chiếm toàn bộ không gian còn lại */
+    flex: 0.6;
     padding: 20px; /* Padding cho form */
     background-color: #fff; /* Màu nền cho form */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Bóng đổ cho form */
-    margin-left: 20px; /* Khoảng cách giữa sidebar và form */
+    margin-left: 200px; /* Khoảng cách giữa sidebar và form */
+    
   }
 
   .profile-form input[readonly], 

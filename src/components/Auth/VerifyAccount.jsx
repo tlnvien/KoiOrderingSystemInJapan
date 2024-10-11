@@ -13,19 +13,11 @@ const ForgotPassword = () => {
 
   return (
     <div className="forgot-password-container">
-      {/* Left Section - Logo */}
-      <div className="logo-section">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
-
       {/* Right Section - Form */}
       <div className="form-section">
         <h2>Verify Account</h2>
         <form onSubmit={handleSubmit}>
-          <label>
-            Enter the verification code sent to your email (phone number)
-            xxx@xxx.com (0xxxxxxxxx)
-          </label>
+          <label>Enter the verification code sent to your email</label>
           <input
             type="text"
             value={identifier}

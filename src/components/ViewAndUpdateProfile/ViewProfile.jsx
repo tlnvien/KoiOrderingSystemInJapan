@@ -28,7 +28,7 @@ const ViewProfile = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8080/api/info";
+  const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();

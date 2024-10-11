@@ -1,24 +1,23 @@
 import React, { useState } from "react";
-import logo from "./assets/logo.jpg"; // Assuming you have a logo in the assets folder
 import "./ForgotPassword.css";
-import { Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [identifier, setIdentifier] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your logic to search for account using identifier (email/phone)
-    console.log("Searching account for:", identifier);
+    // Thêm logic gửi mã xác minh qua email/điện thoại
+    console.log("Sending reset code to:", identifier);
+    Navigate("/verify-code");
   };
 
   return (
     <div className="forgot-password-container">
-      {/* Right Section - Form */}
       <div className="form-section">
-        <h2>Find Your Account</h2>
+        <h2>Quên mật khẩu</h2>
+        <p>Vui lòng nhập email đã đăng ký tài khoản của bạn.</p>
         <form onSubmit={handleSubmit}>
-          <label>Enter your email:</label>
           <input
             type="text"
             value={identifier}
@@ -26,10 +25,13 @@ const ForgotPassword = () => {
             placeholder="Email"
             required
           />
-          <button type="submit" className="search-btn">
-            Search Account
+          <button type="submit" className="submit-btn">
+            Gửi mã
           </button>
         </form>
+        <div className="help-text">
+          <p>Không nhận được mã? Kiểm tra lại thông tin hoặc thử lại sau.</p>
+        </div>
       </div>
     </div>
   );

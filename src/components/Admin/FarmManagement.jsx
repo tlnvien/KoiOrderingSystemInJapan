@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Modal, Form, Input, notification } from "antd";
+import { Table, Button, Modal, Form, Input, notification, Upload } from "antd";
+import { storage } from "../../config/firebase.js";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import necessary functions
 import Sidebar from "./Admin.jsx";
 
 const FarmManagement = () => {
@@ -8,9 +10,10 @@ const FarmManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentFarm, setCurrentFarm] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8080/api/farm"; // URL API cho trang trại
-  const getApi = "http://localhost:8080/api/farm/list"; // URL API để lấy danh sách trang trại
+  const apiUrl = "http://localhost:8082/api/farm";
+  const getApi = "http://localhost:8082/api/farm/list";
   const token = localStorage.getItem("token");
+  const [fileList, setFileList] = useState([]);
 
   // Fetch farm data on component load
   useEffect(() => {
@@ -24,16 +27,30 @@ const FarmManagement = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setFarmList(response.data); // Giả định API trả về danh sách trang trại với tất cả thông tin
+      setFarmList(response.data);
     } catch (error) {
       notification.error({ message: "Failed to fetch farm list" });
     }
   };
 
   const handleEdit = (farm) => {
-    setCurrentFarm(farm);
-    setIsModalVisible(true);
-    form.setFieldsValue(farm);
+    try {
+      setCurrentFarm(farm);
+      setIsModalVisible(true);
+      form.setFieldsValue(farm);
+
+      // Ensure imageLinks is a valid array and each link is a string
+      setFileList(
+        Array.isArray(farm.imageLinks)
+          ? farm.imageLinks
+              .filter((link) => typeof link === "string") // Only keep strings
+              .map((link) => ({ url: link })) // Map to file list format
+          : []
+      ); // Set file list for editing
+    } catch (error) {
+      console.error("Error in handleEdit:", error);
+      notification.error({ message: "Failed to load edit form" });
+    }
   };
 
   const handleDelete = (farmID) => {
@@ -60,37 +77,51 @@ const FarmManagement = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const { imageLink, ...farmData } = values; // Lấy hình ảnh và các thông tin khác
-      const imagesArray = imageLink.split(",").map((link) => link.trim()); // Tách đường dẫn nếu có nhiều
+      // Upload images and get their URLs
+      const imageLinks = await uploadImage(fileList); // Call uploadImage with fileList directly
 
-      const farmDataWithImages = {
-        ...farmData,
-        imageLinks: imagesArray, // Thay thế bằng mảng hình ảnh
-      };
+      // Transform imageLinks to match the expected structure
+      const formattedImageLinks = imageLinks.map((link) => ({
+        imageLink: link,
+      }));
+
+      const farmData = { ...values, imageLinks: formattedImageLinks }; // Ensure `imageLinks` is formatted correctly
 
       if (currentFarm) {
-        await axios.put(`${apiUrl}/${currentFarm.farmID}`, farmDataWithImages, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        await axios.put(`${apiUrl}/${currentFarm.farmId}`, farmData, {
+          headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post(apiUrl, farmDataWithImages, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        await axios.post(apiUrl, farmData, {
+          headers: { Authorization: `Bearer ${token}` },
         });
       }
 
-      fetchFarmList(); // Cập nhật lại danh sách
+      fetchFarmList();
       setIsModalVisible(false);
       form.resetFields();
+      setFileList([]); // Reset fileList after submission
       notification.success({ message: "Farm saved successfully" });
     } catch (error) {
+      console.error(
+        "Error in handleSubmit:",
+        error.response ? error.response.data : error
+      ); // Log the error for debugging
       notification.error({ message: "Failed to save farm" });
     }
+  };
+
+  const uploadImage = async (files) => {
+    const promises = files.map(async (file) => {
+      const storageRef = ref(storage, `farms/${file.name}`);
+      await uploadBytes(storageRef, file.originFileObj, {
+        contentType: "image/jpeg",
+      });
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`); // Log the URL
+      return downloadURL; // Return the URL
+    });
+    return await Promise.all(promises);
   };
 
   return (
@@ -103,22 +134,23 @@ const FarmManagement = () => {
           onClick={() => {
             setIsModalVisible(true);
             setCurrentFarm(null);
-            form.resetFields(); // Reset fields for new entry
+            form.resetFields();
+            setFileList([]); // Reset file list for new entry
           }}
         >
           Add Farm
         </Button>
         <Table
           dataSource={farmList}
-          rowKey="farmID"
+          rowKey="farmId"
           pagination={{ pageSize: 5 }}
           columns={[
-            { title: "ID", dataIndex: "farmID" },
+            { title: "Farm ID", dataIndex: "farmId" },
             { title: "Farm Name", dataIndex: "farmName" },
             { title: "Description", dataIndex: "description" },
             {
               title: "Image Links",
-              dataIndex: "imageLink",
+              dataIndex: "imageLinks",
               render: (imageLinks) => (
                 <div>
                   {imageLinks && imageLinks.length > 0
@@ -143,7 +175,7 @@ const FarmManagement = () => {
               render: (text, farm) => (
                 <>
                   <Button onClick={() => handleEdit(farm)}>Edit</Button>
-                  <Button danger onClick={() => handleDelete(farm.farmID)}>
+                  <Button danger onClick={() => handleDelete(farm.farmId)}>
                     Delete
                   </Button>
                 </>
@@ -158,7 +190,11 @@ const FarmManagement = () => {
           footer={null}
         >
           <Form form={form} onFinish={handleSubmit}>
-            <Form.Item name="farmID" label="ID" rules={[{ required: true }]}>
+            <Form.Item
+              name="farmId"
+              label="Farm ID"
+              rules={[{ required: true }]}
+            >
               <Input disabled={!!currentFarm} />
             </Form.Item>
             <Form.Item
@@ -178,11 +214,23 @@ const FarmManagement = () => {
               <Input.TextArea />
             </Form.Item>
             <Form.Item
-              name="imageLink"
-              label="Image Link"
-              rules={[{ required: true, message: "Please enter image links" }]}
+              name="imageLinks"
+              label="Upload Images"
+              rules={[{ required: true, message: "Please upload images" }]}
             >
-              <Input.TextArea />
+              <Upload
+                fileList={fileList}
+                beforeUpload={(file) => {
+                  setFileList((prev) => [...prev, file]);
+                  return false; // Prevent automatic upload
+                }}
+                onRemove={(file) => {
+                  setFileList((prev) => prev.filter((f) => f.uid !== file.uid));
+                }}
+                multiple
+              >
+                <Button>Upload</Button>
+              </Upload>
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">

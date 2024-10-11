@@ -23,7 +23,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const navigate = useNavigate();
-  const api = "http://localhost:8080/register";
+  const api = "http://localhost:8082/register";
 
   const handleChange = (e) => {
     setFormData({
@@ -194,7 +194,7 @@ const Register = () => {
 
       if (response.ok) {
         const data = await response.json();
-        navigate("/verify-account");
+        navigate("/verify-code");
       } else {
         alert("Registration failed. Please try again.");
       }

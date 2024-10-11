@@ -9,7 +9,7 @@ const UserManagement = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const apiUrl = "http://localhost:8080/api/info"; // URL API
+  const apiUrl = "http://localhost:8082/api/info"; // URL API
   const token = localStorage.getItem("token");
 
   // Fetch user data when component mounts
