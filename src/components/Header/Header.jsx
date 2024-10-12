@@ -60,10 +60,7 @@ const Header = () => {
             <a href="#dich-vu">Dịch vụ</a>
           </li>
           <li>
-            <Link to="/footer">Liên hệ</Link>
-          </li>
-          <li>
-            <a href="#khac">Khác</a>
+            <Link to="/contact">Liên hệ</Link>
           </li>
           {isLoggedIn ? (
             <>

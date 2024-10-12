@@ -12,6 +12,7 @@ const FarmManagement = () => {
   const [form] = Form.useForm();
   const apiUrl = "http://localhost:8082/api/farm";
   const getApi = "http://localhost:8082/api/farm/list";
+  const apiImage = "http://localhost:8082/api/farm/images";
   const token = localStorage.getItem("token");
   const [fileList, setFileList] = useState([]);
 
@@ -27,6 +28,7 @@ const FarmManagement = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response.data);
       setFarmList(response.data);
     } catch (error) {
       notification.error({ message: "Failed to fetch farm list" });
@@ -53,7 +55,7 @@ const FarmManagement = () => {
     }
   };
 
-  const handleDelete = (farmID) => {
+  const handleDelete = (farmId) => {
     Modal.confirm({
       title: "Are you sure you want to delete this Farm?",
       okText: "Yes",
@@ -61,7 +63,14 @@ const FarmManagement = () => {
       cancelText: "No",
       onOk: async () => {
         try {
-          await axios.delete(`${apiUrl}/${farmID}`, {
+          // Xóa các hình ảnh liên quan đến farm
+          await axios.delete(`${apiImage}/${farmId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          // Xóa farm sau khi xóa hình ảnh
+          await axios.delete(`${apiUrl}/${farmId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -69,7 +78,9 @@ const FarmManagement = () => {
           fetchFarmList();
           notification.success({ message: "Farm deleted successfully" });
         } catch (error) {
-          notification.error({ message: "Failed to delete farm" });
+          notification.error({
+            message: "Failed to delete farm or related images",
+          });
         }
       },
     });
@@ -251,9 +262,22 @@ const FarmManagement = () => {
                 onRemove={(file) => {
                   setFileList((prev) => prev.filter((f) => f.uid !== file.uid));
                 }}
-                multiple
+                onPreview={async (file) => {
+                  let src = file.url; // Sử dụng file.url đã upload
+                  if (!src) {
+                    src = await getDownloadURL(ref(storage, file.name)); // Nếu chưa có URL, lấy từ Firebase
+                  }
+                  const imgWindow = window.open(src);
+                  imgWindow.document.write(
+                    `<img src="${src}" alt="Image Preview" />`
+                  );
+                }}
+                accept=".jpeg,.jpg,.png"
+                listType="picture-card"
               >
-                <Button>Upload</Button>
+                <div>
+                  <div>Upload</div>
+                </div>
               </Upload>
             </Form.Item>
             <Form.Item>

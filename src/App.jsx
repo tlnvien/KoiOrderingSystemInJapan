@@ -31,6 +31,7 @@ import LoginTest from "./components/Auth/LoginTest";
 import React from "react";
 import PaymentPage from "./components/Payment/Payment";
 import PaymentSuccessPage from "./components/Payment/PaymentSuccess";
+import Contact from "./components/Contact/Contact";
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
           <Route path="/login-test" element={<LoginTest />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

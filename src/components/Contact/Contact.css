@@ -1,0 +1,18 @@
+.contact-page {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  
+  .contact-content {
+    text-align: center;
+  }
+  
+  .contact-details {
+    margin-bottom: 30px;
+  }
+  
+  .contact-map {
+    margin-top: 20px;
+    height: 400px; /* Adjust height as needed */
+  }
+  

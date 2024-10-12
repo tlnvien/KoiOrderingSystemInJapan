@@ -52,7 +52,7 @@ const KoiManagement = () => {
     }
   };
 
-  const handleDelete = (koiID) => {
+  const handleDelete = (koiId) => {
     Modal.confirm({
       title: "Are you sure you want to delete this Koi?",
       okText: "Yes",
@@ -60,7 +60,7 @@ const KoiManagement = () => {
       cancelText: "No",
       onOk: async () => {
         try {
-          await axios.delete(`${apiUrl}/${koiID}`, {
+          await axios.delete(`${apiUrl}/${koiId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

@@ -9,57 +9,64 @@ const AboutUs = () => {
   return (
     <div className="about-us-container">
       <Header />
-      <h1>About Us</h1>
+      <h1>Giới thiệu về công ty</h1>
 
       <section className="company-intro">
-        <h2>Our Company</h2>
-        <img src={companyImage} alt="Our Company" className="about-image1" />
+        <h2>Công ty của chúng tôi</h2>
+        <img
+          src={companyImage}
+          alt="Công ty chúng tôi"
+          className="about-image1"
+        />
         <p>
-          We are a leading travel agency with a passion for providing
-          unforgettable experiences. Founded in [Year], we have been dedicated
-          to helping travelers explore the world.
+          Chúng tôi là một công ty du lịch hàng đầu với niềm đam mê mang đến
+          những trải nghiệm đáng nhớ. Được thành lập từ năm 2024, chúng tôi cam
+          kết hỗ trợ khách hàng khám phá thế giới.
         </p>
       </section>
 
       <section className="mission-vision">
-        <h2>Our Mission & Vision</h2>
+        <h2>Sứ mệnh & Tầm nhìn</h2>
         <p>
-          Our mission is to make travel accessible and enjoyable for everyone.
-          We envision a world where every traveler can experience the beauty and
-          diversity of our planet.
+          Sứ mệnh của chúng tôi là mang lại trải nghiệm du lịch dễ dàng và thú
+          vị cho mọi người. Chúng tôi mong muốn mỗi người đều có cơ hội chiêm
+          ngưỡng vẻ đẹp và sự đa dạng của hành tinh này.
         </p>
       </section>
 
       <section className="services">
-        <h2>Our Services</h2>
+        <h2>Dịch vụ của chúng tôi</h2>
         <ul>
-          <li>Customized Tour Packages</li>
-          <li>Hotel Bookings</li>
-          <li>Transportation Services</li>
-          <li>Experienced Tour Guides</li>
+          <li>Đặt tour theo nhu cầu</li>
+          <li>Gói tour trọn gói</li>
+          <li>Dịch vụ vận chuyển</li>
+          <li>Hướng dẫn viên giàu kinh nghiệm</li>
         </ul>
       </section>
 
       <section className="team">
-        <h2>Meet Our Team</h2>
-        <img src={teamImage} alt="Our Team" className="about-image1" />
+        <h2>Đội ngũ của chúng tôi</h2>
+        <img
+          src={teamImage}
+          alt="Đội ngũ của chúng tôi"
+          className="about-image1"
+        />
         <p>
-          Our team consists of experienced travel experts who are dedicated to
-          providing the best service. Each member is passionate about travel and
-          is here to assist you.
+          Đội ngũ của chúng tôi bao gồm những chuyên gia du lịch tận tâm. Mỗi
+          thành viên đều có niềm đam mê với du lịch và luôn sẵn sàng hỗ trợ bạn.
         </p>
       </section>
 
       <section className="testimonials">
-        <h2>What Our Customers Say</h2>
+        <h2>Khách hàng nói gì về chúng tôi</h2>
         <blockquote>
-          "The best travel experience I've ever had! Highly recommend!" -{" "}
-          <strong>Customer Name</strong>
+          "Trải nghiệm du lịch tuyệt vời nhất mà tôi từng có! Rất đáng để thử!"
+          - <strong>Tên khách hàng</strong>
         </blockquote>
       </section>
 
       <section className="contact-info">
-        <h2>Contact Us</h2>
+        <h2>Liên hệ</h2>
         <p>
           <p>Địa chỉ: 123 Đường ABC, Thành phố XYZ, Nhật Bản</p>
           <p>Email: contact@koibookingsystem.com</p>
