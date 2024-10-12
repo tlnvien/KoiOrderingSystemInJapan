@@ -100,8 +100,8 @@ function Login() {
 
     try {
       const response = await axios.post(apiUrl, {
-        username: username, // Payload with username
-        password: password, // Payload with password
+        username: username,
+        password: password,
       });
 
       // Assuming response data contains the token, userId, and role
@@ -109,10 +109,11 @@ function Login() {
       localStorage.setItem("userId", response.data.userId);
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("loginType", "username");
+      alert("Đăng nhập thành công!");
       navigate("/");
     } catch (error) {
       console.error("Login error", error);
-      alert("Invalid username or password");
+      alert("Tên người dùng hoặc mật khẩu sai");
     }
   };
 
@@ -123,10 +124,10 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="login-section">
-        <h1 className="heading">Login</h1>
+        <h1 className="heading">Đăng nhập</h1>
         <form onSubmit={handleUsernamePasswordLogin}>
           <div className="form-group">
-            <label>Username:</label>
+            <label>Tên người dùng:</label>
             <input
               type="text"
               value={username}
@@ -135,7 +136,7 @@ function Login() {
             />
           </div>
           <div className="form-group">
-            <label>Password:</label>
+            <label>Mật khẩu:</label>
             <div className="password-input-container">
               <input
                 type={showPassword ? "text" : "password"}
@@ -152,19 +153,19 @@ function Login() {
             </div>
           </div>
           <button type="submit" className="auth-btn">
-            Login
+            Đăng nhập
           </button>
         </form>
         <div className="auth-links">
           <Link to="/forgot-password" className="auth-link">
-            Forgot Password?
+            Quên mật khẩu?
           </Link>
           <Link to="/register" className="auth-link1">
-            Do not have an account? Sign up now
+            Bạn không có tài khoản? Đăng ký ngay
           </Link>
         </div>
         <div className="or-login">
-          <p>Or login with</p>
+          <p>Hoặc đăng nhập bằng</p>
         </div>
         <div className="social-login1">
           <GoogleLogin
@@ -177,7 +178,7 @@ function Login() {
             callback={handleFacebookLogin}
             render={(renderProps) => (
               <button onClick={renderProps.onClick} className="social-btn1">
-                <span className="social-text1">Login with Facebook</span>
+                <span className="social-text1">Facebook</span>
                 <img
                   src={facebookLogo}
                   alt="Facebook Logo"

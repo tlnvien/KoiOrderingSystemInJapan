@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./BookingPage.css";
+import axios from "axios";
 import {
   FaCreditCard,
   FaMobileAlt,
@@ -18,7 +19,7 @@ const BookingPage = () => {
     address: "",
     numberOfAdults: 1,
     numberOfChildren: 0,
-    paymentMethod: "credit",
+    paymentMethod: "vnpay",
     notes: "",
   });
 
@@ -27,9 +28,26 @@ const BookingPage = () => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Booking info:", formData);
+
+    try {
+      // Gọi API để khởi tạo thanh toán
+      const response = await axios.post(
+        "http://localhost:8082/api/payment/initiate",
+        formData
+      );
+      const paymentId = response.data.paymentId; // Giả sử API trả về paymentId
+
+      // Chuyển hướng đến trang thanh toán VNPay với paymentId
+      window.location.href = `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?data=${encodeURIComponent(
+        JSON.stringify({ ...formData, paymentId }) // Gửi thêm paymentId vào dữ liệu
+      )}`;
+    } catch (error) {
+      console.error("Error initiating payment", error);
+      alert("Có lỗi xảy ra khi khởi tạo thanh toán. Vui lòng thử lại.");
+    }
   };
 
   return (

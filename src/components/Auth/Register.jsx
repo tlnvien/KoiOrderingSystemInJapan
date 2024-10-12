@@ -6,6 +6,7 @@ import facebookLogo from "./assets/facebook-logo.png";
 import logo from "./assets/logo.jpg";
 import "./Auth.css";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -13,15 +14,15 @@ const Register = () => {
     username: "",
     password: "",
     confirmPassword: "",
-    fullName: "",
+    firstName: "",
+    lastName: "",
     phoneNumber: "",
-    address: "",
-    gender: "",
-    dob: "",
   });
 
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const api = "http://localhost:8082/register";
 
@@ -37,78 +38,77 @@ const Register = () => {
   };
 
   const validateFullName = (value) => {
-    if (!value) return "Customer name must not be blank";
+    if (!value) return "Họ và tên không được để trống";
     if (value.trimStart().length !== value.length)
-      return "First character cannot have space";
-    if (/[\d]/.test(value)) return "Numbers are not allowed";
-    if (/[^a-zA-Z\s]/.test(value)) return "Special characters are not allowed";
+      return "Ký tự đầu tiên không được có khoảng trắng";
+    if (/[\d]/.test(value)) return "Không được phép có số";
+    if (/[^a-zA-Z\s]/.test(value)) return "Không được phép có ký tự đặc biệt";
     return "";
   };
 
   const validateUsername = (value) => {
-    if (!value) return "Username must not be blank";
+    if (!value) return "Tên đăng nhập không được để trống";
     if (value.trimStart().length !== value.length)
-      return "First character cannot have space";
-    if (value.length < 3) return "Username must be at least 3 characters long";
-    if (value.length > 20) return "Username must not exceed 20 characters";
+      return "Ký tự đầu tiên không được có khoảng trắng";
+    if (value.length < 3) return "Tên đăng nhập phải có ít nhất 3 ký tự";
+    if (value.length > 20) return "Tên đăng nhập không được vượt quá 20 ký tự";
     if (/[^a-zA-Z0-9]/.test(value))
-      return "Username can only contain letters and numbers";
+      return "Tên đăng nhập chỉ được chứa chữ cái và số";
     return "";
   };
 
   const validateAddress = (value) => {
-    if (!value) return "Address field must not be blank";
+    if (!value) return "Địa chỉ không được để trống";
     if (value.trimStart().length !== value.length)
-      return "First character cannot have space";
+      return "Ký tự đầu tiên không được có khoảng trắng";
     if (/[^a-zA-Z0-9\s]/.test(value))
-      return "Special characters are not allowed";
+      return "Không được phép có ký tự đặc biệt";
     return "";
   };
 
   const validatePhoneNumber = (value) => {
-    if (!value) return "Mobile number must not be blank";
-    if (/[^0-9]/.test(value)) return "Characters are not allowed";
+    if (!value) return "Số điện thoại không được để trống";
+    if (/[^0-9]/.test(value)) return "Không được phép có ký tự";
     if (value.trimStart().length !== value.length)
-      return "First character cannot have space";
+      return "Ký tự đầu tiên không được có khoảng trắng";
     return "";
   };
 
   const validateEmail = (value) => {
-    if (!value) return "Email ID must not be blank";
+    if (!value) return "Email không được để trống";
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(value)) return "Email ID is not valid";
+    if (!regex.test(value)) return "Email không hợp lệ";
     if (value.trimStart().length !== value.length)
-      return "First character cannot have space";
+      return "Ký tự đầu tiên không được có khoảng trắng";
     return "";
   };
 
   const validatePassword = (value) => {
-    if (!value) return "Password must not be blank";
-    if (value.length < 8) return "Password must be at least 8 characters long";
+    if (!value) return "Mật khẩu không được để trống";
+    if (value.length < 8) return "Mật khẩu phải có ít nhất 6 ký tự";
     if (!/[A-Za-z]/.test(value))
-      return "Password must contain at least one letter";
-    if (!/[0-9]/.test(value))
-      return "Password must contain at least one number";
+      return "Mật khẩu phải chứa ít nhất một chữ cái";
+    if (!/[0-9]/.test(value)) return "Mật khẩu phải chứa ít nhất một số";
     if (!/[!@#$%^&*]/.test(value))
-      return "Password must contain at least one special character";
+      return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt";
     return "";
   };
 
   const validateConfirmPassword = (password, confirmPassword) => {
-    if (confirmPassword !== password) return "Passwords do not match!";
+    if (confirmPassword !== password) return "Mật khẩu không khớp!";
     return "";
   };
 
   const validateDOB = (value) => {
     const today = new Date();
     const dob = new Date(value);
-    if (!value) return "Date of birth must not be blank";
-    if (dob >= today) return "Date of birth cannot be in the future";
+    if (!value) return "Ngày sinh không được để trống";
+    if (dob >= today) return "Ngày sinh không được ở tương lai";
     return "";
   };
 
   const validateGender = (value) => {
-    if (!value) return "Gender must be selected";
+    if (!value) return "Phải chọn giới tính";
     return "";
   };
 
@@ -117,11 +117,11 @@ const Register = () => {
     let error = "";
 
     switch (name) {
-      case "fullName":
+      case "firstName":
         error = validateFullName(value);
         break;
-      case "address":
-        error = validateAddress(value);
+      case "lastName":
+        error = validateFullName(value);
         break;
       case "phoneNumber":
         error = validatePhoneNumber(value);
@@ -134,12 +134,6 @@ const Register = () => {
         break;
       case "confirmPassword":
         error = validateConfirmPassword(formData.password, value);
-        break;
-      case "dob":
-        error = validateDOB(value);
-        break;
-      case "gender":
-        error = validateGender(value);
         break;
       case "username":
         error = validateUsername(value);
@@ -184,11 +178,9 @@ const Register = () => {
           email: formData.email,
           username: formData.username,
           password: formData.password,
-          fullName: formData.fullName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           phoneNumber: formData.phoneNumber,
-          address: formData.address,
-          gender: formData.gender,
-          dob: formData.dob,
         }),
       });
 
@@ -223,63 +215,125 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <h1 className="heading">Register</h1>
       <div className="form-container">
-        <div className="form-left">
+        <h1 className="heading">Đăng ký</h1>
+        <div className="form-section">
           <form onSubmit={handleSubmit}>
+            <div className="name-container">
+              <div className="name-field">
+                <label>Họ:</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+              </div>
+              <div className="name-field1">
+                <label>Tên:</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+              </div>
+            </div>
             <label>Email:</label>
             <input
               type="email"
               name="email"
-              placeholder="Email"
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
               required
             />
-            {errors.email && <span className="error">{errors.email}</span>}
+            <div className="error-container">
+              {errors.email && <span className="error">{errors.email}</span>}
+            </div>
 
-            <label>Username:</label>
+            <label>Tên đăng nhập:</label>
             <input
               type="text"
               name="username"
-              placeholder="Username"
               value={formData.username}
               onChange={handleChange}
               onBlur={handleBlur}
               required
             />
-            {errors.username && (
-              <span className="error">{errors.username}</span>
-            )}
-
-            <label>Password:</label>
+            <div className="error-container">
+              {errors.username && (
+                <span className="error">{errors.username}</span>
+              )}
+            </div>
+            <label>Số điện thoại:</label>
             <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
               onChange={handleChange}
               onBlur={handleBlur}
               required
             />
-            {errors.password && (
-              <span className="error">{errors.password}</span>
-            )}
+            <div className="error-container">
+              {errors.phoneNumber && (
+                <span className="error">{errors.phoneNumber}</span>
+              )}
+            </div>
 
-            <label>Confirm Password:</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            />
-            {errors.confirmPassword && (
-              <span className="error">{errors.confirmPassword}</span>
-            )}
+            <label>Mật khẩu:</label>
+            <div className="password-field">
+              <input
+                type={showPassword ? "text" : "password"} // Hiển thị/ẩn mật khẩu
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)} // Chuyển đổi trạng thái
+                className="toggle-password-btn"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                {/* Hiện/ẩn biểu tượng */}
+              </button>
+            </div>
+            <div className="error-container">
+              {errors.password && (
+                <span className="error">{errors.password}</span>
+              )}
+            </div>
+
+            <label>Nhập lại mật khẩu:</label>
+            <div className="password-field">
+              <input
+                type={showConfirmPassword ? "text" : "password"} // Hiển thị/ẩn mật khẩu xác nhận
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)} // Chuyển đổi trạng thái
+                className="toggle-password-btn"
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                {/* Hiện/ẩn biểu tượng */}
+              </button>
+            </div>
+            <div className="error-container">
+              {errors.confirmPassword && (
+                <span className="error">{errors.confirmPassword}</span>
+              )}
+            </div>
 
             <div className="terms-container">
               <input
@@ -289,17 +343,17 @@ const Register = () => {
                 onChange={handleCheckboxChange}
               />
               <label htmlFor="agreeToTerms">
-                I agree to the terms of service and user policy
+                Tôi đồng ý với điều khoản và chính sách sử dụng
               </label>
             </div>
-            <button type="submit" className="submit-btn">
-              Register
+            <button type="submit" className="auth-btn">
+              Đăng ký
             </button>
           </form>
-          <div className="or-login1">
-            <p>Or login with</p>
+          <div className="or-login">
+            <p>Hoặc đăng nhập bằng</p>
           </div>
-          <div className="social-login">
+          <div className="social-login1">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
               onError={handleGoogleLoginFailure}
@@ -309,80 +363,17 @@ const Register = () => {
               appId="875093550843749"
               callback={handleFacebookLogin}
               render={(renderProps) => (
-                <button onClick={renderProps.onClick} className="social-btn">
+                <button onClick={renderProps.onClick} className="social-btn1">
                   <img
                     src={facebookLogo}
                     alt="Facebook Logo"
-                    className="social-logo"
+                    className="social-logo1"
                   />
-                  <span className="social-text">Login with Facebook</span>
+                  <span className="social-text1">Facebook</span>
                 </button>
               )}
             />
           </div>
-        </div>
-        <div className="form-right">
-          <label>Full Name:</label>
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Full Name"
-            value={formData.fullName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            required
-          />
-          {errors.fullName && <span className="error">{errors.fullName}</span>}
-
-          <label>Phone Number:</label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            placeholder="Phone Number"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            required
-          />
-          {errors.phoneNumber && (
-            <span className="error">{errors.phoneNumber}</span>
-          )}
-
-          <label>Address:</label>
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            required
-          />
-          {errors.address && <span className="error">{errors.address}</span>}
-
-          <label>Gender:</label>
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-
-          <label>Date of Birth:</label>
-          <input
-            type="date"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            required
-          />
         </div>
       </div>
     </div>

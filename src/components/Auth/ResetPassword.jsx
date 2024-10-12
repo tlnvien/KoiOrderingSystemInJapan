@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import logo from "./assets/logo.jpg"; // Assuming logo path
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./ResetPassword.css"; // Create and import the CSS file
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing eye icons
 
@@ -26,7 +26,7 @@ const ResetPassword = () => {
       console.log("Password successfully reset");
       navigate("/"); // Redirect to login or wherever you want after reset
     } else {
-      alert("Passwords do not match!");
+      alert("Mật khẩu không trùng khớp!");
     }
   };
 
@@ -34,7 +34,7 @@ const ResetPassword = () => {
     <div className="reset-password-container">
       {/* Right Section - Form */}
       <div className="form-section">
-        <h2>Đổi mật khẩu</h2>
+        <h1>Đổi mật khẩu</h1>
         <form onSubmit={handleSubmit}>
           <label>Mật khẩu cũ:</label>
           <div className="password-input-container">
@@ -91,6 +91,9 @@ const ResetPassword = () => {
           <button type="submit" className="reset-btn">
             Xác nhận
           </button>
+          <Link to="/" className="back-link">
+            &lt; Quay lại
+          </Link>
         </form>
       </div>
     </div>
