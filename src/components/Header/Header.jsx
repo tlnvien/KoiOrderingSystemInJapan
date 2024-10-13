@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +23,7 @@ const Header = () => {
     localStorage.removeItem("userId"); // Optional: clear userId if necessary
     localStorage.removeItem("googleId"); // Optional: clear googleId if necessary
     localStorage.removeItem("loginType"); // Clear login type
+    setIsLoading(false);
     setIsLoggedIn(false);
     navigate("/");
   };
@@ -75,6 +77,7 @@ const Header = () => {
                 <Link to="/" onClick={handleLogout} className="logout-link">
                   Đăng xuất
                 </Link>
+                {isLoading && <p>Đang đăng xuất...</p>}
               </li>
             </>
           ) : (

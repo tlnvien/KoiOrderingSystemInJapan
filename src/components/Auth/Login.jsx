@@ -127,7 +127,7 @@ function Login() {
         <h1 className="heading">Đăng nhập</h1>
         <form onSubmit={handleUsernamePasswordLogin}>
           <div className="form-group">
-            <label>Tên người dùng:</label>
+            <label>Tên đăng nhập:</label>
             <input
               type="text"
               value={username}

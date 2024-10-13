@@ -6,6 +6,7 @@ import axios from "axios";
 import {
   FaCreditCard,
   FaMobileAlt,
+  FaMoneyBill,
   FaMoneyBillWave,
   FaPaypal,
 } from "react-icons/fa";
@@ -154,11 +155,11 @@ const BookingPage = () => {
                 checked={formData.paymentMethod === "credit"}
                 onChange={handleChange}
               />
-              <FaPaypal style={{ marginRight: "15px" }} />
-              Paypal
+              <FaMoneyBill style={{ marginRight: "15px" }} />
+              Thanh toán VNPay
             </label>
           </div>
-          <div className="form-group-book">
+          {/* <div className="form-group-book">
             <label>
               <input
                 type="radio"
@@ -196,7 +197,7 @@ const BookingPage = () => {
               <FaMoneyBillTransfer style={{ marginRight: "15px" }} />
               Thanh toán chuyển khoản ngân hàng
             </label>
-          </div>
+          </div> */}
         </section>
 
         <section className="notes-section">

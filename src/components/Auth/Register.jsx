@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import facebookLogo from "./assets/facebook-logo.png";
 import logo from "./assets/logo.jpg";
 import "./Auth.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
@@ -13,18 +13,18 @@ const Register = () => {
     email: "",
     username: "",
     password: "",
-    confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
+    // confirmPassword: "",
+    // firstName: "",
+    // lastName: "",
+    phone: "",
   });
-
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const api = "http://localhost:8082/register";
+  const registerApi = "http://localhost:8082/api/register";
+  const token = localStorage.getItem("token");
 
   const handleChange = (e) => {
     setFormData({
@@ -57,15 +57,6 @@ const Register = () => {
     return "";
   };
 
-  const validateAddress = (value) => {
-    if (!value) return "Địa chỉ không được để trống";
-    if (value.trimStart().length !== value.length)
-      return "Ký tự đầu tiên không được có khoảng trắng";
-    if (/[^a-zA-Z0-9\s]/.test(value))
-      return "Không được phép có ký tự đặc biệt";
-    return "";
-  };
-
   const validatePhoneNumber = (value) => {
     if (!value) return "Số điện thoại không được để trống";
     if (/[^0-9]/.test(value)) return "Không được phép có ký tự";
@@ -85,30 +76,17 @@ const Register = () => {
 
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
-    if (value.length < 8) return "Mật khẩu phải có ít nhất 6 ký tự";
-    if (!/[A-Za-z]/.test(value))
-      return "Mật khẩu phải chứa ít nhất một chữ cái";
-    if (!/[0-9]/.test(value)) return "Mật khẩu phải chứa ít nhất một số";
-    if (!/[!@#$%^&*]/.test(value))
-      return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt";
+    if (value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
+    // if (!/[A-Za-z]/.test(value))
+    //   return "Mật khẩu phải chứa ít nhất một chữ cái";
+    // if (!/[0-9]/.test(value)) return "Mật khẩu phải chứa ít nhất một số";
+    // if (!/[!@#$%^&*]/.test(value))
+    //   return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt";
     return "";
   };
 
   const validateConfirmPassword = (password, confirmPassword) => {
     if (confirmPassword !== password) return "Mật khẩu không khớp!";
-    return "";
-  };
-
-  const validateDOB = (value) => {
-    const today = new Date();
-    const dob = new Date(value);
-    if (!value) return "Ngày sinh không được để trống";
-    if (dob >= today) return "Ngày sinh không được ở tương lai";
-    return "";
-  };
-
-  const validateGender = (value) => {
-    if (!value) return "Phải chọn giới tính";
     return "";
   };
 
@@ -123,7 +101,7 @@ const Register = () => {
       case "lastName":
         error = validateFullName(value);
         break;
-      case "phoneNumber":
+      case "phone":
         error = validatePhoneNumber(value);
         break;
       case "email":
@@ -132,9 +110,9 @@ const Register = () => {
       case "password":
         error = validatePassword(value);
         break;
-      case "confirmPassword":
-        error = validateConfirmPassword(formData.password, value);
-        break;
+      // case "confirmPassword":
+      //   error = validateConfirmPassword(formData.password, value);
+      //   break;
       case "username":
         error = validateUsername(value);
         break;
@@ -155,6 +133,32 @@ const Register = () => {
     }
   };
 
+  const sendVerificationCode = async (email) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8082/api/email/send-code",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.ok) {
+        console.log("Verification code sent to email.");
+      } else {
+        alert("Failed to send verification code. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      alert("An error occurred. Please try again later.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!agreeToTerms) {
@@ -162,31 +166,24 @@ const Register = () => {
       return;
     }
 
-    // Kiểm tra lỗi trước khi gửi
     if (Object.keys(errors).length > 0) {
       alert("Please fix the errors before submitting.");
       return;
     }
 
     try {
-      const response = await fetch(api, {
+      const response = await fetch(registerApi, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: formData.email,
-          username: formData.username,
-          password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phoneNumber: formData.phoneNumber,
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        const data = await response.json();
-        navigate("/verify-code");
+        await sendVerificationCode(formData.email); // Send code after successful registration
+        const email = formData.email;
+        navigate("/verify-code", { state: { mode: "register", email } });
       } else {
         alert("Registration failed. Please try again.");
       }
@@ -217,9 +214,9 @@ const Register = () => {
     <div className="register-container">
       <div className="form-container">
         <h1 className="heading">Đăng ký</h1>
-        <div className="form-section">
+        <div className="form-section-register">
           <form onSubmit={handleSubmit}>
-            <div className="name-container">
+            {/* <div className="name-container">
               <div className="name-field">
                 <label>Họ:</label>
                 <input
@@ -242,7 +239,7 @@ const Register = () => {
                   required
                 />
               </div>
-            </div>
+            </div> */}
             <label>Email:</label>
             <input
               type="email"
@@ -273,16 +270,14 @@ const Register = () => {
             <label>Số điện thoại:</label>
             <input
               type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               onBlur={handleBlur}
               required
             />
             <div className="error-container">
-              {errors.phoneNumber && (
-                <span className="error">{errors.phoneNumber}</span>
-              )}
+              {errors.phone && <span className="error">{errors.phone}</span>}
             </div>
 
             <label>Mật khẩu:</label>
@@ -313,7 +308,7 @@ const Register = () => {
             <label>Nhập lại mật khẩu:</label>
             <div className="password-field">
               <input
-                type={showConfirmPassword ? "text" : "password"} // Hiển thị/ẩn mật khẩu xác nhận
+                type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -322,11 +317,10 @@ const Register = () => {
               />
               <button
                 type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)} // Chuyển đổi trạng thái
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="toggle-password-btn"
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}{" "}
-                {/* Hiện/ẩn biểu tượng */}
               </button>
             </div>
             <div className="error-container">
@@ -349,6 +343,11 @@ const Register = () => {
             <button type="submit" className="auth-btn">
               Đăng ký
             </button>
+            <div className="auth-links">
+              <Link to="/login" className="auth-link1">
+                Bạn đã có tài khoản? Đăng nhập ngay
+              </Link>
+            </div>
           </form>
           <div className="or-login">
             <p>Hoặc đăng nhập bằng</p>
