@@ -23,7 +23,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const registerApi = "http://localhost:8082/api/register";
+  const registerApi = "http://localhost:8082/api/register/manager";
   const token = localStorage.getItem("token");
 
   const handleChange = (e) => {
@@ -130,6 +130,32 @@ const Register = () => {
         const { [name]: _, ...rest } = prevErrors;
         return rest;
       });
+    }
+  };
+
+  const sendVerificationCode = async (email) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8082/api/email/send-code",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.ok) {
+        console.log("Verification code sent to email.");
+      } else {
+        alert("Failed to send verification code. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      alert("An error occurred. Please try again later.");
     }
   };
 

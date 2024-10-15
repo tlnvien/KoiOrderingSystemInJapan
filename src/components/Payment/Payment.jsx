@@ -33,7 +33,7 @@ const PaymentPage = () => {
       method: paymentMethod,
       price: totalPrice,
       description: description,
-      paymentType: "CARD", // You can change this as needed
+      paymentType: "vnpay", // You can change this as needed
     };
 
     try {

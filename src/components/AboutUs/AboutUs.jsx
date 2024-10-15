@@ -12,7 +12,7 @@ const AboutUs = () => {
       <h1>Giới thiệu về công ty</h1>
 
       <section className="company-intro">
-        <h2>Công ty của chúng tôi</h2>
+        <h2 className="about-us-h2">Công ty của chúng tôi</h2>
         <img
           src={companyImage}
           alt="Công ty chúng tôi"
@@ -26,7 +26,7 @@ const AboutUs = () => {
       </section>
 
       <section className="mission-vision">
-        <h2>Sứ mệnh & Tầm nhìn</h2>
+        <h2 className="about-us-h2">Sứ mệnh & Tầm nhìn</h2>
         <p>
           Sứ mệnh của chúng tôi là mang lại trải nghiệm du lịch dễ dàng và thú
           vị cho mọi người. Chúng tôi mong muốn mỗi người đều có cơ hội chiêm
@@ -35,7 +35,7 @@ const AboutUs = () => {
       </section>
 
       <section className="services">
-        <h2>Dịch vụ của chúng tôi</h2>
+        <h2 className="about-us-h2">Dịch vụ của chúng tôi</h2>
         <ul>
           <li>Đặt tour theo nhu cầu</li>
           <li>Gói tour trọn gói</li>
@@ -45,7 +45,7 @@ const AboutUs = () => {
       </section>
 
       <section className="team">
-        <h2>Đội ngũ của chúng tôi</h2>
+        <h2 className="about-us-h2">Đội ngũ của chúng tôi</h2>
         <img
           src={teamImage}
           alt="Đội ngũ của chúng tôi"
@@ -58,7 +58,7 @@ const AboutUs = () => {
       </section>
 
       <section className="testimonials">
-        <h2>Khách hàng nói gì về chúng tôi</h2>
+        <h2 className="about-us-h2">Khách hàng nói gì về chúng tôi</h2>
         <blockquote>
           "Trải nghiệm du lịch tuyệt vời nhất mà tôi từng có! Rất đáng để thử!"
           - <strong>Tên khách hàng</strong>
@@ -66,7 +66,7 @@ const AboutUs = () => {
       </section>
 
       <section className="contact-info">
-        <h2>Liên hệ</h2>
+        <h2 className="about-us-h2">Liên hệ</h2>
         <p>
           <p>Địa chỉ: 123 Đường ABC, Thành phố XYZ, Nhật Bản</p>
           <p>Email: contact@koibookingsystem.com</p>

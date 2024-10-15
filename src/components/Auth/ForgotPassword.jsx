@@ -17,10 +17,7 @@ const ForgotPassword = () => {
     try {
       const response = await axios.post(
         verifyApi,
-        { email: email }, // Send email in request body
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { email: email } // Send email in request body
       );
 
       console.log(response.data); // Debugging: log the response

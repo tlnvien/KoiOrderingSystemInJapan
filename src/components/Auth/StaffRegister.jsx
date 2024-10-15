@@ -23,8 +23,9 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const registerApi = "http://localhost:8082/api/register";
+  const registerApi = "http://localhost:8082/api/register/staff";
   const token = localStorage.getItem("token");
+  const [role, setRole] = useState("SALES");
 
   const handleChange = (e) => {
     setFormData({
@@ -146,10 +147,11 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(registerApi, {
+      const response = await fetch(`${registerApi}?role=${role}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -188,6 +190,12 @@ const Register = () => {
         <h1 className="heading">Đăng ký</h1>
         <div className="form-section-register">
           <form onSubmit={handleSubmit}>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="SALES">SALES</option>
+              <option value="CONSULTING">CONSULTING</option>
+              <option value="DELIVERING">DELIVERING</option>
+              <option value="CUSTOMER">CUSTOMER</option>
+            </select>
             {/* <div className="name-container">
               <div className="name-field">
                 <label>Họ:</label>

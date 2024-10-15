@@ -150,9 +150,9 @@ const BookingPage = () => {
             <label>
               <input
                 type="radio"
-                name="paymentMethod"
-                value="credit"
-                checked={formData.paymentMethod === "credit"}
+                name="vnpay"
+                value="vnpay"
+                checked={formData.paymentMethod === "vnpay"}
                 onChange={handleChange}
               />
               <FaMoneyBill style={{ marginRight: "15px" }} />

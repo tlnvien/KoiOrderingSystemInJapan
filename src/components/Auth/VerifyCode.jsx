@@ -10,8 +10,7 @@ const VerifyCode = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
-  const verifyApi = "http://localhost:8082/api/email/verify-code";
-  const resendApi = "http://localhost:8082/api/email/resend-code";
+  const verifyApi = "http://localhost:8082/api/register/confirm";
   const token = localStorage.getItem("token");
   const { mode } = location.state || {};
 
@@ -30,26 +29,18 @@ const VerifyCode = () => {
 
     try {
       const response = await axios.post(
-        verifyApi,
+        `${verifyApi}?code=${verificationCode}`,
         {
           email: email, // Send email along with verification code
-          code: verificationCode, // Send verification code
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      if (response.data.success) {
+      if (response.status === 200) {
         setSuccessMessage("Xác minh thành công!");
 
         // Redirect based on mode
         setTimeout(() => {
-          if (mode === "reset") {
-            navigate("/reset-password");
-          } else if (mode === "register") {
-            navigate("/login");
-          }
+          navigate("/login");
         }, 2000);
       } else {
         setErrorMessage("Mã xác minh không hợp lệ. Vui lòng thử lại.");
@@ -65,10 +56,7 @@ const VerifyCode = () => {
     try {
       const response = await axios.post(
         resendApi,
-        { email: email }, // Send email to resend the code
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { email: email } // Send email to resend the code
       );
       if (response.data.success) {
         setSuccessMessage("Mã xác minh đã được gửi lại!");

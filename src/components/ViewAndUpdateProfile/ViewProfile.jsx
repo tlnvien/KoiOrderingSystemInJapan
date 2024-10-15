@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Import Axios
-import "./Profile.css"; // Import CSS cho trang
+import axios from "axios";
+import "./Profile.css";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import {
@@ -9,6 +9,7 @@ import {
   ShoppingCartOutlined,
   StarOutlined,
   LockOutlined,
+  TeamOutlined, // Import icon for staff registration
 } from "@ant-design/icons";
 
 const ViewProfile = () => {
@@ -23,18 +24,17 @@ const ViewProfile = () => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // Thêm state để kiểm tra xem có đang ở chế độ chỉnh sửa không
+  const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8082/api/info";
+  const apiUrl = "http://localhost:8082/api/info/user";
 
   useEffect(() => {
     fetchUserProfile();
   }, []);
 
-  // Lấy thông tin người dùng từ API bằng Axios
   const fetchUserProfile = async () => {
     try {
       const response = await axios.get(`${apiUrl}/${userId}`, {
@@ -44,7 +44,7 @@ const ViewProfile = () => {
       });
 
       if (response.data) {
-        setUserData(response.data); // Lưu dữ liệu người dùng vào state
+        setUserData(response.data);
         setIsLoading(false);
       }
     } catch (error) {
@@ -68,8 +68,8 @@ const ViewProfile = () => {
       });
 
       if (response.data) {
-        setUserData(response.data); // Cập nhật dữ liệu người dùng
-        setIsEditing(false); // Đóng chế độ chỉnh sửa
+        setUserData(response.data);
+        setIsEditing(false);
         alert("Cập nhật thông tin thành công!");
       }
     } catch (error) {
@@ -82,7 +82,7 @@ const ViewProfile = () => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
-      [name]: value, // Cập nhật dữ liệu khi người dùng nhập
+      [name]: value,
     }));
   };
 
@@ -109,9 +109,15 @@ const ViewProfile = () => {
             <li onClick={() => navigate("/reset-password")}>
               <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
             </li>
+            {/* Hiển thị tùy chọn đăng ký staff chỉ khi role là manager */}
+            {role === "MANAGER" && (
+              <li onClick={() => navigate("/register/staff")}>
+                <TeamOutlined style={{ marginRight: "10px" }} /> Đăng ký tài
+                khoản cho staff
+              </li>
+            )}
           </ul>
         </div>
-        {/* Profile Form */}
         <div className="profile-form">
           <h1>Thông tin cá nhân</h1>
           <form onSubmit={isEditing ? handleSave : null}>
@@ -122,7 +128,7 @@ const ViewProfile = () => {
                 name="lastName"
                 value={userData.lastName}
                 onChange={handleChange}
-                readOnly={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
+                readOnly={!isEditing}
               />
             </div>
             <div className="form-group">
@@ -132,7 +138,7 @@ const ViewProfile = () => {
                 name="firstName"
                 value={userData.firstName}
                 onChange={handleChange}
-                readOnly={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
+                readOnly={!isEditing}
               />
             </div>
             <div className="form-group">
@@ -141,7 +147,7 @@ const ViewProfile = () => {
                 name="gender"
                 value={userData.gender}
                 onChange={handleChange}
-                disabled={!isEditing} // Cho phép chỉnh sửa nếu isEditing là true
+                disabled={!isEditing}
               >
                 <option value="MALE">MALE</option>
                 <option value="FEMALE">FEMALE</option>
@@ -179,14 +185,12 @@ const ViewProfile = () => {
                 readOnly={!isEditing}
               />
             </div>
-            {/* Chỉ hiển thị nút lưu khi ở chế độ chỉnh sửa */}
             {isEditing && (
               <button type="submit" className="button button-save">
                 Lưu thay đổi
               </button>
             )}
           </form>
-          {/* Nút chỉnh sửa */}
           {!isEditing && (
             <button onClick={handleEdit} className="button button-edit">
               Chỉnh sửa thông tin
