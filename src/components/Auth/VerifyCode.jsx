@@ -6,7 +6,7 @@ import "./ForgotPassword.css";
 const VerifyCode = () => {
   const location = useLocation(); // Get location from routing
   const { email } = location.state || {}; // Retrieve email from state
-  const [verificationCode, setVerificationCode] = useState("");
+  const [code, setVerificationCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
@@ -17,23 +17,25 @@ const VerifyCode = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!verificationCode) {
+    if (!code) {
       setErrorMessage("Vui lòng nhập mã xác minh.");
       return;
     }
 
-    if (!/^\d{6}$/.test(verificationCode)) {
+    if (!/^\d{6}$/.test(code)) {
       setErrorMessage("Mã xác minh phải gồm 6 chữ số.");
       return;
     }
 
+    // if (!email) {
+    //   setErrorMessage("Không tìm thấy email. Vui lòng thử lại.");
+    //   return;
+    // }
+
     try {
-      const response = await axios.post(
-        `${verifyApi}?code=${verificationCode}`,
-        {
-          email: email, // Send email along with verification code
-        }
-      );
+      const response = await axios.post(`${verifyApi}?code=${code}`, {
+        email: email,
+      });
 
       if (response.status === 200) {
         setSuccessMessage("Xác minh thành công!");
@@ -77,7 +79,7 @@ const VerifyCode = () => {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            value={verificationCode}
+            value={code}
             onChange={(e) => {
               setVerificationCode(e.target.value);
               setErrorMessage("");
@@ -103,12 +105,11 @@ const VerifyCode = () => {
           </p>
         )}
 
-        <div className="resend-section">
-          <p>Không nhận được mã?</p>
-          <button onClick={handleResendCode} className="search-btn">
-            Gửi lại mã
-          </button>
-        </div>
+        <p>Không nhận được mã?</p>
+        <button onClick={handleResendCode} className="search-btn">
+          Gửi lại mã
+        </button>
+
         <Link to="/register" className="back-link">
           Quay lại trang đăng ký
         </Link>

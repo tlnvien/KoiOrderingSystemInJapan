@@ -8,25 +8,20 @@ const ForgotPassword = () => {
   const [errorMessage, setErrorMessage] = useState(""); // State for error messages
   const [successMessage, setSuccessMessage] = useState(""); // State for success messages
   const navigate = useNavigate(); // Initialize useNavigate hook
-  const verifyApi = "http://localhost:8082/api/email/send-code"; // API endpoint for sending the verification code
+  const forgotApi = "http://localhost:8082/api/forgot-password"; // API endpoint for sending the verification code
   const token = localStorage.getItem("token"); // Get token from local storage
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        verifyApi,
-        { email: email } // Send email in request body
-      );
+      const response = await axios.post(forgotApi, { email });
 
-      console.log(response.data); // Debugging: log the response
-
-      if (response.data.success) {
-        // Adjusted to check success from response data
-        setSuccessMessage(response.data.message || "Mã xác minh đã được gửi!");
-        console.log("Navigating to /verify-code"); // Debugging
-        navigate("/verify-code", { state: { mode: "reset", email } });
+      if (response.status === 200) {
+        setSuccessMessage("Mã xác minh đã được gửi!");
+        navigate("/reset-password", {
+          state: { email },
+        });
       } else {
         setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
       }

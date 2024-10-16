@@ -1,100 +1,103 @@
 import React, { useState } from "react";
-import logo from "./assets/logo.jpg"; // Assuming logo path
-import { Link, useNavigate } from "react-router-dom";
-import "./ResetPassword.css"; // Create and import the CSS file
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing eye icons
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./ResetPassword.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ResetPassword = () => {
-  const [newPassword, setNewPassword] = useState("");
+  const location = useLocation();
+  const { email } = location.state || {};
+  const [code, setCode] = useState(""); // New state for the code
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const resetApi = "http://localhost:8082/api/reset-password";
 
-  const toggleNewPasswordVisibility = () => {
-    setShowNewPassword(!showNewPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (newPassword === confirmPassword) {
-      // Handle the password reset logic here
-      console.log("Password successfully reset");
-      navigate("/"); // Redirect to login or wherever you want after reset
-    } else {
-      alert("Mật khẩu không trùng khớp!");
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Mật khẩu không khớp.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${resetApi}?requestCode=${code}`, {
+        password,
+      });
+
+      if (response.status === 200) {
+        setSuccessMessage("Mật khẩu đã được đặt lại thành công!");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setErrorMessage(
+          "Đã xảy ra lỗi khi đặt lại mật khẩu. Vui lòng thử lại."
+        );
+      }
+    } catch (error) {
+      setErrorMessage("Đã xảy ra lỗi khi đặt lại mật khẩu. Vui lòng thử lại.");
+      console.error("Reset password error:", error);
     }
   };
 
   return (
     <div className="reset-password-container">
-      {/* Right Section - Form */}
       <div className="form-section">
-        <h1>Đổi mật khẩu</h1>
+        <h1>Đặt lại mật khẩu</h1>
         <form onSubmit={handleSubmit}>
-          <label>Mật khẩu cũ:</label>
-          <div className="password-input-container">
+          {/* New input field for the verification code */}
+          <label>Nhập mã xác minh:</label>
+          <input
+            type="text"
+            placeholder="* * * * * *"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+          />
+          <div className="password-field">
+            <label>Mật khẩu mới:</label>
             <input
-              type={showNewPassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Mật khẩu cũ"
-              required
-            />
-            <span
-              className="password-toggle-icon"
-              onClick={toggleNewPasswordVisibility}
-            >
-              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-          {/* New Password */}
-          <label>Mật khẩu mới:</label>
-          <div className="password-input-container">
-            <input
-              type={showNewPassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              type={showPassword ? "text" : "password"}
               placeholder="Mật khẩu mới"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <span
               className="password-toggle-icon"
-              onClick={toggleNewPasswordVisibility}
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
-
-          {/* Confirm Password */}
-          <label>Nhập lại mật khẩu:</label>
-          <div className="password-input-container">
+          <div className="password-field">
+            <label>Xác nhận mật khẩu mới:</label>
             <input
               type={showConfirmPassword ? "text" : "password"}
+              placeholder="Xác nhận mật khẩu mới"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Nhập lại mật khẩu mới"
               required
             />
             <span
               className="password-toggle-icon"
-              onClick={toggleConfirmPasswordVisibility}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
-
-          <button type="submit" className="reset-btn">
-            Xác nhận
+          <button type="submit" className="submit-btn">
+            Đặt lại mật khẩu
           </button>
-          <Link to="/" className="back-link">
-            &lt; Quay lại
-          </Link>
         </form>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
       </div>
     </div>
   );

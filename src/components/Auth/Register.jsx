@@ -155,7 +155,7 @@ const Register = () => {
       });
 
       if (response.ok) {
-        navigate("/verify-code");
+        navigate("/verify-code", {});
       } else {
         alert("Registration failed. Please try again.");
       }

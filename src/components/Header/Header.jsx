@@ -84,7 +84,7 @@ const Header = () => {
             <li>
               <Link to="/login">Đăng nhập</Link>
               <span className="separator">|</span>
-              <Link to="/register">Đăng kí</Link>
+              <Link to="/register/customer">Đăng kí</Link>
             </li>
           )}
         </ul>
