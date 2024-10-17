@@ -1,0 +1,22 @@
+version: '3'
+services:
+  mysql_container:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+    ports:
+      - "3306:3306"
+
+  app:
+    image: nhatle123/swp391:v5
+    container_name: swp391
+    environment:
+      MYSQL_URL: "jdbc:mysql//127.0.0.1:3306/swp391"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "12345"
+    depends_on:
+      - mysql_container
+    ports:
+      - "8080:8080"
+
