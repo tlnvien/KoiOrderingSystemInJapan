@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registration Confirmation</title>
+</head>
+<body>
+<h1>Welcome, <span th:text="${name}">Name</span>!</h1>
+<p>Thank you for registering. Please click the button below to proceed.</p>
+<a th:href="${link}">
+    <button><span th:text="${button}">Button Text</span></button>
+</a>
+</body>
+</html>
