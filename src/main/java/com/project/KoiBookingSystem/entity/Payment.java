@@ -24,7 +24,7 @@ public class Payment {
 
     @OneToOne
     @JoinColumn(name = "order_id")
-    private Order orders;
+    private Order order;
 
     @OneToOne
     @JoinColumn(name = "payment_Id")
