@@ -65,7 +65,7 @@ public class OrderService {
             for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
                 DetailOrder detailOrder = new DetailOrder();
                 detailOrder.setFarmId(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));
-                detailOrder.setKoiId(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));
+                detailOrder.setKoi(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));
                 detailOrder.setQuantity(list.getQuantity());
                 detailOrder.setPrice(list.getPrice());
                 detailOrders.add(detailOrder);
@@ -112,7 +112,7 @@ public class OrderService {
         String formattedCreateDate = createDate.format(formatter);
 
         //code của mình
-        Order orders = createOrder(ordersRequest);
+        OrderResponse orders = createOrder(ordersRequest);
         float money = orders.getTotal() * 100;
         String amount = String.valueOf((int) money); // để mất thập phân kiểu int
 
@@ -127,7 +127,7 @@ public class OrderService {
         String tmnCode = "K8GYRSRJ";
         String secretKey = "GZRDJNWZ5DZCJF1PF3WV4MP7YX7ZT8H6";
         String vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        String returnUrl = "https://blearning.vn/guide/swp/docker-local?orderID=" + orders.getId();
+        String returnUrl = "https://blearning.vn/guide/swp/docker-local?orderID=" + orders.getOrderId();
         // trang thông báo thành công (font-end) làm
         // đính kèm Id cho orders (sản phẩm)
         String currCode = "VND";
@@ -138,8 +138,8 @@ public class OrderService {
         vnpParams.put("vnp_TmnCode", tmnCode);
         vnpParams.put("vnp_Locale", "vn");
         vnpParams.put("vnp_CurrCode", currCode);
-        vnpParams.put("vnp_TxnRef", orders.getId().toString()); //!!! Do Orders id đang là kiểu UUID (String)
-        vnpParams.put("vnp_OrderInfo", "Thanh toan cho ma GD: " + orders.getId());
+        vnpParams.put("vnp_TxnRef", orders.getOrderId().toString()); //!!! Do Orders id đang là kiểu UUID (String)
+        vnpParams.put("vnp_OrderInfo", "Thanh toan cho ma GD: " + orders.getOrderId());
         vnpParams.put("vnp_OrderType", "other");
         vnpParams.put("vnp_Amount",amount);
         //!!! do vnp_Amount là do người ta quy định, dùng ké thì biết điều tý => phải đúng định dạng
@@ -230,7 +230,7 @@ public class OrderService {
         //Từ ADMIN tới CUSTOMER
         Transactions transactions3 = new Transactions();
         transactions3.setFrom(admin);
-        Account owner = orders.getOrderDetails().get(0).getKoi().getAccount();
+        Account owner = orders.getDetailOrders().get(0).getKoi().getAccount();
         transactions3.setTo(owner);
         transactions3.setPayment(payment);
         transactions3.setStatus(TransactionEnums.SUCCESS);

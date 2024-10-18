@@ -28,7 +28,7 @@ public class OrderAPI {
         return ResponseEntity.ok(orderResponse);
     }
 
-    @PostMapping
+    @PostMapping("/vnpay")
     public ResponseEntity createNewOrder(@Valid @RequestBody OrderRequest orderRequest) throws Exception {
         String vnPayURL = orderService.createUrl(orderRequest);
         return ResponseEntity.ok(vnPayURL);
