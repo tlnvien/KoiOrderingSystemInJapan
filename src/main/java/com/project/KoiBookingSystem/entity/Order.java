@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID orderId;
+    private String orderId;
 
     @ManyToOne
     @JoinColumn(name = "customerId", referencedColumnName = "userID")
@@ -37,4 +37,10 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "deliveringId", referencedColumnName = "userId")
     private Account delivering;
+
+    @PrePersist
+    public void generateOrderId() {
+        String uniqueId = UUID.randomUUID().toString(); // Tạo UUID
+        this.orderId = "ORD" + uniqueId; // Kết hợp với tiền tố "ORD"
+    }
 }

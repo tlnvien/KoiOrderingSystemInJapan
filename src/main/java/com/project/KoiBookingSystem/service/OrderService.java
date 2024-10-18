@@ -44,12 +44,24 @@ public class OrderService {
 
     public OrderResponse createOrder(OrderRequest orderRequest) {
         try{
-            Account account = authenticationService.getCurrentAccount();
+            Account account = accountRepository.findAccountByUserID(orderRequest.getUserId());
             if (account == null) {
-                throw new NotFoundException("Invalid Activity! SalesID Not Found!");
+                throw new NotFoundException("CustomerId Not Found!");
             }
+            Order order = new Order();
+            order.setCustomer(account);
+            order.setDate(new Date());
+            order.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
 
         }
+    }
+
+    protected int totalPrice(List<OrderDetailRequest> orderDetailRequests) {
+        int totalPrice = 0;
+        for (OrderDetailRequest orderDetailRequest : orderDetailRequests) {
+            totalPrice += orderDetailRequest.getPrice() * orderDetailRequest.getQuantity();
+        }
+        return totalPrice;
     }
 
     //lấy danh sách order

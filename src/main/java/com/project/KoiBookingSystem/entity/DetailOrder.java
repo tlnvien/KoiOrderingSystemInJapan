@@ -27,7 +27,7 @@ public class DetailOrder {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "orderId")
-    private Order order;
+    private Order orderId;
 
     @ManyToOne
     @JoinColumn(name = "koiID", referencedColumnName = "koiID")
