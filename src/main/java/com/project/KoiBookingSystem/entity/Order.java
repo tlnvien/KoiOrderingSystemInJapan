@@ -1,6 +1,7 @@
 package com.project.KoiBookingSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.KoiBookingSystem.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -38,7 +39,8 @@ public class Order {
     @JoinColumn(name = "deliveringId", referencedColumnName = "userId")
     private Account delivering;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @PrePersist
     public void generateOrderId() {

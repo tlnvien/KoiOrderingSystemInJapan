@@ -21,5 +21,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findAccountByStatusTrue();
 
     @Query(value = "SELECT userId FROM account WHERE userId LIKE 'DS%' ORDER BY RAND() LIMIT 1", nativeQuery = true)
-    String findRandomUserIdWithPrefix();
+    Account findRandomUserIdWithPrefix();
 }

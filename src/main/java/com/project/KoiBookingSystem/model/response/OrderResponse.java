@@ -27,7 +27,7 @@ public class OrderResponse {
     private String customerLastName;
 
     @NotNull(message = "bookingId can not be null!")
-    private Booking bookingId;
+    private String bookingId;
 
     @NotNull(message = "date can not be null!")
     @PastOrPresent(message = "Create date cannot be in the future")

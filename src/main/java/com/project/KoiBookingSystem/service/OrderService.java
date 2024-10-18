@@ -1,6 +1,7 @@
 package com.project.KoiBookingSystem.service;
 
 import com.project.KoiBookingSystem.entity.*;
+import com.project.KoiBookingSystem.enums.OrderStatus;
 import com.project.KoiBookingSystem.enums.PaymentEnums;
 import com.project.KoiBookingSystem.enums.Role;
 import com.project.KoiBookingSystem.enums.TransactionEnums;
@@ -52,9 +53,13 @@ public class OrderService {
                 throw new NotFoundException("CustomerId Not Found!");
             }
             Order order = new Order();
+            //customerId
             order.setCustomer(customer);
+            //bookingId
             order.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
+            //date
             order.setDate(new Date());
+            //totalPrice
             order.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
             List<DetailOrder> detailOrders = new ArrayList<>();
             for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
@@ -65,15 +70,24 @@ public class OrderService {
                 detailOrder.setPrice(list.getPrice());
                 detailOrders.add(detailOrder);
             }
+            //list DetailOrder
             order.setDetailOrders(detailOrders);
             //payment
-            //
+            //delivering
+            order.setDelivering(accountRepository.findRandomUserIdWithPrefix());
+            //status
+            order.setStatus(OrderStatus.PROCESSING);
             orderRepository.save(order);
             OrderResponse orderResponse = new OrderResponse();
             orderResponse.setOrderId(order.getOrderId());
             orderResponse.setCustomerFirstName(customer.getFirstName());
             orderResponse.setCustomerLastName(customer.getLastName());
-            orderResponse.setBookingId();
+            orderResponse.setBookingId(orderRequest.getBookingId());
+            orderResponse.setDate(order.getDate());
+            orderResponse.setTotal(order.getTotal());
+            orderResponse.setDetailOrders(order.getDetailOrders());
+            orderResponse.setDeliveringName(order.getDelivering().getFirstName() + " " + order.getDelivering().getLastName());
+            return orderResponse;
     }
 
     protected int totalPrice(List<OrderDetailRequest> orderDetailRequests) {
