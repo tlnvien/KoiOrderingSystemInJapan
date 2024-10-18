@@ -37,7 +37,7 @@ public class Booking {
     @Positive(message = "Total price must be positive")
     private float totalPrice;
 
-    @NotNull(message = "seatBooked can not be blank")
+    @NotNull(message = "seatBooked can not be null")
     private int seatBooked;
 
     @Enumerated(EnumType.STRING)

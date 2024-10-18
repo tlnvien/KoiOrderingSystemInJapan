@@ -7,6 +7,7 @@ import com.project.KoiBookingSystem.enums.TransactionEnums;
 import com.project.KoiBookingSystem.exception.NotFoundException;
 import com.project.KoiBookingSystem.model.request.OrderDetailRequest;
 import com.project.KoiBookingSystem.model.request.OrderRequest;
+import com.project.KoiBookingSystem.model.response.OrderResponse;
 import com.project.KoiBookingSystem.repository.AccountRepository;
 import com.project.KoiBookingSystem.repository.KoiRepository;
 import com.project.KoiBookingSystem.repository.OrderRepository;
@@ -41,36 +42,20 @@ public class OrderService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    public Orders createOrder(OrderRequest orderRequest) {
-        Account customer = authenticationService.getCurrentAccount(); // lấy thằng vừa tạo order => customer
-        Orders order = new Orders();
-        List<OrderDetail> orderDetails = new ArrayList<>(); //
-        float totalPrice = 0;
-        order.setDate(new Date());
-        order.setCustomer(customer);
+    public OrderResponse createOrder(OrderRequest orderRequest) {
+        try{
+            Account account = authenticationService.getCurrentAccount();
+            if (account == null) {
+                throw new NotFoundException("Invalid Activity! SalesID Not Found!");
+            }
 
-
-        for(OrderDetailRequest orderDetailRequest : orderRequest.getDetail()){
-//            Koi koi = koiRepository.findKoiByKoiID(String.valueOf(orderDetailRequest.getKoiID()));
-            Koi koi = koiRepository.findKoiById(orderDetailRequest.getKoiID());
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setQuantity(orderDetailRequest.getQuantity());
-            orderDetail.setPrice(koi.getPrice());
-            orderDetail.setOrder(order);
-            orderDetail.setKoi(koi);
-            orderDetails.add(orderDetail);
-            totalPrice += orderDetail.getPrice() * orderDetail.getQuantity();
         }
-        order.setOrderDetails(orderDetails);
-        order.setTotal(totalPrice);
-
-        return orderRepository.save(order);
     }
 
     //lấy danh sách order
-    public List<Orders> getAllOrders() {
+    public List<Order> getAllOrders() {
         Account account = authenticationService.getCurrentAccount();
-        List<Orders> ordersList = orderRepository.findOrderssByCustomer(account);
+        List<Order> ordersList = orderRepository.findOrderssByCustomer(account);
         return ordersList;
     }
 
@@ -81,7 +66,7 @@ public class OrderService {
         String formattedCreateDate = createDate.format(formatter);
 
         //code của mình
-        Orders orders = createOrder(ordersRequest);
+        Order orders = createOrder(ordersRequest);
         float money = orders.getTotal() * 100;
         String amount = String.valueOf((int) money); // để mất thập phân kiểu int
 
@@ -159,7 +144,7 @@ public class OrderService {
 
     public void createTransaction (UUID uuid){
         //tìm cái order
-        Orders orders = orderRepository.findById(uuid)
+        Order orders = orderRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
 
 

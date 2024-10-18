@@ -56,7 +56,7 @@ public class Koi {
 
     @OneToMany(mappedBy = "koi", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<OrderDetail> orderDetails;
+    private List<DetailOrder> DetailOrders;
 
     @ManyToOne
     @JsonIgnore

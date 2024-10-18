@@ -2,7 +2,6 @@ package com.project.KoiBookingSystem.repository;
 
 import com.project.KoiBookingSystem.entity.Account;
 import com.project.KoiBookingSystem.entity.Booking;
-import com.project.KoiBookingSystem.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

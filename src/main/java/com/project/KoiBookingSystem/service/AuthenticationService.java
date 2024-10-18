@@ -189,7 +189,10 @@ public class AuthenticationService implements UserDetailsService {
     }
 
 
-
+    public Account getCurrentAccount1(){
+        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return accountRepository.findAccountByUserID(account.getUserID());
+    }
 
     private void handleDuplicateData(DataIntegrityViolationException e, Account account) {
         if (e.getMessage().contains(account.getUsername())) {

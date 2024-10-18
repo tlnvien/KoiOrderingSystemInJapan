@@ -88,7 +88,7 @@ public class Account implements UserDetails {
     private  Set<Booking> bookings;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private Set<Orders> orders;
+    private Set<Order> orders;
 
 
     @OneToMany(mappedBy = "from")

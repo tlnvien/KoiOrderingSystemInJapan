@@ -24,9 +24,9 @@ public class TourRequest {
     @Min(value = 0, message = "Invalid Tour Max Participant")
     private int maxParticipants;
 
-    @Column(nullable = false)
-    @Min(value = 0, message = "Invalid Remain Seat!")
-    private int remainSeat;
+//    @Column(nullable = false)
+//    @Min(value = 0, message = "Invalid Remain Seat!")
+//    private int remainSeat;
 
 
     @Column(nullable = false)

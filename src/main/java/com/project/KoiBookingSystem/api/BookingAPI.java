@@ -5,6 +5,7 @@ import com.project.KoiBookingSystem.model.response.BookingResponse;
 import com.project.KoiBookingSystem.model.response.TourResponse;
 import com.project.KoiBookingSystem.service.BookingService;
 import com.project.KoiBookingSystem.service.TourService;
+import com.project.KoiBookingSystem.service.VnpayService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,16 @@ public class BookingAPI {
     @Autowired
     BookingService bookingService;
 
+    @Autowired
+    VnpayService vnpayService;
+
     @PostMapping("createUrl")
     public ResponseEntity createNewBooking(@Valid @RequestBody BookingRequest bookingRequest) throws Exception {
-        String vnPayURL = bookingService.createUrl(bookingRequest);
+        String vnPayURL = vnpayService.createUrl(bookingRequest);
         return ResponseEntity.ok(vnPayURL);
     }
 
-    @PostMapping("{bookingId}")
+    @PostMapping("transaction/{bookingId}")
     public ResponseEntity createNewOrder(@RequestParam String bookingID) {
         bookingService.createTransaction(bookingID);
         return ResponseEntity.ok("Success");
@@ -41,8 +45,6 @@ public class BookingAPI {
         BookingResponse ticket = bookingService.createTicket(bookingRequest);
         return ResponseEntity.ok(ticket);
     }
-
-
 
 
     // hiển thị thông tin chi tiết của tour khi chọn

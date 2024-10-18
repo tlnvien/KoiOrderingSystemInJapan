@@ -62,6 +62,7 @@ public class TourService {
             newTour.setTourApproval(TourApproval.PENDING);
             newTour.setCreatedDate(LocalDate.now());
             newTour.setStatus(true);
+            newTour.setRemainSeat(tourRequest.getMaxParticipants());// Số ghế ban đầu bằng tổng số ghế có sẵn
             tourRepository.save(newTour);
             return modelMapper.map(newTour, TourResponse.class);
         } catch (DataIntegrityViolationException e) {
@@ -102,6 +103,11 @@ public class TourService {
         }
         if (tourRequest.getPrice() >= 0) {
             updatedTour.setPrice(tourRequest.getPrice());
+        }
+        if (tourRequest.getMaxParticipants() >= 0) {
+            int difference = tourRequest.getMaxParticipants() - updatedTour.getMaxParticipants();
+            updatedTour.setMaxParticipants(tourRequest.getMaxParticipants());
+            updatedTour.setRemainSeat(updatedTour.getRemainSeat() + difference); // Điều chỉnh số ghế còn lại khi cập nhật tổng số ghế
         }
 
         updatedTour.setConsulting(consulting);
