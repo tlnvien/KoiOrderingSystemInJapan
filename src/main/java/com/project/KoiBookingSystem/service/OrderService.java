@@ -8,10 +8,7 @@ import com.project.KoiBookingSystem.exception.NotFoundException;
 import com.project.KoiBookingSystem.model.request.OrderDetailRequest;
 import com.project.KoiBookingSystem.model.request.OrderRequest;
 import com.project.KoiBookingSystem.model.response.OrderResponse;
-import com.project.KoiBookingSystem.repository.AccountRepository;
-import com.project.KoiBookingSystem.repository.KoiRepository;
-import com.project.KoiBookingSystem.repository.OrderRepository;
-import com.project.KoiBookingSystem.repository.PaymentRepository;
+import com.project.KoiBookingSystem.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,20 +37,31 @@ public class OrderService {
     private AccountRepository accountRepository;
 
     @Autowired
+    private FarmRepository farmRepository;
+
+    @Autowired
     private PaymentRepository paymentRepository;
 
     public OrderResponse createOrder(OrderRequest orderRequest) {
-        try{
-            Account account = accountRepository.findAccountByUserID(orderRequest.getUserId());
-            if (account == null) {
+            Account customer = accountRepository.findAccountByUserID(orderRequest.getUserId());
+            if (customer == null) {
                 throw new NotFoundException("CustomerId Not Found!");
             }
             Order order = new Order();
-            order.setCustomer(account);
+            order.setCustomer(customer);
             order.setDate(new Date());
             order.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
-
-        }
+            List<DetailOrder> detailOrders = new ArrayList<>();
+            for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
+                DetailOrder detailOrder = new DetailOrder();
+                detailOrder.setFarmId(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));
+                detailOrder.setKoiId(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));
+                detailOrder.setQuantity(list.getQuantity());
+                detailOrder.setPrice(list.getPrice());
+                detailOrders.add(detailOrder);
+            }
+            order.setDetailOrders(detailOrders);
+            orderRepository.save(order);
     }
 
     protected int totalPrice(List<OrderDetailRequest> orderDetailRequests) {
