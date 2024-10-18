@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Booking findTopByOrderByIdDesc();
 
+    Booking findBookingByBookingID(String bookingID);
 
     @Query("SELECT SUM(b.seatBooked) FROM Booking b")
     Integer sumSeatBooked();

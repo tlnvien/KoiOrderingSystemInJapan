@@ -27,6 +27,10 @@ public class OrderService {
 
     @Autowired
     AuthenticationService authenticationService;
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
     @Autowired
     private KoiRepository koiRepository;
 
@@ -49,6 +53,7 @@ public class OrderService {
             }
             Order order = new Order();
             order.setCustomer(customer);
+            order.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
             order.setDate(new Date());
             order.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
             List<DetailOrder> detailOrders = new ArrayList<>();
@@ -61,7 +66,14 @@ public class OrderService {
                 detailOrders.add(detailOrder);
             }
             order.setDetailOrders(detailOrders);
+            //payment
+            //
             orderRepository.save(order);
+            OrderResponse orderResponse = new OrderResponse();
+            orderResponse.setOrderId(order.getOrderId());
+            orderResponse.setCustomerFirstName(customer.getFirstName());
+            orderResponse.setCustomerLastName(customer.getLastName());
+            orderResponse.setBookingId();
     }
 
     protected int totalPrice(List<OrderDetailRequest> orderDetailRequests) {

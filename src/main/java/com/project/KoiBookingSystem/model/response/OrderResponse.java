@@ -20,8 +20,11 @@ public class OrderResponse {
     @NotNull(message = "orderId can not be null!")
     private String orderId;
 
-    @NotNull(message = "")
-    private String customerName;
+    @NotNull(message = "FirstName of Customer can not be null!")
+    private String customerFirstName;
+
+    @NotNull(message = "LastName of Customer can not be null!")
+    private String customerLastName;
 
     @NotNull(message = "bookingId can not be null!")
     private Booking bookingId;

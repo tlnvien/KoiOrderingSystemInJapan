@@ -38,6 +38,8 @@ public class Order {
     @JoinColumn(name = "deliveringId", referencedColumnName = "userId")
     private Account delivering;
 
+    private String status;
+
     @PrePersist
     public void generateOrderId() {
         String uniqueId = UUID.randomUUID().toString(); // Tạo UUID
