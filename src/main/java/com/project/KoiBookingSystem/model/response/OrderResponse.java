@@ -36,7 +36,7 @@ public class OrderResponse {
 
     private List<DetailOrder> DetailOrders;
 
-    private Payment payment;
+//    private Payment payment;
 
     @NotNull(message = "delivering name can not be null")
     private String deliveringName;
