@@ -37,7 +37,7 @@ const UserManagement = () => {
     setIsModalVisible(true);
   };
 
-  const handleDelete = (userID) => {
+  const handleDelete = (userId) => {
     Modal.confirm({
       title: "Bạn có chắc chắn muốn xóa người dùng này không?",
       okText: "Có",
@@ -45,7 +45,7 @@ const UserManagement = () => {
       cancelText: "Không",
       onOk: async () => {
         try {
-          await axios.delete(`${apiUrl}/${userID}`, {
+          await axios.delete(`${apiUrl}/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           fetchData();
@@ -60,7 +60,7 @@ const UserManagement = () => {
   const handleOk = async (values) => {
     try {
       // Nếu không có editingRecord, đảm bảo userID không để trống
-      if (!editingRecord && !values.userID) {
+      if (!editingRecord && !values.userId) {
         alert("Vui lòng nhập User ID!");
         return;
       }
@@ -69,7 +69,7 @@ const UserManagement = () => {
 
       if (editingRecord) {
         // Cập nhật một bản ghi hiện tại
-        await axios.put(`${apiUrl}/${editingRecord.userID}`, dataToSend, {
+        await axios.put(`${apiUrl}/${editingRecord.userId}`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Cập nhật thành công");
@@ -101,7 +101,7 @@ const UserManagement = () => {
   );
 
   const columns = [
-    { title: "User ID", dataIndex: "userID", key: "userID" },
+    { title: "User ID", dataIndex: "userId", key: "userId" },
     { title: "Username", dataIndex: "username", key: "username" },
     { title: "Phone", dataIndex: "phone", key: "phone" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -141,7 +141,7 @@ const UserManagement = () => {
         <Table
           dataSource={filteredData}
           columns={columns}
-          rowKey="userID"
+          rowKey="userId"
           pagination={{ pageSize: 5 }}
         />
 
@@ -158,7 +158,7 @@ const UserManagement = () => {
             layout="vertical"
           >
             <Form.Item
-              name="userID"
+              name="userId"
               label="User ID"
               rules={[{ required: true, message: "Vui lòng nhập User ID!" }]}
             >

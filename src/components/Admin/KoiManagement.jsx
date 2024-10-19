@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Modal, Form, Input, notification, Upload } from "antd";
-import { storage } from "../../config/firebase.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Table, Button, Modal, Form, Input, notification } from "antd";
 import Sidebar from "./Admin.jsx";
 
 const KoiManagement = () => {
@@ -10,12 +8,11 @@ const KoiManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentKoi, setCurrentKoi] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8082/api/koi"; // Adjust your API URL
-  const getApi = "http://localhost:8082/api/koi/list"; // Adjust your API URL
+  const apiUrl = "http://localhost:8082/api/koi"; // API URL của bạn
+  const getApi = "http://localhost:8082/api/koi/list"; // API URL của bạn
   const token = localStorage.getItem("token");
-  const [fileList, setFileList] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Trạng thái cho các tệp đã chọn
 
-  // Fetch koi data on component load
   useEffect(() => {
     fetchKoiList();
   }, []);
@@ -29,35 +26,23 @@ const KoiManagement = () => {
       });
       setKoiList(response.data);
     } catch (error) {
-      notification.error({ message: "Failed to fetch koi list" });
+      notification.error({ message: "Không thể lấy danh sách koi" });
     }
   };
 
   const handleEdit = (koi) => {
-    try {
-      setCurrentKoi(koi);
-      setIsModalVisible(true);
-      form.setFieldsValue(koi);
-
-      setFileList(
-        Array.isArray(koi.imageLinks)
-          ? koi.imageLinks
-              .filter((link) => typeof link === "string")
-              .map((link) => ({ url: link }))
-          : []
-      );
-    } catch (error) {
-      console.error("Error in handleEdit:", error);
-      notification.error({ message: "Failed to load edit form" });
-    }
+    setCurrentKoi(koi);
+    setIsModalVisible(true);
+    form.setFieldsValue(koi);
+    setSelectedFiles([]); // Đặt lại các tệp đã chọn
   };
 
   const handleDelete = (koiId) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Koi?",
-      okText: "Yes",
+      title: "Bạn có chắc chắn muốn xóa koi này?",
+      okText: "Có",
       okType: "danger",
-      cancelText: "No",
+      cancelText: "Không",
       onOk: async () => {
         try {
           await axios.delete(`${apiUrl}/${koiId}`, {
@@ -66,9 +51,9 @@ const KoiManagement = () => {
             },
           });
           fetchKoiList();
-          notification.success({ message: "Koi deleted successfully" });
+          notification.success({ message: "Xóa koi thành công" });
         } catch (error) {
-          notification.error({ message: "Failed to delete koi" });
+          notification.error({ message: "Không thể xóa koi" });
         }
       },
     });
@@ -76,13 +61,14 @@ const KoiManagement = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const updatedFileList = await uploadImage(fileList);
+      const uploadedImages = await uploadImagesToCloudinary(selectedFiles);
 
-      const formattedImageLinks = updatedFileList.map((file) => ({
-        imageLink: file.url,
-      }));
-
-      const koiData = { ...values, imageLinks: formattedImageLinks };
+      const koiData = {
+        ...values,
+        imageLinks: uploadedImages.map((image) => ({
+          imageLink: image.url,
+        })),
+      };
 
       if (currentKoi) {
         await axios.put(`${apiUrl}/${currentKoi.koiId}`, koiData, {
@@ -97,61 +83,63 @@ const KoiManagement = () => {
       fetchKoiList();
       setIsModalVisible(false);
       form.resetFields();
-      setFileList(updatedFileList);
-      notification.success({ message: "Koi saved successfully" });
+      setSelectedFiles([]); // Đặt lại các tệp đã chọn sau khi gửi
+      notification.success({ message: "Lưu koi thành công" });
     } catch (error) {
       console.error(
-        "Error in handleSubmit:",
+        "Lỗi trong handleSubmit:",
         error.response ? error.response.data : error
       );
-      notification.error({ message: "Failed to save koi" });
+      notification.error({ message: "Không thể lưu koi" });
     }
   };
 
-  const uploadImage = async (files) => {
-    const promises = files.map(async (file) => {
-      const isImage = file.type.startsWith("image/");
-      if (!isImage) {
-        console.error(`File ${file.name} is not an image. Skipping upload.`);
-        return null;
-      }
+  const uploadImagesToCloudinary = async (files) => {
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/dx6ldhzdj/image/upload`;
+    const uploadPreset = "cxwt7hpl"; // Upload preset của Cloudinary
 
-      try {
-        const storageRef = ref(storage, `koi/${file.name}`); // Change the storage path
-        await uploadBytes(storageRef, file.originFileObj, {
-          contentType: "image/jpeg",
+    if (files.length === 0) return [];
+
+    const uploadPromises = files.map((file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+
+      return axios
+        .post(cloudinaryUrl, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => response.data)
+        .catch((error) => {
+          console.error("Lỗi khi tải ảnh:", error);
+          notification.error({
+            message: `Lỗi khi tải ảnh: ${error.message}`,
+          });
+          return null;
         });
-        const downloadURL = await getDownloadURL(storageRef);
-        console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`);
-        return {
-          uid: file.uid,
-          name: file.name,
-          status: "done",
-          url: downloadURL,
-        };
-      } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error);
-        return null;
-      }
     });
-    return (await Promise.all(promises)).filter(Boolean);
+
+    const results = await Promise.all(uploadPromises);
+    return results.filter((result) => result !== null); // Lọc bỏ các tải lên thất bại
   };
 
   return (
     <div className="admin">
       <Sidebar />
       <div className="admin-content">
-        <h1>Koi Management</h1>
+        <h1>Quản lý cá Koi</h1>
         <Button
           type="primary"
           onClick={() => {
             setIsModalVisible(true);
             setCurrentKoi(null);
             form.resetFields();
-            setFileList([]);
+            setSelectedFiles([]); // Đặt lại các tệp đã chọn khi thêm một Koi mới
           }}
         >
-          Add Koi
+          Thêm Koi
         </Button>
         <Table
           dataSource={koiList}
@@ -159,37 +147,37 @@ const KoiManagement = () => {
           pagination={{ pageSize: 5 }}
           columns={[
             { title: "Koi ID", dataIndex: "koiId" },
-            { title: "Koi Specie", dataIndex: "species" },
-            { title: "Description", dataIndex: "description" },
+            { title: "Loại Koi", dataIndex: "species" },
+            { title: "Mô Tả", dataIndex: "description" },
             {
-              title: "Image Links",
+              title: "Ảnh",
               dataIndex: "imageLinks",
               render: (imageLinks) => (
                 <div>
                   {imageLinks && imageLinks.length > 0
-                    ? imageLinks.map((link, index) => (
+                    ? imageLinks.map((image, index) => (
                         <img
                           key={index}
-                          src={link.imageLink}
-                          alt={`Koi ${index + 1}`}
+                          src={image.imageLink}
+                          alt="Koi"
                           style={{
-                            width: "50px",
-                            height: "auto",
-                            marginRight: "5px",
+                            width: "70px",
+                            height: "70px",
+                            marginRight: "8px",
                           }}
                         />
                       ))
-                    : "No Images"}
+                    : "Không có ảnh"}
                 </div>
               ),
             },
             {
-              title: "Actions",
+              title: "Hành Động",
               render: (text, koi) => (
                 <>
-                  <Button onClick={() => handleEdit(koi)}>Edit</Button>
+                  <Button onClick={() => handleEdit(koi)}>Sửa</Button>
                   <Button danger onClick={() => handleDelete(koi.koiId)}>
-                    Delete
+                    Xóa
                   </Button>
                 </>
               ),
@@ -197,7 +185,7 @@ const KoiManagement = () => {
           ]}
         />
         <Modal
-          title={currentKoi ? "Edit Koi" : "Add Koi"}
+          title={currentKoi ? "Sửa Koi" : "Thêm Koi"}
           visible={isModalVisible}
           onCancel={() => setIsModalVisible(false)}
           footer={null}
@@ -208,50 +196,33 @@ const KoiManagement = () => {
             </Form.Item>
             <Form.Item
               name="species"
-              label="Koi Species"
-              rules={[{ required: true, message: "Please enter koi specie" }]}
+              label="Loại Koi"
+              rules={[{ required: true, message: "Vui lòng nhập loại koi" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="description"
-              label="Description"
-              rules={[
-                { required: true, message: "Please enter koi description" },
-              ]}
+              label="Mô Tả"
+              rules={[{ required: true, message: "Vui lòng nhập mô tả koi" }]}
             >
               <Input.TextArea />
             </Form.Item>
-            <Form.Item
-              name="imageLinks"
-              label="Upload Images"
-              rules={[{ required: true, message: "Please upload images" }]}
-            >
-              <Upload
-                fileList={fileList}
-                beforeUpload={(file) => {
-                  const isJpgOrPng =
-                    file.type === "image/jpeg" || file.type === "image/png";
-                  if (!isJpgOrPng) {
-                    notification.error({
-                      message: "You can only upload JPG/PNG files!",
-                    });
-                    return Upload.LIST_IGNORE;
-                  }
-                  setFileList((prev) => [...prev, file]);
-                  return false;
+            <Form.Item label="Tải Ảnh" required>
+              <input
+                type="file"
+                accept="image/jpeg, image/png"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files);
+                  setSelectedFiles(files); // Đặt các tệp đã chọn vào trạng thái
                 }}
-                onRemove={(file) => {
-                  setFileList((prev) => prev.filter((f) => f.uid !== file.uid));
-                }}
-                multiple
-              >
-                <Button>Upload</Button>
-              </Upload>
+                multiple // Cho phép chọn nhiều tệp
+                required
+              />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Save
+                Lưu
               </Button>
             </Form.Item>
           </Form>

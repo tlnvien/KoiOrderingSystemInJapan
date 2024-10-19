@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Modal, Form, Input, notification, Upload } from "antd";
-import { storage } from "../../config/firebase.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import necessary functions
+import { Table, Button, Modal, Form, Input, notification } from "antd";
 import Sidebar from "./Admin.jsx";
 
 const FarmManagement = () => {
@@ -10,13 +8,11 @@ const FarmManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentFarm, setCurrentFarm] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8082/api/farm";
-  const getApi = "http://localhost:8082/api/farm/list";
-  const apiImage = "http://localhost:8082/api/farm/images";
+  const apiUrl = "http://localhost:8082/api/farm"; // API URL của bạn
+  const getApi = "http://localhost:8082/api/farm/list"; // API URL của bạn
   const token = localStorage.getItem("token");
-  const [fileList, setFileList] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  // Fetch farm data on component load
   useEffect(() => {
     fetchFarmList();
   }, []);
@@ -28,59 +24,36 @@ const FarmManagement = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
       setFarmList(response.data);
     } catch (error) {
-      notification.error({ message: "Failed to fetch farm list" });
+      notification.error({ message: "Không thể lấy danh sách trang trại" });
     }
   };
 
   const handleEdit = (farm) => {
-    try {
-      setCurrentFarm(farm);
-      setIsModalVisible(true);
-      form.setFieldsValue(farm);
-
-      // Ensure imageLinks is a valid array and each link is a string
-      setFileList(
-        Array.isArray(farm.imageLinks)
-          ? farm.imageLinks
-              .filter((link) => typeof link === "string") // Only keep strings
-              .map((link) => ({ url: link })) // Map to file list format
-          : []
-      ); // Set file list for editing
-    } catch (error) {
-      console.error("Error in handleEdit:", error);
-      notification.error({ message: "Failed to load edit form" });
-    }
+    setCurrentFarm(farm);
+    setIsModalVisible(true);
+    form.setFieldsValue(farm);
+    setSelectedFiles([]);
   };
 
   const handleDelete = (farmId) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Farm?",
-      okText: "Yes",
+      title: "Bạn có chắc chắn muốn xóa trang trại này?",
+      okText: "Có",
       okType: "danger",
-      cancelText: "No",
+      cancelText: "Không",
       onOk: async () => {
         try {
-          // Xóa các hình ảnh liên quan đến farm
-          await axios.delete(`${apiImage}/${farmId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          // Xóa farm sau khi xóa hình ảnh
           await axios.delete(`${apiUrl}/${farmId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           fetchFarmList();
-          notification.success({ message: "Farm deleted successfully" });
+          notification.success({ message: "Xóa trang trại thành công" });
         } catch (error) {
-          notification.error({
-            message: "Failed to delete farm or related images",
-          });
+          notification.error({ message: "Không thể xóa trang trại" });
         }
       },
     });
@@ -88,15 +61,14 @@ const FarmManagement = () => {
 
   const handleSubmit = async (values) => {
     try {
-      // Upload images and get their URLs in the required format
-      const updatedFileList = await uploadImage(fileList); // Call uploadImage with fileList
+      const uploadedImages = await uploadImagesToCloudinary(selectedFiles);
 
-      // Format image links for database
-      const formattedImageLinks = updatedFileList.map((file) => ({
-        imageLink: file.url,
-      }));
-
-      const farmData = { ...values, imageLinks: formattedImageLinks }; // Ensure `imageLinks` is formatted correctly
+      const farmData = {
+        ...values,
+        imageLinks: uploadedImages.map((image) => ({
+          imageLink: image.url,
+        })),
+      };
 
       if (currentFarm) {
         await axios.put(`${apiUrl}/${currentFarm.farmId}`, farmData, {
@@ -111,99 +83,101 @@ const FarmManagement = () => {
       fetchFarmList();
       setIsModalVisible(false);
       form.resetFields();
-      setFileList(updatedFileList); // Set updated file list with uploaded images
-      notification.success({ message: "Farm saved successfully" });
+      setSelectedFiles([]);
+      notification.success({ message: "Lưu trang trại thành công" });
     } catch (error) {
       console.error(
         "Error in handleSubmit:",
         error.response ? error.response.data : error
       );
-      notification.error({ message: "Failed to save farm" });
+      notification.error({ message: "Không thể lưu trang trại" });
     }
   };
 
-  const uploadImage = async (files) => {
-    const promises = files.map(async (file) => {
-      const isImage = file.type.startsWith("image/");
-      if (!isImage) {
-        console.error(`File ${file.name} is not an image. Skipping upload.`);
-        return null; // Bỏ qua nếu không phải tệp hình ảnh
-      }
+  const uploadImagesToCloudinary = async (files) => {
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/dx6ldhzdj/image/upload`;
+    const uploadPreset = "cxwt7hpl"; // Upload preset của Cloudinary
 
-      try {
-        const storageRef = ref(storage, `farms/${file.name}`);
-        await uploadBytes(storageRef, file.originFileObj, {
-          contentType: "image/jpeg",
+    if (files.length === 0) return [];
+
+    const uploadPromises = files.map((file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+
+      return axios
+        .post(cloudinaryUrl, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => response.data)
+        .catch((error) => {
+          console.error("Lỗi khi tải ảnh:", error);
+          notification.error({
+            message: `Lỗi khi tải ảnh: ${error.message}`,
+          });
+          return null;
         });
-        const downloadURL = await getDownloadURL(storageRef);
-        console.log(`Uploaded ${file.name} and got URL: ${downloadURL}`);
-        return {
-          uid: file.uid,
-          name: file.name,
-          status: "done",
-          url: downloadURL,
-        };
-      } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error);
-        return null;
-      }
     });
-    return (await Promise.all(promises)).filter(Boolean); // Lọc bỏ các tệp lỗi
+
+    const results = await Promise.all(uploadPromises);
+    return results.filter((result) => result !== null);
   };
 
   return (
     <div className="admin">
       <Sidebar />
       <div className="admin-content">
-        <h1>Farm Management</h1>
+        <h1>Quản lý trang trại</h1>
         <Button
           type="primary"
           onClick={() => {
             setIsModalVisible(true);
             setCurrentFarm(null);
             form.resetFields();
-            setFileList([]); // Reset file list for new entry
+            setSelectedFiles([]);
           }}
         >
-          Add Farm
+          Thêm Trang Trại
         </Button>
         <Table
           dataSource={farmList}
           rowKey="farmId"
           pagination={{ pageSize: 5 }}
           columns={[
-            { title: "Farm ID", dataIndex: "farmId" },
-            { title: "Farm Name", dataIndex: "farmName" },
-            { title: "Description", dataIndex: "description" },
+            { title: "Mã Trang Trại", dataIndex: "farmId" },
+            { title: "Tên Trang Trại", dataIndex: "farmName" },
+            { title: "Mô Tả", dataIndex: "description" },
             {
-              title: "Image Links",
+              title: "Ảnh",
               dataIndex: "imageLinks",
               render: (imageLinks) => (
                 <div>
                   {imageLinks && imageLinks.length > 0
-                    ? imageLinks.map((link, index) => (
+                    ? imageLinks.map((image, index) => (
                         <img
                           key={index}
-                          src={link.imageLink}
-                          alt={`Farm ${index + 1}`}
+                          src={image.imageLink}
+                          alt="Farm"
                           style={{
-                            width: "50px",
-                            height: "auto",
-                            marginRight: "5px",
+                            width: "70px",
+                            height: "70px",
+                            marginRight: "8px",
                           }}
                         />
                       ))
-                    : "No Images"}
+                    : "Không có ảnh"}
                 </div>
               ),
             },
             {
-              title: "Actions",
+              title: "Hành Động",
               render: (text, farm) => (
                 <>
-                  <Button onClick={() => handleEdit(farm)}>Edit</Button>
+                  <Button onClick={() => handleEdit(farm)}>Sửa</Button>
                   <Button danger onClick={() => handleDelete(farm.farmId)}>
-                    Delete
+                    Xóa
                   </Button>
                 </>
               ),
@@ -211,7 +185,7 @@ const FarmManagement = () => {
           ]}
         />
         <Modal
-          title={currentFarm ? "Edit Farm" : "Add Farm"}
+          title={currentFarm ? "Sửa Trang Trại" : "Thêm Trang Trại"}
           visible={isModalVisible}
           onCancel={() => setIsModalVisible(false)}
           footer={null}
@@ -219,70 +193,42 @@ const FarmManagement = () => {
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item
               name="farmId"
-              label="Farm ID"
+              label="Mã Trang Trại"
               rules={[{ required: true }]}
             >
               <Input disabled={!!currentFarm} />
             </Form.Item>
             <Form.Item
               name="farmName"
-              label="Farm Name"
-              rules={[{ required: true, message: "Please enter farm name" }]}
+              label="Tên Trang Trại"
+              rules={[
+                { required: true, message: "Vui lòng nhập tên trang trại" },
+              ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="description"
-              label="Description"
-              rules={[
-                { required: true, message: "Please enter farm description" },
-              ]}
+              label="Mô Tả"
+              rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
             >
               <Input.TextArea />
             </Form.Item>
-            <Form.Item
-              name="imageLinks"
-              label="Upload Images"
-              rules={[{ required: true, message: "Please upload images" }]}
-            >
-              <Upload
-                fileList={fileList}
-                beforeUpload={(file) => {
-                  const isJpgOrPng =
-                    file.type === "image/jpeg" || file.type === "image/png";
-                  if (!isJpgOrPng) {
-                    notification.error({
-                      message: "You can only upload JPG/PNG files!",
-                    });
-                    return Upload.LIST_IGNORE; // Hoặc return false;
-                  }
-                  setFileList((prev) => [...prev, file]);
-                  return false; // Prevent automatic upload
+            <Form.Item label="Tải Ảnh" required>
+              <input
+                type="file"
+                accept="image/jpeg, image/png"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files);
+                  setSelectedFiles(files);
                 }}
-                onRemove={(file) => {
-                  setFileList((prev) => prev.filter((f) => f.uid !== file.uid));
-                }}
-                onPreview={async (file) => {
-                  let src = file.url; // Sử dụng file.url đã upload
-                  if (!src) {
-                    src = await getDownloadURL(ref(storage, file.name)); // Nếu chưa có URL, lấy từ Firebase
-                  }
-                  const imgWindow = window.open(src);
-                  imgWindow.document.write(
-                    `<img src="${src}" alt="Image Preview" />`
-                  );
-                }}
-                accept=".jpeg,.jpg,.png"
-                listType="picture-card"
-              >
-                <div>
-                  <div>Upload</div>
-                </div>
-              </Upload>
+                multiple
+                required
+              />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Save
+                Lưu
               </Button>
             </Form.Item>
           </Form>

@@ -105,12 +105,22 @@ function Login() {
       });
 
       // Assuming response data contains the token, userId, and role
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("userId", response.data.userId);
-      localStorage.setItem("role", response.data.role);
+      const { token, userId, role } = response.data;
+
+      // Save login info to localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("role", role);
       localStorage.setItem("loginType", "username");
       alert("Đăng nhập thành công!");
-      navigate("/");
+      if (role === "MANAGER") {
+        navigate("/admin"); // Redirect to admin page
+      } else if (role === "CUSTOMER") {
+        navigate("/"); // Redirect to homepage for customer
+      } else {
+        // Handle other roles if needed
+        navigate("/"); // Default to homepage
+      }
     } catch (error) {
       console.error("Login error", error);
       alert("Tên người dùng hoặc mật khẩu sai");

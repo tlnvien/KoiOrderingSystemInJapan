@@ -14,8 +14,6 @@ const Register = () => {
     username: "",
     password: "",
     confirmPassword: "",
-    // firstName: "",
-    // lastName: "",
     phone: "",
   });
   const [errors, setErrors] = useState({});
@@ -24,7 +22,6 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const registerApi = "http://localhost:8082/api/register";
-  const token = localStorage.getItem("token");
 
   const handleChange = (e) => {
     setFormData({
@@ -77,11 +74,6 @@ const Register = () => {
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
     if (value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
-    // if (!/[A-Za-z]/.test(value))
-    //   return "Mật khẩu phải chứa ít nhất một chữ cái";
-    // if (!/[0-9]/.test(value)) return "Mật khẩu phải chứa ít nhất một số";
-    // if (!/[!@#$%^&*]/.test(value))
-    //   return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt";
     return "";
   };
 
@@ -136,12 +128,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!agreeToTerms) {
-      alert("You must agree to the terms and conditions.");
+      alert("Bạn phải đồng ý với các điều khoản.");
       return;
     }
 
     if (Object.keys(errors).length > 0) {
-      alert("Please fix the errors before submitting.");
+      alert("Vui lòng sửa các lỗi trước khi gửi.");
       return;
     }
 
@@ -157,28 +149,28 @@ const Register = () => {
       if (response.ok) {
         navigate("/verify-code", {});
       } else {
-        alert("Registration failed. Please try again.");
+        alert("Đăng ký thất bại. Vui lòng thử lại.");
       }
     } catch (error) {
-      console.error("Error registering user:", error);
-      alert("An error occurred. Please try again later.");
+      console.error("Lỗi khi đăng ký người dùng:", error);
+      alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
     }
   };
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
-    console.log("Google user:", decoded);
+    console.log("Người dùng Google:", decoded);
   };
 
   const handleGoogleLoginFailure = (error) => {
-    console.error("Google login failed:", error);
+    console.error("Đăng nhập Google thất bại:", error);
   };
 
   const handleFacebookLogin = (response) => {
     if (response.accessToken) {
-      console.log("Facebook user:", response);
+      console.log("Người dùng Facebook:", response);
     } else {
-      console.error("Facebook login failed");
+      console.error("Đăng nhập Facebook thất bại");
     }
   };
 
@@ -188,30 +180,6 @@ const Register = () => {
         <h1 className="heading">Đăng ký</h1>
         <div className="form-section-register">
           <form onSubmit={handleSubmit}>
-            {/* <div className="name-container">
-              <div className="name-field">
-                <label>Họ:</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                />
-              </div>
-              <div className="name-field1">
-                <label>Tên:</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                />
-              </div>
-            </div> */}
             <label>Email:</label>
             <input
               type="email"
@@ -255,7 +223,7 @@ const Register = () => {
             <label>Mật khẩu:</label>
             <div className="password-field">
               <input
-                type={showPassword ? "text" : "password"} // Hiển thị/ẩn mật khẩu
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -264,11 +232,10 @@ const Register = () => {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} // Chuyển đổi trạng thái
+                onClick={() => setShowPassword(!showPassword)}
                 className="toggle-password-btn"
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
-                {/* Hiện/ẩn biểu tượng */}
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             <div className="error-container">
@@ -292,7 +259,7 @@ const Register = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="toggle-password-btn"
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             <div className="error-container">
@@ -316,31 +283,30 @@ const Register = () => {
               Đăng ký
             </button>
             <div className="auth-links">
-              <Link to="/login" className="auth-link1">
-                Bạn đã có tài khoản? Đăng nhập ngay
-              </Link>
+              <Link to="/login">Bạn đã có tài khoản? Đăng nhập</Link>
             </div>
           </form>
-          <div className="or-login">
-            <p>Hoặc đăng nhập bằng</p>
-          </div>
-          <div className="social-login1">
+        </div>
+
+        <div className="social-login-section">
+          <h2>Đăng nhập bằng mạng xã hội</h2>
+          <div className="social-btns-container">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginFailure}
-              useOneTap
+              onFailure={handleGoogleLoginFailure}
+              cookiePolicy="single_host_origin"
             />
             <FacebookLogin
-              appId="875093550843749"
+              appId="YourFacebookAppId"
+              autoLoad={false}
               callback={handleFacebookLogin}
               render={(renderProps) => (
-                <button onClick={renderProps.onClick} className="social-btn1">
-                  <img
-                    src={facebookLogo}
-                    alt="Facebook Logo"
-                    className="social-logo1"
-                  />
-                  <span className="social-text1">Facebook</span>
+                <button
+                  onClick={renderProps.onClick}
+                  className="facebook-login-btn"
+                >
+                  <img src={facebookLogo} alt="Facebook" />
+                  <span>Đăng nhập với Facebook</span>
                 </button>
               )}
             />

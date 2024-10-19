@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Profile.css";
-import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
-import {
-  UserOutlined,
-  ShoppingCartOutlined,
-  StarOutlined,
-  LockOutlined,
-  TeamOutlined, // Import icon for staff registration
-} from "@ant-design/icons";
+import Sidebar from "../Admin/Admin.jsx";
 
-const ViewProfile = () => {
+const ManaProfile = () => {
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -92,32 +83,8 @@ const ViewProfile = () => {
 
   return (
     <div className="profile-container">
-      <Header />
       <div className="profile-content">
-        <div className="sidebar-profile">
-          <ul>
-            <li onClick={() => navigate("/profile")}>
-              <UserOutlined style={{ marginRight: "10px" }} /> Tài khoản
-            </li>
-            <li onClick={() => navigate("/orders")}>
-              <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
-              hàng
-            </li>
-            <li onClick={() => navigate("/feedback")}>
-              <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
-            </li>
-            <li onClick={() => navigate("/reset-password")}>
-              <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
-            </li>
-            {/* Hiển thị tùy chọn đăng ký staff chỉ khi role là manager */}
-            {role === "MANAGER" && (
-              <li onClick={() => navigate("/register/staff")}>
-                <TeamOutlined style={{ marginRight: "10px" }} /> Đăng ký tài
-                khoản cho staff
-              </li>
-            )}
-          </ul>
-        </div>
+        <Sidebar />
         <div className="profile-form">
           <h1>Thông tin cá nhân</h1>
           <form onSubmit={isEditing ? handleSave : null}>
@@ -160,7 +127,11 @@ const ViewProfile = () => {
                 type="date"
                 format="yyyy-MM-dd"
                 name="dob"
-                value={userData.dob}
+                value={
+                  userData.dob
+                    ? new Date(userData.dob).toISOString().substring(0, 10)
+                    : ""
+                }
                 onChange={handleChange}
                 readOnly={!isEditing}
               />
@@ -198,9 +169,8 @@ const ViewProfile = () => {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
 
-export default ViewProfile;
+export default ManaProfile;

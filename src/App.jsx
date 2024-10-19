@@ -20,11 +20,11 @@ import FarmDetail from "./components/FarmDetail/FarmDetail";
 import Search from "./components/SearchPage/SearchPage";
 import TourDetail from "./components/TourDetail/TourDetail";
 import ViewProfile from "./components/ViewAndUpdateProfile/ViewProfile";
+import ManaProfile from "./components/ViewAndUpdateProfile/ManagerProfile";
 import Admin from "./components/Admin/Admin";
-import CustomerManagement from "./components/Admin/CustomerManagement";
 import TourManagement from "./components/Admin/TourManagement";
 import InvoiceManagement from "./components/Admin/InvoiceManagement";
-import ReviewManagement from "./components/Admin/ReviewManagement";
+import ReviewManagement from "./components/Admin/FeedbackManagement";
 import UserManagement from "./components/Admin/UserManagement";
 import GoogleProfile from "./components/ViewAndUpdateProfile/GoogleProfile";
 import FacebookProfile from "./components/ViewAndUpdateProfile/FacebookProfile";
@@ -57,14 +57,14 @@ function App() {
               userRole === "MANAGER" ? (
                 <StaffRegister />
               ) : (
-                <Navigate to="/login" /> // Redirect if not manager
+                <Navigate to="/login" />
               )
             }
           />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/koi-fish" element={<KoiFishDetail />} />
           <Route path="/farm" element={<FarmList />} />
           <Route path="/farms/:farmId" element={<FarmDetail />} />
@@ -72,16 +72,16 @@ function App() {
           <Route path="/tour/:id" element={<TourDetail />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/view-profile" element={<ViewProfile />} />
+          <Route path="/admin/mana-profile" element={<ManaProfile />} />
           <Route path="/google-profile" element={<GoogleProfile />} />
           <Route path="/facebook-profile" element={<FacebookProfile />} />
-          <Route path="/customers" element={<CustomerManagement />} />
           <Route path="/tours" element={<TourManagement />} />
-          <Route path="/invoices" element={<InvoiceManagement />} />
-          <Route path="/reviews" element={<ReviewManagement />} />
-          <Route path="/users" element={<UserManagement />} />
+          <Route path="/admin/invoices" element={<InvoiceManagement />} />
+          <Route path="/admin/feedback" element={<ReviewManagement />} />
+          <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/feedback" element={<Feedback />} />
-          <Route path="/koies" element={<KoiManagement />} />
-          <Route path="/farm-management" element={<FarmManagement />} />
+          <Route path="/admin/koies" element={<KoiManagement />} />
+          <Route path="/admin/farm-management" element={<FarmManagement />} />
           <Route path="/booking/:id" element={<BookingPage />} />
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/login-test" element={<LoginTest />} />

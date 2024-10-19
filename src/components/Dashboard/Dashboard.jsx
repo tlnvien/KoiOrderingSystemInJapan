@@ -8,7 +8,8 @@ import {
   DollarOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import "./Dashboard.css"; // Import CSS
+import "./Dashboard.css";
+import Sidebar from "../Admin/Admin";
 
 // Columns for the table
 const columns = [
@@ -44,26 +45,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       {/* Sidebar */}
-      <div className="sidebar1">
-        <div className="menu-item">
-          <HomeOutlined /> <span>Home</span>
-        </div>
-        <div className="menu-item">
-          <ShoppingCartOutlined /> <span>Orders</span>
-        </div>
-        <div className="menu-item">
-          <FileTextOutlined /> <span>Reports</span>
-        </div>
-        <div className="menu-item">
-          <DollarOutlined /> <span>Payments</span>
-        </div>
-        <div className="menu-item">
-          <SettingOutlined /> <span>Settings</span>
-        </div>
-        <div className="menu-item">
-          <UserOutlined /> <span>Profile</span>
-        </div>
-      </div>
+      <Sidebar />
 
       {/* Main content */}
       <div className="main-content">
