@@ -113,7 +113,7 @@ public class OrderService {
 
         //code của mình
         OrderResponse orders = createOrder(ordersRequest);
-        float money = orders.getTotal() * 100;
+        float money = orders.getTotal() /** 100*/;
         String amount = String.valueOf((int) money); // để mất thập phân kiểu int
 
 
@@ -196,7 +196,7 @@ public class OrderService {
 
         //tạo payment
         Payment payment = new Payment();
-        payment.setOrders(orders);
+        payment.setOrder(orders);
         payment.setCreatedAt(new Date());
         payment.setPayment_method(PaymentEnums.BANKING);
 

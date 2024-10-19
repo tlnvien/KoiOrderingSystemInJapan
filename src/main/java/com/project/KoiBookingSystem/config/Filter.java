@@ -39,18 +39,22 @@ public class Filter extends OncePerRequestFilter {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
-            "/api/login",
             "/api/register",
+            "/api/register/confirm",
+            "/api/login",
             "/api/register/manager",
+            "/api//forgot-password",
+            "/api//reset-password",
             "/api/koi/list",
+            "/api/koi/search",
             "/api/koi/images/**",
             "/api/farm/list",
             "/api/farm/images/**",
             "/api/tour/schedule/all/**",
             "/api/koiFarm/listKoi/**",
             "/api/koiFarm/listFarm/**",
-            "/api/booking/**",
-            "/api/order/**"
+            "/api/tour/search/**",
+            "/api/payment/initiate"
     );
 
     public boolean checkIsPublicAPI(String uri) {
@@ -68,7 +72,7 @@ public class Filter extends OncePerRequestFilter {
         if (isPublicAPI) {
             filterChain.doFilter(request, response); // cho phép request có thể truy cập vào các controller (api)
         } else {
-            String token = getToken(request); // check token  thông qua request
+            String token = getToken(request);
             if (token == null) {
                 // không có token => không được phép truy cập
                 handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException("Token is empty!"));
@@ -84,7 +88,7 @@ public class Filter extends OncePerRequestFilter {
                 handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException("Token is expired!"));
                 return;
             } catch (MalformedJwtException malformedJwtException) {
-                // Token không hợp lệ, token ma quỷ thần thánh nào đó aaaaa lỗi 4 ngày role: Anoy_role
+// Token không hợp lệ, token ma quỷ thần thánh nào đó
                 handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException("Invalid Token"));
                 return;
             }
@@ -109,7 +113,7 @@ public class Filter extends OncePerRequestFilter {
         if (authHeader == null) {
             return null;
         }
-        return authHeader.substring(7); // vì API được đưa về từ backend có thêm ký tự Bearer(từ font -end) ở đằng trước
+        return authHeader.substring(7); // vì API được đưa về từ backend có thêm ký tự Bearer ở đằng trước
         // => mình không cần đến cái ký tự đó => bỏ qua và lấy index từ số 7
     }
 }

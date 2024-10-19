@@ -22,7 +22,7 @@ public class OrderAPI {
     @Autowired
     OrderService orderService;
 
-    @PostMapping
+    @PostMapping("/cash")
     public ResponseEntity createOrder(@RequestBody @Valid OrderRequest orderRequest) {
         OrderResponse orderResponse = orderService.createOrder(orderRequest);
         return ResponseEntity.ok(orderResponse);
