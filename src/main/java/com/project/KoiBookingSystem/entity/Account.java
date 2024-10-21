@@ -102,13 +102,13 @@ public class Account implements UserDetails {
     private Set<Koi> koies;
 
     @OneToMany(mappedBy = "consulting", cascade = CascadeType.ALL)
-    private Set<Booking> bookingsId;
+    private Set<Booking> bookingsCheck;
 
     @OneToMany (mappedBy = "customer", cascade = CascadeType.ALL)
-    Set<Feedback> customerFeedbacks;
+    private Set<Feedback> customerFeedbacks;
 
     @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL)
-    Set<Feedback> staffFeedbacks;
+    private Set<Feedback> staffFeedbacks;
 
     @Override
     public boolean isAccountNonExpired() {

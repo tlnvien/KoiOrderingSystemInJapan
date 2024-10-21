@@ -45,8 +45,8 @@ public class EmailService {
         try {
             Context context = new Context();
             context.setVariable("customerName", emailDetail.getAccount().getUsername());
-            context.setVariable("bookingId", emailDetail.getBooking().getId());
-            context.setVariable("tourName", emailDetail.getBooking().getTourId());
+            context.setVariable("bookingId", emailDetail.getBooking().getBookingID());
+            context.setVariable("tourName", emailDetail.getBooking().getTourId().getTourName());
             context.setVariable("numberOfAttendees", emailDetail.getBooking().getNumberOfPerson());
             context.setVariable("totalPrice", emailDetail.getBooking().getTotalPrice());
             context.setVariable("link", emailDetail.getLink());

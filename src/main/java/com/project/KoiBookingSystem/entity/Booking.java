@@ -1,15 +1,12 @@
 package com.project.KoiBookingSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.KoiBookingSystem.enums.BookingStatus;
-import com.project.KoiBookingSystem.enums.BookingType;
+import com.project.KoiBookingSystem.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -24,7 +21,7 @@ public class Booking {
 
     @NotNull(message = "Create date cannot be null")
     @PastOrPresent(message = "Create date cannot be in the future")
-    private LocalDate createDate;
+    private LocalDateTime createDate;
 
     @Min(value = 1, message = "Number of persons must be at least 1")
     private int numberOfPerson;
@@ -43,8 +40,17 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingType bookingType;
 
+
     private Date lastUpdate;
-    private  boolean refundable = false;
+
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+
+    private boolean isExpired;
+
+    private boolean refundable = false;
 
     @ManyToOne
     @JoinColumn(name = "customer_Id" , nullable = false, referencedColumnName = "userID")
@@ -58,8 +64,7 @@ public class Booking {
     @JsonIgnore // Ngăn vòng lặp
     private Payment payment;
 
-
     @ManyToOne
-    @JoinColumn(name = "consulting_Id", referencedColumnName = "userID")
+    @JoinColumn(name = "consulting_ID", referencedColumnName = "userID")
     private Account consulting;
 }

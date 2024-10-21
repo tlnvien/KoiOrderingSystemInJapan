@@ -52,7 +52,7 @@ public class TourAPI {
     }
 
     // search tour bằng filter
-    @GetMapping("/search")
+    @GetMapping("search")
     public ResponseEntity searchTours(
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) Double minPrice,

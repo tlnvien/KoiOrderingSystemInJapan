@@ -86,4 +86,7 @@ public class Tour {
 
     @OneToMany(mappedBy = "tourId", cascade = CascadeType.ALL)
     private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "tourFeedback", cascade = CascadeType.ALL)
+    private Set<Feedback> feedbacksTourID;
 }

@@ -47,6 +47,13 @@ public class TourService {
             if (consulting == null || !consulting.getRole().equals(Role.CONSULTING)) {
                 throw new NotFoundException("Consulting Staff Not Found!");
             }
+
+            // Kiểm tra xem nhân viên consulting đã nhận tour nào chưa
+            Tour existingTour = tourRepository.findTourByConsulting(consulting);
+            if (existingTour != null) {
+                throw new ActionException("Consulting staff has already been assigned to another tour!");
+            }
+
             Tour newTour = new Tour();
             newTour.setTourID(tourRequest.getTourID());
             newTour.setTourName(tourRequest.getTourName());
@@ -69,6 +76,7 @@ public class TourService {
             throw new DataIntegrityViolationException(e.getMessage());
         }
     }
+
 
     public List<TourResponse> getAllTours() {
         List<Tour> tours = tourRepository.findTourByStatusTrue();
@@ -130,6 +138,8 @@ public class TourService {
         }
         return tour;
     }
+
+    // hiện thị list tour dựa vào tour ID
     public  List<TourResponse> getToursByTourID (String tourID){
             List<Tour> tours = tourRepository.findToursByTourID(tourID);
             if (tours == null) {

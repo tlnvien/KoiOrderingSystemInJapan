@@ -143,14 +143,14 @@ public class AuthenticationService implements UserDetailsService {
 //        return accountRepository.findAccountByUsername(username);
 //    }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findAccountByUsername(username);
-        if (account == null) {
-            throw new UsernameNotFoundException("Account not found: " + username);
-        }
-        return account;  // Trả về đối tượng Account, không phải String
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        Account account = accountRepository.findAccountByUsername(username);
+//        if (account == null) {
+//            throw new UsernameNotFoundException("Account not found: " + username);
+//        }
+//        return account;  // Trả về đối tượng Account, không phải String
+//    }
 
 
     public String generateUserID(Role role) {
@@ -183,15 +183,16 @@ public class AuthenticationService implements UserDetailsService {
 
 
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserDetails userDetails =  accountRepository.findAccountByUsername(username);
+        if (userDetails == null) throw new UsernameNotFoundException("Username not found: " + username);
+        return userDetails;
+    }
+
     public Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (Account) authentication.getPrincipal();
-    }
-
-
-    public Account getCurrentAccount1(){
-        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return accountRepository.findAccountByUserID(account.getUserID());
     }
 
     private void handleDuplicateData(DataIntegrityViolationException e, Account account) {

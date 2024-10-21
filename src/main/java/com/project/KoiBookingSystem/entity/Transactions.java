@@ -22,12 +22,12 @@ public class Transactions {
 
 
     @ManyToOne
-    @JoinColumn(name = "from_id")
+    @JoinColumn(name = "from_id", referencedColumnName = "userID")
     private Account from;
 
 
     @ManyToOne
-    @JoinColumn(name = "to_id")
+    @JoinColumn(name = "to_id", referencedColumnName = "userID")
     private Account to;
 
     @ManyToOne

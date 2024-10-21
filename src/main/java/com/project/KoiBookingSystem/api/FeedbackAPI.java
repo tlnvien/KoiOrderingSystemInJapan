@@ -8,6 +8,7 @@ import com.project.KoiBookingSystem.service.FeedbackService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class FeedbackAPI {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity getAll () {
         List<FeedbackResponse> feedbackList = feedbackService.getFeedbacksByStaff();
         return ResponseEntity.ok(feedbackList);

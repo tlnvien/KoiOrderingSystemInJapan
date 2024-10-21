@@ -23,23 +23,17 @@ public class UserResponse {
     private String phone;
     @JsonIgnore
     private String email;
-
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @JsonIgnore
-    private String firstName;
-
-    @JsonIgnore
-    private String lastName;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @JsonIgnore
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dob;
 
     @JsonIgnore

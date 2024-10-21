@@ -1,5 +1,6 @@
 package com.project.KoiBookingSystem.service;
 
+import com.project.KoiBookingSystem.enums.PaymentStatus;
 import com.project.KoiBookingSystem.model.request.BookingRequest;
 import com.project.KoiBookingSystem.model.response.BookingResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class VnPayServiceAvailableTour {
 
 
         BookingResponse booking = bookingService.createTicket(bookingRequest);
-        float money = booking.getTotalPrice() * 100;  // để mất thập phân kiểu int (sân nhà của ng ta)
+        float money = booking.getTotalPrice() * 100;  // để mất thập phân kiểu int (sân nhà của ng ta) vnp_Amount
         String amount = String.valueOf((int) money);
         // muốn tạo order thì chỉ cần thêm hàm order ở đây
 
