@@ -71,6 +71,12 @@ public class BookingAvailableService {
                 throw new ActionException("Not enough seats available!");
             }
 
+
+            // Kiểm tra thông tin khách hàng
+            validateCustomerInfo(bookingRequest, currentCustomer);
+
+
+
             // Kiểm tra thông tin khách hàng
             validateCustomerInfo(bookingRequest, currentCustomer);
 
@@ -103,8 +109,11 @@ public class BookingAvailableService {
             // Lập lịch kiểm tra trạng thái thanh toán
             scheduleBookingCancellation(booking.getBookingId());
 
+
+            BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
+            response.setPaymentStatus(PaymentStatus.PENDING);
             // Trả về response của booking
-            return modelMapper.map(booking, BookingAvailableResponse.class);
+            return response;
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException(e.getMessage());
         }
@@ -113,23 +122,25 @@ public class BookingAvailableService {
 
     //hàm để check lỗi username phải giống lúc login
     private void validateCustomerInfo(BookingAvailableRequest bookingRequest, Account currentCustomer) {
-        if (bookingRequest.getCustomer() != null) {
-            String userNameFromRequest = bookingRequest.getCustomer().getUserName();
-            String phoneFromRequest = bookingRequest.getCustomer().getPhone();
+        CustomerOfBookingResponse customerInfo = bookingRequest.getCustomer();
 
-            // Kiểm tra xem userName trong yêu cầu có giống với userName của tài khoản đang đăng nhập không
-            if (!currentCustomer.getUsername().equals(userNameFromRequest)) {
-                throw new ActionException("Logged-in user does not match the provided username!");
-            }
+        // Kiểm tra thông tin khách hàng
+        if (customerInfo == null || customerInfo.getFullName() == null || customerInfo.getFullName().isEmpty()) {
+            throw new IllegalArgumentException("Customer full name is required!");
+        }
 
-            // Kiểm tra xem số điện thoại trong yêu cầu có giống với số điện thoại của tài khoản đang đăng nhập không
-            if (!currentCustomer.getPhone().equals(phoneFromRequest)) {
-                throw new ActionException("Logged-in user's phone number does not match the provided phone number!");
-            }
-        } else {
-            throw new ActionException("Customer information is required!");
+        // Kiểm tra và cập nhật fullName
+        if (currentCustomer.getFullName() == null || !currentCustomer.getFullName().equals(customerInfo.getFullName())) {
+            currentCustomer.setFullName(customerInfo.getFullName());
+            accountRepository.save(currentCustomer);
+        }
+
+        // Kiểm tra số điện thoại
+        if (!currentCustomer.getPhone().equals(customerInfo.getPhone())) {
+            throw new ActionException("Logged-in user's phone number does not match the provided phone number!");
         }
     }
+
 
 
     //kiểm tra thanh toán
@@ -189,7 +200,7 @@ public class BookingAvailableService {
                 // Đảm bảo Thread Pool được tắt sau khi thực hiện xong nhiệm vụ
                 scheduler.shutdown();
             }
-        }, 3, TimeUnit.SECONDS); // Hủy booking sau 24 giờ nếu chưa thanh toán
+        }, 3, TimeUnit.HOURS); // Hủy booking sau 24 giờ nếu chưa thanh toán
     }
 
 
@@ -418,9 +429,7 @@ public class BookingAvailableService {
 
             Booking booking = new Booking();
             booking.setBookingId(generateBookingID());
-//            booking.setPaymentStatus(PaymentStatus.COMPLETED);
-            booking.setBookingStatus(BookingStatus.UNCHECKED); // chưa check tại sân bay
-//            booking.setBookingType(BookingType.AVAILABLE); // xác định phương thức booking
+            booking.setBookingStatus(BookingStatus.NOT_CONFIRMED); // chưa check tại sân bay
             booking.setNumberOfAttendances(requestedSeats);
             booking.setRequestStatus(RequestStatus.NULL);
             booking.setExpired(true);
@@ -440,6 +449,8 @@ public class BookingAvailableService {
             tour.setRemainSeat(updatedRemainSeats);
             tourRepository.save(tour);
 
+            validateCustomerInfo(bookingAvailableRequest, customer);
+
             // Tạo payment
             Payment payment = new Payment();
             payment.setBooking(booking);
@@ -448,9 +459,10 @@ public class BookingAvailableService {
             payment.setPaymentId(generatePaymentId()); // Gán paymentId mới
             payment.setStatus(PaymentStatus.COMPLETED); // Trạng thái ban đầu là PENDING
             payment.setPaymentType(PaymentType.TOUR);
-            payment.setDescription("Pay");
             payment.setCurrency(PaymentCurrency.VND);
-
+            payment.setDescription("Pay by Cash");
+            payment.setCurrency(PaymentCurrency.VND);
+            paymentRepository.save(payment);
 
             EmailDetail emailDetail = new EmailDetail();
             emailDetail.setSubject("Xác Nhận Đơn Đặt Tour");
@@ -459,7 +471,10 @@ public class BookingAvailableService {
             emailDetail.setLink("https://google.com"); // Thay thế bằng link phù hợp để quản lý đặt chỗ
             emailService.sendBookingCompleteEmail(emailDetail);
 
-            return modelMapper.map(booking, BookingAvailableResponse.class);
+            BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
+            response.setPaymentStatus(PaymentStatus.COMPLETED);
+
+            return response;
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException(e.getMessage());
         }

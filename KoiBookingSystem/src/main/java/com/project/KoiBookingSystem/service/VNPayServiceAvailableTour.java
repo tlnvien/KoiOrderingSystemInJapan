@@ -50,7 +50,7 @@ public class VNPayServiceAvailableTour {
         vnpParams.put("vnp_TmnCode", tmnCode);
         vnpParams.put("vnp_Locale", "vn");
         vnpParams.put("vnp_CurrCode", currCode);
-        vnpParams.put("vnp_TxnRef", booking.getBookingId()); //!!! Do Orders id đang là kiểu UUID (String)
+        vnpParams.put("vnp_TxnRef", booking.getBookingId().toString()); //!!! Do Orders id đang là kiểu UUID (String)
         vnpParams.put("vnp_OrderInfo", "Thanh toan cho ma GD: " + booking.getBookingId());
         vnpParams.put("vnp_OrderType", "other");
         vnpParams.put("vnp_Amount", amount);
