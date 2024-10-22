@@ -6,7 +6,6 @@ import com.project.KoiBookingSystem.enums.Gender;
 import com.project.KoiBookingSystem.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -88,7 +87,7 @@ public class Account implements UserDetails {
     private  Set<Booking> bookings;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private Set<Order> orders;
+    private Set<CustomerOrder> customerOrders;
 
 
     @OneToMany(mappedBy = "from")

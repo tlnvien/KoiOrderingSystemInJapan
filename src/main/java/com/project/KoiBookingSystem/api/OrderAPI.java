@@ -1,6 +1,6 @@
 package com.project.KoiBookingSystem.api;
 
-import com.project.KoiBookingSystem.entity.Order;
+import com.project.KoiBookingSystem.entity.CustomerOrder;
 import com.project.KoiBookingSystem.model.request.OrderRequest;
 import com.project.KoiBookingSystem.model.response.OrderResponse;
 import com.project.KoiBookingSystem.service.OrderService;
@@ -36,8 +36,8 @@ public class OrderAPI {
 
     @GetMapping
     public ResponseEntity getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+        List<CustomerOrder> customerOrders = orderService.getAllOrders();
+        return ResponseEntity.ok(customerOrders);
     }
 
     @PostMapping("transaction")

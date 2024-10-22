@@ -52,15 +52,15 @@ public class OrderService {
             if (customer == null) {
                 throw new NotFoundException("CustomerId Not Found!");
             }
-            Order order = new Order();
+            CustomerOrder customerOrder = new CustomerOrder();
             //customerId
-            order.setCustomer(customer);
+            customerOrder.setCustomer(customer);
             //bookingId
-            order.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
+            customerOrder.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
             //date
-            order.setDate(new Date());
+            customerOrder.setDate(new Date());
             //totalPrice
-            order.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
+            customerOrder.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
             List<DetailOrder> detailOrders = new ArrayList<>();
             for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
                 DetailOrder detailOrder = new DetailOrder();
@@ -68,25 +68,31 @@ public class OrderService {
                 detailOrder.setKoi(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));
                 detailOrder.setQuantity(list.getQuantity());
                 detailOrder.setPrice(list.getPrice());
+                detailOrder.setOrder(customerOrder);
                 detailOrders.add(detailOrder);
             }
             //list DetailOrder
-            order.setDetailOrders(detailOrders);
+            customerOrder.setDetailOrders(detailOrders);
             //payment
+            Payment payment = new Payment();
+            payment.setCustomerOrder(customerOrder);
+            payment.setCreatedAt(new Date());
+            payment.setPayment_method(PaymentEnums.CASH);
+            customerOrder.setPayment(payment);
             //delivering
-            order.setDelivering(accountRepository.findRandomUserIdWithPrefix());
+            customerOrder.setDelivering(accountRepository.findRandomUserIdWithPrefix());
             //status
-            order.setStatus(OrderStatus.PROCESSING);
-            orderRepository.save(order);
+            customerOrder.setStatus(OrderStatus.PROCESSING);
+            orderRepository.save(customerOrder);
             OrderResponse orderResponse = new OrderResponse();
-            orderResponse.setOrderId(order.getOrderId());
+            orderResponse.setOrderId(customerOrder.getOrderId());
             orderResponse.setCustomerFirstName(customer.getFirstName());
             orderResponse.setCustomerLastName(customer.getLastName());
             orderResponse.setBookingId(orderRequest.getBookingId());
-            orderResponse.setDate(order.getDate());
-            orderResponse.setTotal(order.getTotal());
-            orderResponse.setDetailOrders(order.getDetailOrders());
-            orderResponse.setDeliveringName(order.getDelivering().getFirstName() + " " + order.getDelivering().getLastName());
+            orderResponse.setDate(customerOrder.getDate());
+            orderResponse.setTotal(customerOrder.getTotal());
+            orderResponse.setDetailOrders(customerOrder.getDetailOrders());
+            orderResponse.setDeliveringName(customerOrder.getDelivering().getFirstName() + " " + customerOrder.getDelivering().getLastName());
             return orderResponse;
     }
 
@@ -99,9 +105,9 @@ public class OrderService {
     }
 
     //lấy danh sách order
-    public List<Order> getAllOrders() {
+    public List<CustomerOrder> getAllOrders() {
         Account account = authenticationService.getCurrentAccount();
-        List<Order> ordersList = orderRepository.findOrderssByCustomer(account);
+        List<CustomerOrder> ordersList = orderRepository.findOrderssByCustomer(account);
         return ordersList;
     }
 
@@ -111,13 +117,9 @@ public class OrderService {
         LocalDateTime createDate = LocalDateTime.now();
         String formattedCreateDate = createDate.format(formatter);
 
-        //code của mình
-        OrderResponse orders = createOrder(ordersRequest);
-        float money = orders.getTotal() /** 100*/;
-        String amount = String.valueOf((int) money); // để mất thập phân kiểu int
-
-
-
+        OrderResponse orders = createOrder(ordersRequest);  //enum still CASH
+        float money = orders.getTotal();
+        String amount = String.valueOf((int) money);
 
 
         
@@ -190,13 +192,13 @@ public class OrderService {
 
     public void createTransaction (UUID uuid){
         //tìm cái order
-        Order orders = orderRepository.findById(uuid)
+        CustomerOrder orders = orderRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
 
 
         //tạo payment
         Payment payment = new Payment();
-        payment.setOrder(orders);
+        payment.setCustomerOrder(orders);
         payment.setCreatedAt(new Date());
         payment.setPayment_method(PaymentEnums.BANKING);
 

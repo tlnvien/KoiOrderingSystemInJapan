@@ -1,5 +1,6 @@
 package com.project.KoiBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -13,9 +14,9 @@ import java.util.UUID;
 @Entity
 public class DetailOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
-    private UUID id;
+    private String id;
 
     @Column(nullable = false)
     private int price;
@@ -29,7 +30,8 @@ public class DetailOrder {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "orderId")
-    private Order order;
+    @JsonIgnore
+    private CustomerOrder order;
 
     @ManyToOne
     @JoinColumn(name = "koiID", referencedColumnName = "koiID")

@@ -11,9 +11,9 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class Order {
+public class CustomerOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String orderId;
 
     @ManyToOne
@@ -32,7 +32,8 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<DetailOrder> DetailOrders;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToOne(mappedBy = "customerOrder", cascade = CascadeType.ALL)
     private Payment payment;
 
     @ManyToOne
@@ -45,6 +46,6 @@ public class Order {
     @PrePersist
     public void generateOrderId() {
         String uniqueId = UUID.randomUUID().toString(); // Tạo UUID
-        this.orderId = "ORD" + uniqueId; // Kết hợp với tiền tố "ORD"
+        this.orderId = "ORD" + uniqueId; // Kết hợp với prefix "ORD"
     }
 }
