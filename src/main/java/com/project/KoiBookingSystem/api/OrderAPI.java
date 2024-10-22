@@ -36,7 +36,13 @@ public class OrderAPI {
 
     @GetMapping
     public ResponseEntity getAllOrders() {
-        List<CustomerOrder> customerOrders = orderService.getAllOrders();
+        List<CustomerOrder> customerOrders = orderService.getAllOrder();
+        return ResponseEntity.ok(customerOrders);
+    }
+
+    @GetMapping("/customer")
+    public ResponseEntity getAllOrderOfCustomer() {
+        List<CustomerOrder> customerOrders = orderService.getAllOrderOfCustomer();
         return ResponseEntity.ok(customerOrders);
     }
 

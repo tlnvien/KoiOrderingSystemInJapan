@@ -14,7 +14,7 @@ import java.util.UUID;
 @Entity
 public class DetailOrder {
     @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
     private String id;
 

@@ -104,13 +104,16 @@ public class OrderService {
         return totalPrice;
     }
 
-    //lấy danh sách order
-    public List<CustomerOrder> getAllOrders() {
-        Account account = authenticationService.getCurrentAccount();
-        List<CustomerOrder> ordersList = orderRepository.findOrderssByCustomer(account);
+    public List<CustomerOrder> getAllOrder() {
+        List<CustomerOrder> ordersList = orderRepository.findAll();
         return ordersList;
     }
 
+    public List<CustomerOrder> getAllOrderOfCustomer() {
+        Account customer = authenticationService.getCurrentAccount();
+        List<CustomerOrder> ordersList = orderRepository.findOrderssByCustomer(customer);
+        return ordersList;
+    }
 
     public String createUrl(OrderRequest ordersRequest) throws  Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

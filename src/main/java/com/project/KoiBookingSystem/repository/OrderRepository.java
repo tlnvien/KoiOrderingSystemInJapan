@@ -9,4 +9,7 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<CustomerOrder, UUID>{
     List<CustomerOrder> findOrderssByCustomer(Account customer);
+
+    @Override
+    List<CustomerOrder> findAll();
 }
