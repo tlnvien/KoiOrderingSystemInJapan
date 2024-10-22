@@ -34,15 +34,21 @@ public class OrderAPI {
         return ResponseEntity.ok(vnPayURL);
     }
 
-    @GetMapping
+    @GetMapping  //lấy all Order không cần lọc
     public ResponseEntity getAllOrders() {
         List<CustomerOrder> customerOrders = orderService.getAllOrder();
         return ResponseEntity.ok(customerOrders);
     }
 
-    @GetMapping("/customer")
+    @GetMapping("/customer")  //lấy all Order của Customer (đang login)
     public ResponseEntity getAllOrderOfCustomer() {
         List<CustomerOrder> customerOrders = orderService.getAllOrderOfCustomer();
+        return ResponseEntity.ok(customerOrders);
+    }
+
+    @GetMapping("/{customerId}")  //lấy all Order của Customer thông qua customerId
+    public ResponseEntity getAllIndividualOrder(@PathVariable String customerId) {
+        List<CustomerOrder> customerOrders = orderService.getAllIndividualOrder(customerId);
         return ResponseEntity.ok(customerOrders);
     }
 

@@ -115,6 +115,12 @@ public class OrderService {
         return ordersList;
     }
 
+    public List<CustomerOrder> getAllIndividualOrder(String customerId) {
+        Account customer = authenticationService.accountRepository.findAccountByUserID(customerId);
+        List<CustomerOrder> ordersList = orderRepository.findOrderssByCustomer(customer);
+        return ordersList;
+    }
+
     public String createUrl(OrderRequest ordersRequest) throws  Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime createDate = LocalDateTime.now();
