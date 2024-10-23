@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào mừng đến với Koi Booking System</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; margin: 0; padding: 0; background-color: #f4f4f4;">
+<div style="padding: 20px; max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="color: #007BFF;">Chào mừng đến với Koi Booking System!</h1>
+    <p>Chào <span th:text="${name}"></span>,</p>
+    <p>Cảm ơn vì bạn đã trở thành thành viên của chúng tôi.</p>
+    <p>Tài khoản của bạn đã được đăng ký thành công.</p>
+    <p>Để trải nghiệm những dịch vụ của chúng tôi, vui lòng nhấn nút phía dưới:</p>
+
+    <table role="presentation" style="border-collapse: collapse;">
+        <tr>
+            <td style="border-radius: 5px; background-color: #007BFF;">
+                <a href="https://google.com"
+                   class="button"
+                   th:href="${link}"
+                   style="display: inline-block; padding: 10px 20px; color: white; text-decoration: none; border-radius: 5px;">
+                    Đi Đến Trang Chủ!
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <p>Nếu bạn có thắc mắc hoặc yêu cầu hỗ trợ, vui lòng để lại thông tin cho chúng tôi <a href="mailto:tranlenhat123456@gmail.com">tranlenhat123456@gmail.com</a>.</p>
+    <p>Hệ thống chúng tôi chào mừng bạn!</p>
+    <p>Cảm ơn bạn,<br>SWP391 Team 2</p>
+</div>
+</body>
+</html>
