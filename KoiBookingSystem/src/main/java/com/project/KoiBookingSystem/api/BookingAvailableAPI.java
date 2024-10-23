@@ -2,7 +2,7 @@ package com.project.KoiBookingSystem.api;
 
 import com.project.KoiBookingSystem.model.request.BookingAvailableRequest;
 import com.project.KoiBookingSystem.model.response.BookingAvailableResponse;
-import com.project.KoiBookingSystem.service.BookingAvailableService;
+import com.project.KoiBookingSystem.service.BookingService;
 import com.project.KoiBookingSystem.service.VNPayServiceAvailableTour;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -19,8 +19,11 @@ import java.util.List;
 public class BookingAvailableAPI {
 
 
+//    @Autowired
+//    BookingAvailableService bookingAvailableService;
+
     @Autowired
-    BookingAvailableService bookingAvailableService;
+    BookingService bookingService;
 
     @Autowired
     VNPayServiceAvailableTour vnPayServiceAvailableTour;
@@ -35,7 +38,7 @@ public class BookingAvailableAPI {
     // Xem luồng payment.
     @PostMapping("api/booking/available/transaction/{bookingID}")
     public ResponseEntity createNewOrder(@RequestParam String bookingID) {
-        bookingAvailableService.createTransaction(bookingID);
+        bookingService.createTransaction(bookingID);
         return ResponseEntity.ok("Payment Successful");
     }
 
@@ -43,7 +46,7 @@ public class BookingAvailableAPI {
     @PostMapping("createNoUrl")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity createTicket(@Valid @RequestBody BookingAvailableRequest bookingRequest) {
-        BookingAvailableResponse ticket = bookingAvailableService.createTicket(bookingRequest);
+        BookingAvailableResponse ticket = bookingService.createTicket(bookingRequest);
         return ResponseEntity.ok(ticket);
     }
 
@@ -51,7 +54,7 @@ public class BookingAvailableAPI {
     @PostMapping("createTicketCast")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity createTicketCast(@Valid @RequestBody BookingAvailableRequest bookingRequest) {
-        BookingAvailableResponse ticket = bookingAvailableService.createTicketCast(bookingRequest);
+        BookingAvailableResponse ticket = bookingService.createTicketCast(bookingRequest);
         return ResponseEntity.ok(ticket);
     }
 
@@ -60,7 +63,7 @@ public class BookingAvailableAPI {
     @PutMapping("/api/booking/checking/{bookingID}/{consultingID}")
     @PreAuthorize("hasAuthority('CONSULTING')")
     public ResponseEntity updateBooking(@PathVariable String bookingID, @PathVariable String consultingID) {
-        BookingAvailableResponse updateStatus = bookingAvailableService.confirm(bookingID, consultingID);
+        BookingAvailableResponse updateStatus = bookingService.confirm(bookingID, consultingID);
         return ResponseEntity.ok(updateStatus);
     }
 
@@ -68,7 +71,7 @@ public class BookingAvailableAPI {
     @PutMapping("/api/booking/listBooking/{customerID}")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity getAllBookings(@PathVariable String customerID) {
-        List<BookingAvailableResponse> bookings = bookingAvailableService.getAllBookings(customerID);
+        List<BookingAvailableResponse> bookings = bookingService.getAllBookings(customerID);
         return ResponseEntity.ok(bookings);
     }
 
@@ -76,8 +79,9 @@ public class BookingAvailableAPI {
     @GetMapping("/listBooking/consulting")
     @PreAuthorize("hasAuthority('CONSULTING')")
     public ResponseEntity getExpiredBookings(@RequestParam String tourId) {
-        List<BookingAvailableResponse> listTicket = bookingAvailableService.getExpiredBookings(tourId);
+        List<BookingAvailableResponse> listTicket = bookingService.getExpiredBookings(tourId);
         return ResponseEntity.ok(listTicket);
+
     }
 }
 

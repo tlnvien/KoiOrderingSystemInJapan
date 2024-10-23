@@ -47,5 +47,6 @@ public class BookingAvailableResponse {
     private CustomerOfBookingResponse customer;
 
     private BookingAvailableTour tourID;
+
 }
 

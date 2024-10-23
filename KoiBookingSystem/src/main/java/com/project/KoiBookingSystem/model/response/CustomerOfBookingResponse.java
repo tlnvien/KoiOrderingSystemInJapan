@@ -10,4 +10,5 @@ public class CustomerOfBookingResponse {
     private String fullName;
 
     private String phone;
+
 }

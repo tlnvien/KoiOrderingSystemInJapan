@@ -26,10 +26,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByTour_Consulting_UserId(String consultingId);
 
-    Optional<Object> findByBookingId(String bookingID);
+    Optional<Object> findByBookingId(String bookingID);//.
 
 
-    List<Booking> findBookingsByCustomer(Account account);
+    List<Booking> findBookingsByCustomer(Account account);//
 
-    List<Booking> findBookingsByIsExpiredAndTour_TourId(boolean isExpired, String tourId);
+    List<Booking> findBookingsByIsExpiredAndTour_TourId(boolean isExpired, String tourId);//.
 }

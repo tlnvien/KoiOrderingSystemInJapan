@@ -11,11 +11,5 @@ public class BookingAvailableTour {
     @NotBlank(message = "Can not be blank!!!")
     private String tourID;
 
-//    @NotBlank(message = "Tour Name can not be blank!!!")
-//    private String tourName;
-//
-//    @Enumerated(EnumType.STRING)
-//    private TourType tourType;
-
 }
 

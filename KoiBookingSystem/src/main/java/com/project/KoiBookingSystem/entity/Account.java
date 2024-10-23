@@ -114,7 +114,7 @@ public class Account implements UserDetails {
     private Set<Feedback> feedbackCustomer;
 
     @OneToMany(mappedBy = "consulting", cascade = CascadeType.ALL)
-    private Set<Booking> bookingsCheck;
+    private Set<Booking> bookingsCheck;//
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

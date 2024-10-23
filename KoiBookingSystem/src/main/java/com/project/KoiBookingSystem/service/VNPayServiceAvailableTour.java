@@ -21,8 +21,11 @@ public class VNPayServiceAvailableTour {
 
     // này tui chia ra 1 khu vực riêng để dùng cái vnpay trả về url.
 
+//    @Autowired
+//    BookingAvailableService bookingAvailableService;
+
     @Autowired
-    BookingAvailableService bookingAvailableService;
+    BookingService bookingService;
 
     public String createUrl(BookingAvailableRequest bookingAvailableRequest) throws Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -30,7 +33,7 @@ public class VNPayServiceAvailableTour {
         String formattedCreateDate = createDate.format(formatter);
 
 
-        BookingAvailableResponse booking = bookingAvailableService.createTicket(bookingAvailableRequest);
+        BookingAvailableResponse booking = bookingService.createTicket(bookingAvailableRequest);
         float money = booking.getTotalPrice() * 100;  // để mất thập phân kiểu int (sân nhà của ng ta) vnp_Amount
         String amount = String.valueOf((int) money);
         // muốn tạo order thì chỉ cần thêm hàm order ở đây
@@ -39,7 +42,7 @@ public class VNPayServiceAvailableTour {
         String tmnCode = "K8GYRSRJ";
         String secretKey = "GZRDJNWZ5DZCJF1PF3WV4MP7YX7ZT8H6";
         String vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        String returnUrl = "https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox/?orderID=" + booking.getBookingId();
+        String returnUrl = "https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox/?bookingID=" + booking.getBookingId();
         // trang thông báo thành công (font-end) làm
         // đính kèm Id cho orders (sản phẩm)
         String currCode = "VND";
@@ -50,7 +53,7 @@ public class VNPayServiceAvailableTour {
         vnpParams.put("vnp_TmnCode", tmnCode);
         vnpParams.put("vnp_Locale", "vn");
         vnpParams.put("vnp_CurrCode", currCode);
-        vnpParams.put("vnp_TxnRef", booking.getBookingId().toString()); //!!! Do Orders id đang là kiểu UUID (String)
+        vnpParams.put("vnp_TxnRef", booking.getBookingId().toString()); //!!! Do Orders id đang là kiểu UUID (String).
         vnpParams.put("vnp_OrderInfo", "Thanh toan cho ma GD: " + booking.getBookingId());
         vnpParams.put("vnp_OrderType", "other");
         vnpParams.put("vnp_Amount", amount);

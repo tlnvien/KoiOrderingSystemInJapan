@@ -27,6 +27,7 @@ public class BookingAvailableRequest {
     private boolean hasVisa;
 
     private CustomerOfBookingResponse customer;
+
     
 }
 
