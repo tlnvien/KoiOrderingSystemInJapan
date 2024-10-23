@@ -48,51 +48,52 @@ public class OrderService {
     private PaymentRepository paymentRepository;
 
     public OrderResponse createOrder(OrderRequest orderRequest) {
+        //note
             Account customer = accountRepository.findAccountByUserID(orderRequest.getUserId());
             if (customer == null) {
                 throw new NotFoundException("CustomerId Not Found!");
             }
-            CustomerOrder customerOrder = new CustomerOrder();
+            Orders orders = new Orders();
             //customerId
-            customerOrder.setCustomer(customer);
+            orders.setCustomer(customer);
             //bookingId
-            customerOrder.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
+            orders.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
             //date
-            customerOrder.setDate(new Date());
+            orders.setDate(new Date());
             //totalPrice
-            customerOrder.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
-            List<DetailOrder> detailOrders = new ArrayList<>();
+            orders.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
+            List<OrderDetail> orderDetails = new ArrayList<>();
             for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
-                DetailOrder detailOrder = new DetailOrder();
-                detailOrder.setFarmId(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));
-                detailOrder.setKoi(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));
-                detailOrder.setQuantity(list.getQuantity());
-                detailOrder.setPrice(list.getPrice());
-                detailOrder.setOrder(customerOrder);
-                detailOrders.add(detailOrder);
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setFarmId(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));//note fix
+                orderDetail.setKoi(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));//note fix
+                orderDetail.setQuantity(list.getQuantity());
+                orderDetail.setPrice(list.getPrice());
+                orderDetail.setOrder(orders);
+                orderDetails.add(orderDetail);
             }
             //list DetailOrder
-            customerOrder.setDetailOrders(detailOrders);
+            orders.setOrderDetails(orderDetails);
             //payment
             Payment payment = new Payment();
-            payment.setCustomerOrder(customerOrder);
+            payment.setOrders(orders);
             payment.setCreatedAt(new Date());
             payment.setPayment_method(PaymentEnums.CASH);
-            customerOrder.setPayment(payment);
+            orders.setPayment(payment);
             //delivering
-            customerOrder.setDelivering(accountRepository.findRandomUserIdWithPrefix());
+            orders.setDelivering(accountRepository.findRandomUserIdWithPrefix());
             //status
-            customerOrder.setStatus(OrderStatus.PROCESSING);
-            orderRepository.save(customerOrder);
+            orders.setStatus(OrderStatus.PROCESSING);
+            orderRepository.save(orders);
             OrderResponse orderResponse = new OrderResponse();
-            orderResponse.setOrderId(customerOrder.getOrderId());
+            orderResponse.setOrderId(orders.getOrderId());
             orderResponse.setCustomerFirstName(customer.getFirstName());
             orderResponse.setCustomerLastName(customer.getLastName());
             orderResponse.setBookingId(orderRequest.getBookingId());
-            orderResponse.setDate(customerOrder.getDate());
-            orderResponse.setTotal(customerOrder.getTotal());
-            orderResponse.setDetailOrders(customerOrder.getDetailOrders());
-            orderResponse.setDeliveringName(customerOrder.getDelivering().getFirstName() + " " + customerOrder.getDelivering().getLastName());
+            orderResponse.setDate(orders.getDate());
+            orderResponse.setTotal(orders.getTotal());
+            orderResponse.setOrderDetails(orders.getOrderDetails());
+            orderResponse.setDeliveringName(orders.getDelivering().getFirstName() + " " + orders.getDelivering().getLastName());
             return orderResponse;
     }
 
@@ -104,20 +105,20 @@ public class OrderService {
         return totalPrice;
     }
 
-    public List<CustomerOrder> getAllOrder() {
-        List<CustomerOrder> ordersList = orderRepository.findAll();
+    public List<Orders> getAllOrder() {
+        List<Orders> ordersList = orderRepository.findAll();
         return ordersList;
     }
 
-    public List<CustomerOrder> getAllOrderOfCustomer() {
+    public List<Orders> getAllOrderOfCustomer() {
         Account customer = authenticationService.getCurrentAccount();
-        List<CustomerOrder> ordersList = orderRepository.findOrderssByCustomer(customer);
+        List<Orders> ordersList = orderRepository.findOrderssByCustomer(customer);
         return ordersList;
     }
 
-    public List<CustomerOrder> getAllIndividualOrder(String customerId) {
+    public List<Orders> getAllIndividualOrder(String customerId) {
         Account customer = authenticationService.accountRepository.findAccountByUserID(customerId);
-        List<CustomerOrder> ordersList = orderRepository.findOrderssByCustomer(customer);
+        List<Orders> ordersList = orderRepository.findOrderssByCustomer(customer);
         return ordersList;
     }
 
@@ -129,11 +130,6 @@ public class OrderService {
         OrderResponse orders = createOrder(ordersRequest);  //enum still CASH
         float money = orders.getTotal();
         String amount = String.valueOf((int) money);
-
-
-        
-
-
 
         String tmnCode = "K8GYRSRJ";
         String secretKey = "GZRDJNWZ5DZCJF1PF3WV4MP7YX7ZT8H6";
@@ -201,13 +197,13 @@ public class OrderService {
 
     public void createTransaction (UUID uuid){
         //tìm cái order
-        CustomerOrder orders = orderRepository.findById(uuid)
+        Orders orders = orderRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
 
 
         //tạo payment
         Payment payment = new Payment();
-        payment.setCustomerOrder(orders);
+        payment.setOrders(orders);
         payment.setCreatedAt(new Date());
         payment.setPayment_method(PaymentEnums.BANKING);
 
@@ -241,7 +237,7 @@ public class OrderService {
         //Từ ADMIN tới CUSTOMER
         Transactions transactions3 = new Transactions();
         transactions3.setFrom(admin);
-        Account owner = orders.getDetailOrders().get(0).getKoi().getAccount();
+        Account owner = orders.getOrderDetails().get(0).getKoi().getAccount();
         transactions3.setTo(owner);
         transactions3.setPayment(payment);
         transactions3.setStatus(TransactionEnums.SUCCESS);

@@ -1,11 +1,6 @@
 package com.project.KoiBookingSystem.model.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.KoiBookingSystem.entity.Account;
-import com.project.KoiBookingSystem.entity.Booking;
-import com.project.KoiBookingSystem.entity.DetailOrder;
-import com.project.KoiBookingSystem.entity.Payment;
-import jakarta.persistence.*;
+import com.project.KoiBookingSystem.entity.OrderDetail;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -13,7 +8,6 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 public class OrderResponse {
@@ -37,7 +31,7 @@ public class OrderResponse {
     @Min(value = 0, message = "total price must be greater than 0")
     private float total;
 
-    private List<DetailOrder> DetailOrders;
+    private List<OrderDetail> orderDetails;
 
 //    private Payment payment;
 

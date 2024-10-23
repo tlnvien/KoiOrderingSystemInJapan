@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class CustomerOrder {
+public class Orders {
     @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String orderId;
@@ -30,7 +30,7 @@ public class CustomerOrder {
     private float total;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<DetailOrder> DetailOrders;
+    private List<OrderDetail> orderDetails;
 
     @JsonIgnore
     @OneToOne(mappedBy = "customerOrder", cascade = CascadeType.ALL)

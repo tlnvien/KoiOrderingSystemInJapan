@@ -6,13 +6,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @Data
 @Entity
-public class DetailOrder {
+public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
@@ -31,7 +29,7 @@ public class DetailOrder {
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "orderId")
     @JsonIgnore
-    private CustomerOrder order;
+    private Orders order;
 
     @ManyToOne
     @JoinColumn(name = "koiID", referencedColumnName = "koiID")

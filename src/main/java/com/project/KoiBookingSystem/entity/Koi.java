@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +55,7 @@ public class Koi {
 
     @OneToMany(mappedBy = "koi", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<DetailOrder> DetailOrders;
+    private List<OrderDetail> orderDetails;
 
     @ManyToOne
     @JsonIgnore

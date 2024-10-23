@@ -1,6 +1,6 @@
 package com.project.KoiBookingSystem.api;
 
-import com.project.KoiBookingSystem.entity.CustomerOrder;
+import com.project.KoiBookingSystem.entity.Orders;
 import com.project.KoiBookingSystem.model.request.OrderRequest;
 import com.project.KoiBookingSystem.model.response.OrderResponse;
 import com.project.KoiBookingSystem.service.OrderService;
@@ -36,20 +36,20 @@ public class OrderAPI {
 
     @GetMapping  //lấy all Order không cần lọc
     public ResponseEntity getAllOrders() {
-        List<CustomerOrder> customerOrders = orderService.getAllOrder();
-        return ResponseEntity.ok(customerOrders);
+        List<Orders> orders = orderService.getAllOrder();
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/customer")  //lấy all Order của Customer (đang login)
     public ResponseEntity getAllOrderOfCustomer() {
-        List<CustomerOrder> customerOrders = orderService.getAllOrderOfCustomer();
-        return ResponseEntity.ok(customerOrders);
+        List<Orders> orders = orderService.getAllOrderOfCustomer();
+        return ResponseEntity.ok(orders);
     }
 
-    @GetMapping("/{customerId}")  //lấy all Order của Customer thông qua customerId
+    @GetMapping("/{customerId}")  //lấy all Order của Customer cụ thể thông qua customerId
     public ResponseEntity getAllIndividualOrder(@PathVariable String customerId) {
-        List<CustomerOrder> customerOrders = orderService.getAllIndividualOrder(customerId);
-        return ResponseEntity.ok(customerOrders);
+        List<Orders> orders = orderService.getAllIndividualOrder(customerId);
+        return ResponseEntity.ok(orders);
     }
 
     @PostMapping("transaction")
