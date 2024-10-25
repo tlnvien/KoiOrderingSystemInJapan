@@ -1,10 +1,15 @@
 package com.project.KoiBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.KoiBookingSystem.enums.OrderStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,23 +27,37 @@ public class Orders {
     private Account customer;
 
     @ManyToOne
-    @JoinColumn(name = "bookingId", referencedColumnName = "bookingId")
-    private Booking booking;
+    @JoinColumn(name = "tour_id", nullable = false, referencedColumnName = "tourId")
+    @JsonBackReference
+    private Tour tour;
 
-    private Date date;
+    @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime orderDate;
 
+    @Column(nullable = false)
+    @Min(value = 0, message = "Price can not be lower than 0!")
     private float total;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "customerOrder", cascade = CascadeType.ALL)
-    private Payment payment;
-
     @ManyToOne
     @JoinColumn(name = "deliveringId", referencedColumnName = "userId")
     private Account delivering;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime deliveredDate;
+
+    @Column(nullable = false)
+    private double paidPrice;
+
+    @Column(nullable = false)
+    private double remainingPrice;
+
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<OrdersPayment> payments;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
