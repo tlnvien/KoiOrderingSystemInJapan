@@ -60,15 +60,15 @@ public class OrderService {
             //customerId
             orders.setCustomer(customer);
             //bookingId
-            orders.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
+//            orders.setBooking(bookingRepository.findBookingByBookingID(orderRequest.getBookingId()));
             //date
-            orders.setDate(new Date());
+            orders.setOrderDate(LocalDateTime.now());
             //totalPrice
-            orders.setTotal(totalPrice(orderRequest.getOrderDetailRequests()));
+            orders.setTotalPrice(totalPrice(orderRequest.getOrderDetailRequests()));
             List<OrderDetail> orderDetails = new ArrayList<>();
             for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
                 OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setFarmId(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));//note fix
+                orderDetail.setFarms(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));//note fix
                 orderDetail.setKoi(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));//note fix
                 orderDetail.setQuantity(list.getQuantity());
                 orderDetail.setPrice(list.getPrice());
@@ -82,21 +82,13 @@ public class OrderService {
             payment.setOrders(orders);
             payment.setCreatedAt(new Date());
             payment.setPayment_method(PaymentEnums.CASH);
-            orders.setPayment(payment);
+            orders.setPayments((List<OrdersPayment>) payment);
             //delivering
             orders.setDelivering(accountRepository.findRandomUserIdWithPrefix());
             //status
             orders.setStatus(OrderStatus.PROCESSING);
             ordersRepository.save(orders);
-            OrderResponse orderResponse = new OrderResponse();
-            orderResponse.setOrderId(orders.getOrderId());
-            orderResponse.setCustomerFirstName(customer.getFirstName());
-            orderResponse.setCustomerLastName(customer.getLastName());
-            orderResponse.setBookingId(orderRequest.getBookingId());
-            orderResponse.setDate(orders.getDate());
-            orderResponse.setTotal(orders.getTotal());
-            orderResponse.setOrderDetails(orders.getOrderDetails());
-            orderResponse.setDeliveringName(orders.getDelivering().getFirstName() + " " + orders.getDelivering().getLastName());
+            OrderResponse orderResponse = convertToOrdersResponse(orders);
             return orderResponse;
     }
 
@@ -139,7 +131,7 @@ public class OrderService {
         String formattedCreateDate = createDate.format(formatter);
 
         OrderResponse orders = createOrder(ordersRequest);  //enum still CASH
-        float money = orders.getTotal();
+        double money = orders.getTotalPrice();
         String amount = String.valueOf((int) money);
 
         String tmnCode = "K8GYRSRJ";
@@ -240,20 +232,20 @@ public class OrderService {
         transactions2.setPayment(payment);
         transactions2.setStatus(TransactionEnums.SUCCESS);
         transactions2.setDescription(" CUSTOMER TO ADMIN");
-        float newBalance = admin.getBalance() + orders.getTotal() * 0.10f;
+        double newBalance = admin.getBalance() + orders.getTotalPrice() * 0.10f;
         admin.setBalance(newBalance);
         setTransactions.add(transactions2);
 
 
-        //Từ ADMIN tới CUSTOMER
+        //Từ MANAGER tới CUSTOMER
         Transactions transactions3 = new Transactions();
         transactions3.setFrom(admin);
-        Account owner = orders.getOrderDetails().get(0).getKoi().getAccount();
+        Account owner = orders.getOrderDetails().get(0).getKoi().getManager();
         transactions3.setTo(owner);
         transactions3.setPayment(payment);
         transactions3.setStatus(TransactionEnums.SUCCESS);
         transactions3.setDescription(" ADMIN TO OWNER");
-        float newShopBalance = owner.getBalance() + orders.getTotal() * 0.90f;
+        double newShopBalance = owner.getBalance() + orders.getTotalPrice() * 0.90f;
         owner.setBalance(newShopBalance);
         setTransactions.add(transactions3);
 
