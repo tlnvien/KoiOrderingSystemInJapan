@@ -25,7 +25,7 @@ public class VNPayServiceAvailableTour {
 //    BookingAvailableService bookingAvailableService;
 
     @Autowired
-    BookingService bookingService;
+    BookingService bookingService;//.
 
     public String createUrl(BookingAvailableRequest bookingAvailableRequest) throws Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

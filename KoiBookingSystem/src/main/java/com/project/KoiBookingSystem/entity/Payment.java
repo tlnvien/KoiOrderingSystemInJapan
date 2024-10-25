@@ -51,6 +51,8 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    private double price;
+
 //    @ManyToOne
 //    @JoinColumn(name = "tour_id", referencedColumnName = "tourId")
 //    private Tour tour;

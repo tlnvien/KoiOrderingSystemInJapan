@@ -10,6 +10,6 @@ import lombok.Data;
 public class BookingAvailableTour {
     @NotBlank(message = "Can not be blank!!!")
     private String tourID;
-
+//
 }
 

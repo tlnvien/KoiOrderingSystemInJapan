@@ -15,7 +15,7 @@ public class BookingAvailableRequest {
     private String bookingID;
 
 //    @NotBlank(message = "Customer ID can not be blank!!!")
-//    private String customerID;.
+//    private String customerID;..
 
     @NotBlank(message = "Tour ID can not be blank!!!")
     private String tourID;

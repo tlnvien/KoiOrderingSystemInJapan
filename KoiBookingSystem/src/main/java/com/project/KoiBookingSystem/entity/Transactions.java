@@ -33,6 +33,8 @@ public class Transactions {
     @JsonBackReference
     private Payment payment;
 
+    private double amount;
+
     @Lob
     private String description;
 

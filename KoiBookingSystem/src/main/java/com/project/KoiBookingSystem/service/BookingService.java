@@ -361,21 +361,26 @@ public class BookingService {
         return booking;
 
     }
-
+    //.
     private void updateCustomerDetails(Account customer, BookingRequest bookingRequest) {
-        if ((customer.getPhone() == null || customer.getPhone().isEmpty() || !customer.getPhone().equals(bookingRequest.getPhone()))) {
+        if (customer.getPhone() == null || customer.getPhone().isEmpty()) {
             if (bookingRequest.getPhone() != null && !bookingRequest.getPhone().isEmpty()) {
                 customer.setPhone(bookingRequest.getPhone());
             } else {
                 throw new ActionException("Please enter phone number if you want to register for a tour!");
             }
+        } else if (!customer.getPhone().equals(bookingRequest.getPhone())) {
+            throw new ActionException("Logged-in user's phone number does not match the provided phone number!");
         }
+
+        // Kiểm tra và cập nhật tên đầy đủ của khách hàng nếu cần
         if (customer.getFullName() == null || customer.getFullName().isEmpty() || !customer.getFullName().equals(bookingRequest.getFullName())) {
             customer.setFullName(bookingRequest.getFullName());
-
         }
+
         accountRepository.save(customer);
     }
+
 
 //    private Tour getAvailableTour(String tourId, int numberOfAttendees) {
 //        Tour tour = tourRepository.findTourByTourId(tourId);
@@ -439,9 +444,10 @@ public class BookingService {
     public String generateBookingId() {
         return UUID.randomUUID().toString();
     }
+//// nhận yêu cầu booking của khách hàng
+//    // yêu cầu booking ban đầu của khách sẽ không có tour
 
-
-// ĐẶT TOUR CÓ SẴN
+        // ĐẶT TOUR CÓ SẴN.
         @Transactional
         public BookingAvailableResponse createTicket(BookingAvailableRequest bookingRequest) {
             try {
@@ -462,11 +468,6 @@ public class BookingService {
                 if (tour.getRemainSeat() < requestedSeats) {
                     throw new ActionException("Not enough seats available!");
                 }
-
-
-                // Kiểm tra thông tin khách hàng
-                validateCustomerInfo(bookingRequest, currentCustomer);
-
 
 
                 // Kiểm tra thông tin khách hàng
@@ -512,7 +513,7 @@ public class BookingService {
         }
 
 
-        //hàm để check lỗi username phải giống lúc login
+        //hàm để check lỗi username và phone
         private void validateCustomerInfo(BookingAvailableRequest bookingRequest, Account currentCustomer) {
             CustomerOfBookingResponse customerInfo = bookingRequest.getCustomer();
 
@@ -528,12 +529,13 @@ public class BookingService {
             }
 
             // Kiểm tra số điện thoại
-            if (!currentCustomer.getPhone().equals(customerInfo.getPhone())) {
-                throw new ActionException("Logged-in user's phone number does not match the provided phone number!");
+            if (customerInfo.getPhone() == null || customerInfo.getPhone().isEmpty()) {
+                throw new ActionException("Customer phone number is required!");
+            } else if (!currentCustomer.getPhone().equals(customerInfo.getPhone())) {
+                currentCustomer.setPhone(customerInfo.getPhone());
+                accountRepository.save(currentCustomer);
             }
         }
-
-
 
         //kiểm tra thanh toán
         public boolean isPaymentCompleted(String bookingID) {
@@ -642,6 +644,7 @@ public class BookingService {
             payment.setPaymentType(PaymentType.TOUR);
             payment.setDescription("Thanh toán Tour có sẵn!!");
             payment.setCurrency(PaymentCurrency.VND);
+            payment.setPrice(booking.getTotalPrice());
 
             Set<Transactions> setTransactions = new HashSet<>();
 
@@ -653,6 +656,7 @@ public class BookingService {
             transaction1.setToAccount(customer);
             transaction1.setPayment(payment);
             transaction1.setStatus(TransactionsEnum.SUCCESS);
+            transaction1.setAmount(0);
             transaction1.setDescription("VNPay TO CUSTOMER");
             setTransactions.add(transaction1);
 
@@ -664,6 +668,7 @@ public class BookingService {
             transaction2.setPayment(payment);
             transaction2.setStatus(TransactionsEnum.SUCCESS);
             transaction2.setDescription("CUSTOMER TO ADMIN");
+            transaction2.setAmount(booking.getTotalPrice());
 
             // Cập nhật số dư cho ADMIN
             float newBalance = (float) (admin.getBalance() + booking.getTotalPrice());
@@ -842,6 +847,7 @@ public class BookingService {
                 payment.setCurrency(PaymentCurrency.VND);
                 payment.setDescription("Pay by Cash");
                 payment.setCurrency(PaymentCurrency.VND);
+                payment.setPrice(booking.getTotalPrice());
                 paymentRepository.save(payment);
 
                 EmailDetail emailDetail = new EmailDetail();
@@ -859,6 +865,4 @@ public class BookingService {
                 throw new DataIntegrityViolationException(e.getMessage());
             }
         }
-    }// nhận yêu cầu booking của khách hàng
-    // yêu cầu booking ban đầu của khách sẽ không có tour
-
+    }

@@ -41,13 +41,6 @@ public class BookingAPI {
         return ResponseEntity.ok("Payment Successfully!");
     }
 
-//    @PostMapping("/available/{tourId}")
-//    @PreAuthorize("hasAuthority('CUSTOMER')")
-//    public ResponseEntity createNewAvailableBooking(@Valid @RequestBody BookingRequest bookingRequest, @PathVariable String tourId) {
-//        BookingResponse bookingResponse = bookingService.createNewAvailableBooking(bookingRequest, tourId);
-//        return ResponseEntity.ok(bookingResponse);
-//    }
-
     @PostMapping("/request")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity createNewRequestedBooking(@Valid @RequestBody BookingRequest bookingRequest) {
@@ -81,12 +74,6 @@ public class BookingAPI {
         BookingResponse bookingResponse = bookingService.checkInBooking(bookingId, status);
         return ResponseEntity.ok(bookingResponse);
     }
-
-//    @PostMapping("/callback")
-//    public ResponseEntity bookingPaymentCallback(@RequestParam Map<String, String> vnpParams) {
-//        String result = vnPayService.handleBookingPaymentCallBack(vnpParams);
-//        return ResponseEntity.ok(result);
-//    }
 
     @PostMapping("/take/{bookingId}")
     @PreAuthorize("hasAuthority('SALES')")
