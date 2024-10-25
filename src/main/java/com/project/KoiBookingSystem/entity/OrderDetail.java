@@ -1,5 +1,6 @@
 package com.project.KoiBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,8 +24,9 @@ public class OrderDetail {
     private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "farmID", referencedColumnName = "farmID")
-    private Farm farmId;
+    @JoinColumn(name = "farm_id", referencedColumnName = "farmId", nullable = false)
+    @JsonBackReference
+    private Farm farms;
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "orderId")
@@ -34,4 +36,7 @@ public class OrderDetail {
     @ManyToOne
     @JoinColumn(name = "koiID", referencedColumnName = "koiID")
     private Koi koi;
+
+    @Lob
+    private String description;
 }

@@ -63,6 +63,8 @@ public class Orders {
     @JsonManagedReference
     private List<OrdersPayment> payments;
 
+    private String note;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
