@@ -52,6 +52,12 @@ public class OrderAPI {
         return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/tour/{tourId}")
+    public ResponseEntity getAllOrdersByTour(@PathVariable String tourId) {
+        List<OrderResponse> orderResponses = orderService.getAllOrdersByTour(tourId);
+        return ResponseEntity.ok(orderResponses);
+    }
+
     @PostMapping("transaction")
     public ResponseEntity createNewOrder(@RequestParam UUID orderID) {
          orderService.createTransaction(orderID);

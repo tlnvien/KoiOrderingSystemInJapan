@@ -8,6 +8,8 @@ import com.project.KoiBookingSystem.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,6 +18,8 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Getter
+@Setter
 public class Orders {
     @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +41,7 @@ public class Orders {
 
     @Column(nullable = false)
     @Min(value = 0, message = "Price can not be lower than 0!")
-    private float total;
+    private float totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;

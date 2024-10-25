@@ -1,7 +1,7 @@
 package com.project.KoiBookingSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.KoiBookingSystem.enums.Gender;
 import com.project.KoiBookingSystem.enums.Role;
 import jakarta.persistence.*;
@@ -13,7 +13,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,9 +25,6 @@ public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    @JsonIgnore
-    private float balance = 0;
 
     @NotBlank(message = "Username can not be empty!")
     @Column(unique = true, nullable = false)
@@ -35,7 +35,7 @@ public class Account implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Pattern(regexp = "(84|0[3|5|7|8|9])\\d{8}", message = "Invalid phone number")
+    @Pattern(regexp = "(84[35789]|0[35789])\\d{8}", message = "Invalid phone number")
     @Column(unique = true)
     private String phone;
 
@@ -51,21 +51,18 @@ public class Account implements UserDetails {
     @Column(nullable = false)
     private LocalDate createdDate;
 
-    @Pattern(regexp = "^CU\\d+$|^SS\\d+$|^CS\\d+$|^DS\\d+$|^MG\\d+$|^AD\\d+$", message = "Invalid user ID")
+    @Pattern(regexp = "^CU\\d+$|^SS\\d+$|^CS\\d+$|^DS\\d+$|^MG\\d+$|^AD\\d+$|^FH\\d+$", message = "Invalid user ID")
     @Column(unique = true, nullable = false)
-    private String userID;
+    private String userId;
 
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "First name can not contain number")
-    private String firstName;
-
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Last name can not contain number")
-    private String lastName;
+    @Pattern(regexp = "^[\\p{L} ]+$", message = "Full name can not contain numbers or special characters")
+    private String fullName;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Past(message = "Invalid date of birth")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dob;
 
     private String address;
@@ -75,33 +72,58 @@ public class Account implements UserDetails {
     @Column(nullable = false)
     private boolean status;
 
+    @Column(nullable = false)
+    private boolean confirmed;
+
+    private double balance;
+
+    @OneToOne(mappedBy = "farmHost", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Farm farm;
+
+    @OneToMany(mappedBy = "consulting", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Tour> consulting;
+
+    @OneToMany(mappedBy = "sales", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Tour> sales;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Booking> bookingCustomer;
+
+    @OneToMany(mappedBy = "sales", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Booking> bookingSales;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Orders> orders;
+
+//    @OneToMany(mappedBy = "deliveringStaff", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JsonManagedReference
+//    private Set<Delivering> delivering;
+
+    @OneToMany(mappedBy = "fromAccount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Transactions> transactionsFrom;
+
+    @OneToMany(mappedBy = "toAccount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Transactions> transactionsTo;
+
+//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//    @JsonManagedReference
+//    private Set<Feedback> feedbackCustomer;
+
+
     @Override
-    // Định nghĩa những quyền hạn mà account có thể làm được
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(this.role.toString()));
         return authorities;
     }
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private  Set<Booking> bookings;
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private Set<Orders> orders;
-
-
-    @OneToMany(mappedBy = "from")
-    private Set<Transactions> transactionsFrom;
-
-    @OneToMany(mappedBy = "to")
-    private Set<Transactions> transactionsTo;
-
-
-    @OneToMany (mappedBy = "account")
-    private Set<Koi> koies;
-
-    @OneToMany(mappedBy = "consulting", cascade = CascadeType.ALL)
-    private Set<Booking> bookingsId;
 
     @Override
     public boolean isAccountNonExpired() {
@@ -120,7 +142,7 @@ public class Account implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.status;
     }
 
 }

@@ -5,6 +5,7 @@ import com.project.KoiBookingSystem.enums.OrderStatus;
 import com.project.KoiBookingSystem.enums.PaymentEnums;
 import com.project.KoiBookingSystem.enums.Role;
 import com.project.KoiBookingSystem.enums.TransactionEnums;
+import com.project.KoiBookingSystem.exception.EmptyListException;
 import com.project.KoiBookingSystem.exception.NotFoundException;
 import com.project.KoiBookingSystem.model.request.OrderDetailRequest;
 import com.project.KoiBookingSystem.model.request.OrderRequest;
@@ -22,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -36,7 +38,7 @@ public class OrderService {
     private KoiRepository koiRepository;
 
     @Autowired
-    OrderRepository orderRepository;
+    ordersRepository ordersRepository;
 
     @Autowired
     private AccountRepository accountRepository;
@@ -84,7 +86,7 @@ public class OrderService {
             orders.setDelivering(accountRepository.findRandomUserIdWithPrefix());
             //status
             orders.setStatus(OrderStatus.PROCESSING);
-            orderRepository.save(orders);
+            ordersRepository.save(orders);
             OrderResponse orderResponse = new OrderResponse();
             orderResponse.setOrderId(orders.getOrderId());
             orderResponse.setCustomerFirstName(customer.getFirstName());
@@ -106,20 +108,28 @@ public class OrderService {
     }
 
     public List<Orders> getAllOrder() {
-        List<Orders> ordersList = orderRepository.findAll();
+        List<Orders> ordersList = ordersRepository.findAll();
         return ordersList;
     }
 
     public List<Orders> getAllOrderOfCustomer() {
         Account customer = authenticationService.getCurrentAccount();
-        List<Orders> ordersList = orderRepository.findOrderssByCustomer(customer);
+        List<Orders> ordersList = ordersRepository.findOrderssByCustomer(customer);
         return ordersList;
     }
 
     public List<Orders> getAllIndividualOrder(String customerId) {
         Account customer = authenticationService.accountRepository.findAccountByUserID(customerId);
-        List<Orders> ordersList = orderRepository.findOrderssByCustomer(customer);
+        List<Orders> ordersList = ordersRepository.findOrderssByCustomer(customer);
         return ordersList;
+    }
+
+    public List<OrderResponse> getAllOrdersByTour(String tourId) {
+        List<Orders> orders = ordersRepository.findByTour_TourId(tourId);
+        if (orders.isEmpty()) {
+            throw new EmptyListException("There is no order in the list!");
+        }
+        return orders.stream().map(this::convertToOrdersResponse).collect(Collectors.toList());
     }
 
     public String createUrl(OrderRequest ordersRequest) throws  Exception {
@@ -197,7 +207,7 @@ public class OrderService {
 
     public void createTransaction (UUID uuid){
         //tìm cái order
-        Orders orders = orderRepository.findById(uuid)
+        Orders orders = ordersRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
 
 
@@ -250,6 +260,33 @@ public class OrderService {
         accountRepository.save(admin);
         accountRepository.save(owner);
         paymentRepository.save(payment);
+    }
+
+    private OrderResponse convertToOrdersResponse(Orders orders) {
+        OrderResponse orderResponse = new OrderResponse();
+        orderResponse.setOrderId(orders.getOrderId());
+        orderResponse.setCustomerId(orders.getCustomer().getUserId());
+        orderResponse.setTourId(orders.getTour().getTourId());
+        orderResponse.setOrderDate(orders.getOrderDate());
+        orderResponse.setDeliveredDate(orders.getDeliveredDate());
+        orderResponse.setTotalPrice(orders.getTotalPrice());
+        orderResponse.setStatus(orders.getStatus());
+        orderResponse.setNote(orders.getNote());
+
+        List<OrderDetailResponse> orderDetailResponses = orders.getOrderDetails().stream().map(orderDetail -> {
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setFarmId(orderDetail.getFarms().getFarmId());
+            orderDetailResponse.setKoiId(orderDetail.getKoi().getKoiId());
+            orderDetailResponse.setDescription(orderDetail.getDescription());
+            orderDetailResponse.setQuantity(orderDetail.getQuantity());
+            orderDetailResponse.setPrice(orderDetail.getPrice());
+
+            return orderDetailResponse;
+        }).collect(Collectors.toList());
+
+        orderResponse.setOrderDetails(orderDetailResponses);
+
+        return orderResponse;
     }
     
     

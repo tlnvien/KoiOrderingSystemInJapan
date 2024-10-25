@@ -1,40 +1,36 @@
 package com.project.KoiBookingSystem.model.response;
 
-import com.project.KoiBookingSystem.entity.OrderDetail;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.KoiBookingSystem.enums.OrderStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class OrderResponse {
-    @NotNull(message = "orderId can not be null!")
+
     private String orderId;
 
-    @NotNull(message = "FirstName of Customer can not be null!")
-    private String customerFirstName;
+    private String customerId;
 
-    @NotNull(message = "LastName of Customer can not be null!")
-    private String customerLastName;
+    private String tourId;
 
-    @NotNull(message = "bookingId can not be null!")
-    private String bookingId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime orderDate;
 
-    @NotNull(message = "date can not be null!")
-    @PastOrPresent(message = "Create date cannot be in the future")
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime deliveredDate;
 
-    @NotNull(message = "total price can not be null!")
-    @Min(value = 0, message = "total price must be greater than 0")
-    private float total;
+    private double totalPrice;
 
-    private List<OrderDetail> orderDetails;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
-//    private Payment payment;
+    private String note;
 
-    @NotNull(message = "delivering name can not be null")
-    private String deliveringName;
+    private List<OrderDetailResponse> orderDetails;
 }

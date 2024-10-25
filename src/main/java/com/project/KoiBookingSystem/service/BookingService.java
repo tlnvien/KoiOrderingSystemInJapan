@@ -12,14 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -38,7 +30,7 @@ public class BookingService {
     AccountRepository accountRepository;
 
     @Autowired
-    OrderRepository orderRepository;
+    ordersRepository ordersRepository;
     @Autowired
     private PaymentRepository paymentRepository;
     @Autowired
