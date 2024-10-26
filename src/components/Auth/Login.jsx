@@ -1,72 +1,67 @@
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-import { jwtDecode } from "jwt-decode";
+// import jwtDecode from "jwt-decode";
 import "./Login.css";
 import logo from "./assets/logo.jpg";
 import facebookLogo from "./assets/facebook-logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
+import { auth, googleProvider } from "../../config/firebase"; // Adjust the path as necessary
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isGoogleLogin, setIsGoogleLogin] = useState(false); // New state for login type
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
 
   const navigate = useNavigate();
 
   const apiUrl = "http://localhost:8082/api/login";
 
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    const googleId = decoded.sub;
+  // Updated Google login success handler
+  const handleGoogleLoginSuccess = async (response) => {
+    try {
+      const token = response.credential;
+      console.log("Google OAuth token:", token);
 
-    console.log("Google user:", decoded);
-
-    // Fetch the user from your API using googleId
-    fetch(`https://66f19ed541537919155193cf.mockapi.io/Login`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch Google profile");
-        }
-        return res.json();
-      })
-      .then((users) => {
-        if (users.length > 0) {
-          const user = users.find((user) => user.googleId === googleId);
-          localStorage.setItem("token", credentialResponse.credential);
-          localStorage.setItem("googleId", googleId);
-          localStorage.setItem("userId", user.id); // Store user ID
-          localStorage.setItem("loginType", "google");
-          alert("Google login successful!");
-          navigate("/");
-        } else {
-          alert("Google login failed.");
-        }
-      })
-      .catch((error) => {
-        console.error("Google login error", error);
-        alert("Error during Google login. Please try again.");
+      // Optionally send token to backend for further processing
+      const res = await axios.post("http://localhost:8082/api/auth/google", {
+        token,
       });
+
+      const { email, userId } = res.data;
+
+      // Store the necessary information in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("email", email);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("loginType", "google");
+
+      alert("Đăng nhập Google thành công!");
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging in with Google:", error);
+      alert("Có lỗi xảy ra khi đăng nhập Google. Vui lòng thử lại.");
+    }
   };
 
   const handleGoogleLoginFailure = (error) => {
-    console.error("Google login failed:", error);
+    console.error("Đăng nhập Google thất bại:", error);
   };
 
   const handleFacebookLogin = (response) => {
     if (response.accessToken) {
       const facebookId = response.userID;
 
-      console.log("Facebook user:", response);
+      console.log("Người dùng Facebook:", response);
 
-      // Fetch the user from your API using facebookId
       fetch(`https://66f19ed541537919155193cf.mockapi.io/FacebookProfile`)
         .then((res) => {
           if (!res.ok) {
-            throw new Error("Failed to fetch Facebook profile");
+            throw new Error("Lấy thông tin hồ sơ Facebook thất bại");
           }
           return res.json();
         })
@@ -76,21 +71,21 @@ function Login() {
             if (user) {
               localStorage.setItem("token", response.accessToken);
               localStorage.setItem("facebookId", facebookId);
-              localStorage.setItem("userId", user.id); // Store user ID
+              localStorage.setItem("userId", user.id);
               localStorage.setItem("loginType", "facebook");
-              alert("Facebook login successful!");
-              navigate("/"); // Navigate to Facebook profile page
+              alert("Đăng nhập Facebook thành công!");
+              navigate("/");
             } else {
-              alert("Facebook login failed. No user found.");
+              alert("Đăng nhập Facebook thất bại. Không tìm thấy người dùng.");
             }
           }
         })
         .catch((error) => {
-          console.error("Facebook login error", error);
-          alert("Error during Facebook login. Please try again.");
+          console.error("Lỗi đăng nhập Facebook", error);
+          alert("Có lỗi xảy ra khi đăng nhập Facebook. Vui lòng thử lại.");
         });
     } else {
-      console.error("Facebook login failed");
+      console.error("Đăng nhập Facebook thất bại");
     }
   };
 
@@ -104,25 +99,24 @@ function Login() {
         password: password,
       });
 
-      // Assuming response data contains the token, userId, and role
       const { token, userId, role } = response.data;
 
-      // Save login info to localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
       localStorage.setItem("role", role);
       localStorage.setItem("loginType", "username");
       alert("Đăng nhập thành công!");
       if (role === "MANAGER") {
-        navigate("/admin"); // Redirect to admin page
+        navigate("/admin");
       } else if (role === "CUSTOMER") {
-        navigate("/"); // Redirect to homepage for customer
+        navigate("/");
+      } else if (role === "FARM_HOST") {
+        navigate("/farm-host");
       } else {
-        // Handle other roles if needed
-        navigate("/"); // Default to homepage
+        navigate("/");
       }
     } catch (error) {
-      console.error("Login error", error);
+      console.error("Lỗi đăng nhập", error);
       alert("Tên người dùng hoặc mật khẩu sai");
     }
   };
@@ -170,7 +164,7 @@ function Login() {
           <Link to="/forgot-password" className="auth-link">
             Quên mật khẩu?
           </Link>
-          <Link to="/register" className="auth-link1">
+          <Link to="/register/customer" className="auth-link1">
             Bạn không có tài khoản? Đăng ký ngay
           </Link>
         </div>

@@ -26,9 +26,12 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post(`${resetApi}?requestCode=${code}`, {
-        password,
-      });
+      const response = await axios.post(
+        `${resetApi}?requestCode=${code}&email=${encodeURIComponent(email)}`,
+        {
+          password,
+        }
+      );
 
       if (response.status === 200) {
         setSuccessMessage("Mật khẩu đã được đặt lại thành công!");

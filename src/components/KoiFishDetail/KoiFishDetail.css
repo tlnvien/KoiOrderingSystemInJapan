@@ -19,6 +19,7 @@
   width: 100%;
   max-width: 300px;
   border-radius: 10px;
+  aspect-ratio: 3/4;
 }
 
 .koi-right {

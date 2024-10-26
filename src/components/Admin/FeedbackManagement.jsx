@@ -9,13 +9,18 @@ const FeedbackManagement = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
   const [filter, setFilter] = useState("ALL"); // TẤT CẢ, 1, 2, 3, 4, 5
+  const token = localStorage.getItem("token");
 
   const apiUrl = "http://localhost:8082/api/feedback"; // Cập nhật với URL API của bạn
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get(apiUrl, { params: { type: "ALL" } });
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setFeedbacks(response.data);
         setFilteredFeedbacks(response.data);
       } catch (error) {
@@ -41,9 +46,19 @@ const FeedbackManagement = () => {
 
   const columns = [
     {
-      title: "ID Phản Hồi",
+      title: "Mã đánh giá",
       dataIndex: "feedbackId",
       key: "feedbackId",
+    },
+    {
+      title: "Mã Khách hàng",
+      dataIndex: "customerId",
+      key: "customerId",
+    },
+    {
+      title: "Mã tour",
+      dataIndex: "tourId",
+      key: "tourId",
     },
     {
       title: "Đánh Giá",
@@ -65,11 +80,6 @@ const FeedbackManagement = () => {
       title: "Bình Luận",
       dataIndex: "comment",
       key: "comment",
-    },
-    {
-      title: "Loại",
-      dataIndex: "type",
-      key: "type",
     },
     {
       title: "Hành Động",

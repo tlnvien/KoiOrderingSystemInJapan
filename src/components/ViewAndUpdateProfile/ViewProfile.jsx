@@ -9,15 +9,15 @@ import {
   ShoppingCartOutlined,
   StarOutlined,
   LockOutlined,
-  TeamOutlined, // Import icon for staff registration
+  TeamOutlined,
 } from "@ant-design/icons";
+import { DatePicker } from "antd";
+import moment from "moment";
 
 const ViewProfile = () => {
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
-    citizenID: "",
     gender: "",
     dob: "",
     address: "",
@@ -29,7 +29,7 @@ const ViewProfile = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8082/api/info/user";
+  const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();
@@ -37,7 +37,7 @@ const ViewProfile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/${userId}`, {
+      const response = await axios.get(`${apiUrl}/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +60,7 @@ const ViewProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`${apiUrl}/${userId}`, userData, {
+      const response = await axios.put(apiUrl, userData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -86,10 +86,6 @@ const ViewProfile = () => {
     }));
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="profile-container">
       <Header />
@@ -109,7 +105,6 @@ const ViewProfile = () => {
             <li onClick={() => navigate("/reset-password")}>
               <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
             </li>
-            {/* Hiển thị tùy chọn đăng ký staff chỉ khi role là manager */}
             {role === "MANAGER" && (
               <li onClick={() => navigate("/register/staff")}>
                 <TeamOutlined style={{ marginRight: "10px" }} /> Đăng ký tài
@@ -122,21 +117,11 @@ const ViewProfile = () => {
           <h1>Thông tin cá nhân</h1>
           <form onSubmit={isEditing ? handleSave : null}>
             <div className="form-group">
-              <label>Họ:</label>
+              <label>Họ và tên:</label>
               <input
                 type="text"
-                name="lastName"
-                value={userData.lastName}
-                onChange={handleChange}
-                readOnly={!isEditing}
-              />
-            </div>
-            <div className="form-group">
-              <label>Tên:</label>
-              <input
-                type="text"
-                name="firstName"
-                value={userData.firstName}
+                name="fullName"
+                value={userData.fullName}
                 onChange={handleChange}
                 readOnly={!isEditing}
               />
@@ -151,13 +136,28 @@ const ViewProfile = () => {
               >
                 <option value="MALE">Nam</option>
                 <option value="FEMALE">Nữ</option>
-                <option value="OTHER">Khác</option>
               </select>
             </div>
+            {/* <div className="form-group">
+              <label>Ngày sinh:</label>
+              <DatePicker
+                name="dob"
+                value={userData.dob ? moment(userData.dob, "DD-MM-YYYY") : null}
+                format="DD-MM-YYYY" // Desired format
+                onChange={(date, dateString) => {
+                  setUserData((prevData) => ({
+                    ...prevData,
+                    dob: dateString,
+                  }));
+                }}
+                disabled={!isEditing} 
+              />
+            </div> */}
+
             <div className="form-group">
               <label>Ngày sinh:</label>
               <input
-                type="date"
+                type="LocalDate"
                 format="yyyy-MM-dd"
                 name="dob"
                 value={userData.dob}

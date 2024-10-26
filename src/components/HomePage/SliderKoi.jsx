@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import "./Slider.css";
-import FarmVarierties1 from "./assets/koi-farm.jpg";
-import FarmVarierties2 from "./assets/koi-farm.jpg";
-import FarmVarierties3 from "./assets/koi-farm.jpg";
-import FarmVarierties4 from "./assets/koi-farm.jpg";
-import FarmVarierties5 from "./assets/koi-farm.jpg";
-import FarmVarierties6 from "./assets/koi-farm.jpg";
-import FarmVarierties7 from "./assets/koi-farm.jpg";
-import FarmVarierties8 from "./assets/koi-farm.jpg";
-import FarmVarierties9 from "./assets/koi-farm.jpg";
+import FarmVarierties1 from "./assets/koi-fish.jpg";
+import FarmVarierties2 from "./assets/koi-fish1.jpg";
+import FarmVarierties3 from "./assets/koi-fish2.jpg";
+import FarmVarierties4 from "./assets/koi-fish3.jpg";
+import FarmVarierties5 from "./assets/koi-fish4.jpg";
+import FarmVarierties6 from "./assets/koi-fish5.jpg";
+import FarmVarierties7 from "./assets/koi-fish6.jpg";
+import FarmVarierties8 from "./assets/koi-fish7.jpg";
+import FarmVarierties9 from "./assets/koi-fish8.jpg";
 
 const Slider = () => {
   const images = [

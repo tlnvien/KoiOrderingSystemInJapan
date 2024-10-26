@@ -78,6 +78,7 @@ h1 {
   display: flex;
   justify-content: space-between; /* Distribute links */
   width: 100%;
+  text-decoration: none;
 }
 
 .auth-link, .auth-link1 {

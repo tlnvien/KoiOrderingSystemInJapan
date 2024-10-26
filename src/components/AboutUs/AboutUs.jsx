@@ -39,8 +39,7 @@ const AboutUs = () => {
         <ul>
           <li>Đặt tour theo nhu cầu</li>
           <li>Gói tour trọn gói</li>
-          <li>Dịch vụ vận chuyển</li>
-          <li>Hướng dẫn viên giàu kinh nghiệm</li>
+          <li>Đặt cá trên chuyến tham quan</li>
         </ul>
       </section>
 

@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from "react"; // Import useEffect
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useLocation to get email from props
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./ForgotPassword.css";
 
 const VerifyCode = () => {
-  const location = useLocation(); // Get location from routing
-  const { email } = location.state || {}; // Retrieve email from state
+  const location = useLocation();
+  const { email } = location.state || {}; // Lấy email từ state nếu có
   const [code, setVerificationCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
-  const verifyApi = "http://localhost:8082/api/register/confirm";
-  const token = localStorage.getItem("token");
-  const { mode } = location.state || {};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,20 +24,21 @@ const VerifyCode = () => {
       return;
     }
 
-    // if (!email) {
-    //   setErrorMessage("Không tìm thấy email. Vui lòng thử lại.");
-    //   return;
-    // }
+    if (!email) {
+      setErrorMessage("Không tìm thấy email. Vui lòng thử lại.");
+      return;
+    }
 
     try {
-      const response = await axios.post(`${verifyApi}?code=${code}`, {
-        email: email,
-      });
+      const verifyApi = `http://localhost:8082/api/register/confirm/${encodeURIComponent(
+        email
+      )}?code=${code}`;
+
+      const response = await axios.post(verifyApi);
 
       if (response.status === 200) {
         setSuccessMessage("Xác minh thành công!");
 
-        // Redirect based on mode
         setTimeout(() => {
           navigate("/login");
         }, 2000);
@@ -54,12 +52,10 @@ const VerifyCode = () => {
   };
 
   const handleResendCode = async () => {
-    // Handle resend code functionality
+    const resendApi = "http://localhost:8082/api/register/resend";
+
     try {
-      const response = await axios.post(
-        resendApi,
-        { email: email } // Send email to resend the code
-      );
+      const response = await axios.post(resendApi, { email });
       if (response.data.success) {
         setSuccessMessage("Mã xác minh đã được gửi lại!");
       } else {
@@ -110,7 +106,7 @@ const VerifyCode = () => {
           Gửi lại mã
         </button>
 
-        <Link to="/register" className="back-link">
+        <Link to="/register/customer" className="back-link">
           Quay lại trang đăng ký
         </Link>
       </div>

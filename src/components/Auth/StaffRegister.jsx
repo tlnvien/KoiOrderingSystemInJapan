@@ -150,7 +150,7 @@ const Register = () => {
       });
 
       if (response.ok) {
-        navigate("/verify-code", {});
+        navigate("/login", {});
       } else {
         alert("Đăng ký thất bại. Vui lòng thử lại.");
       }
@@ -185,6 +185,7 @@ const Register = () => {
           <form onSubmit={handleSubmit}>
             <select value={role} onChange={(e) => setRole(e.target.value)}>
               <option value="SALES">SALES</option>
+              <option value="FARM_HOST">CHỦ TRANG TRẠI</option>
               <option value="CONSULTING">TƯ VẤN</option>
               <option value="DELIVERING">GIAO HÀNG</option>
               <option value="CUSTOMER">KHÁCH HÀNG</option>
@@ -295,22 +296,31 @@ const Register = () => {
             </button>
           </form>
 
-          <div className="social-login">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginFailure}
-            />
-
-            <FacebookLogin
-              appId="139536378825633"
-              autoLoad={false}
-              callback={handleFacebookLogin}
-              render={(renderProps) => (
-                <button onClick={renderProps.onClick}>
-                  <img src={facebookLogo} alt="Facebook" />
-                </button>
-              )}
-            />
+          <div className="social-login-section">
+            <div className="or-login">
+              <p>Hoặc đăng nhập bằng</p>
+            </div>
+            <div className="social-login1">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={handleGoogleLoginFailure}
+                useOneTap
+              />
+              <FacebookLogin
+                appId="875093550843749"
+                callback={handleFacebookLogin}
+                render={(renderProps) => (
+                  <button onClick={renderProps.onClick} className="social-btn1">
+                    <span className="social-text1">Facebook</span>
+                    <img
+                      src={facebookLogo}
+                      alt="Facebook Logo"
+                      className="social-logo1"
+                    />
+                  </button>
+                )}
+              />
+            </div>
           </div>
 
           <p>

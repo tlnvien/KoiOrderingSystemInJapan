@@ -137,7 +137,7 @@ const TourDetailPage = () => {
   }
 
   const handleBooking = () => {
-    navigate(`/booking/${tour.id}`); // Điều hướng sang trang đặt tour với ID của tour
+    navigate(`/booking/${tour.id}`);
   };
 
   return (

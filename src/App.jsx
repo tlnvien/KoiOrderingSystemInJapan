@@ -33,11 +33,11 @@ import KoiManagement from "./components/Admin/KoiManagement";
 import FarmManagement from "./components/Admin/FarmManagement";
 import BookingPage from "./components/BookingPage/BookingPage";
 import AboutUs from "./components/AboutUs/AboutUs";
-import LoginTest from "./components/Auth/LoginTest";
 import React from "react";
 import PaymentPage from "./components/Payment/Payment";
 import PaymentSuccessPage from "./components/Payment/PaymentSuccess";
 import Contact from "./components/Contact/Contact";
+import FarmHost from "./components/FarmHost/FarmHost";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -64,7 +64,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/koi-fish" element={<KoiFishDetail />} />
           <Route path="/farm" element={<FarmList />} />
           <Route path="/farms/:farmId" element={<FarmDetail />} />
@@ -79,15 +79,15 @@ function App() {
           <Route path="/admin/invoices" element={<InvoiceManagement />} />
           <Route path="/admin/feedback" element={<ReviewManagement />} />
           <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/admin/koies" element={<KoiManagement />} />
+          <Route path="/feedback-page" element={<Feedback />} />
+          <Route path="/admin/koi" element={<KoiManagement />} />
           <Route path="/admin/farm-management" element={<FarmManagement />} />
           <Route path="/booking/:id" element={<BookingPage />} />
           <Route path="/aboutUs" element={<AboutUs />} />
-          <Route path="/login-test" element={<LoginTest />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/farm-host" element={<FarmHost />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

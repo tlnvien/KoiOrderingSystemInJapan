@@ -69,7 +69,7 @@ const UserManagement = () => {
 
       if (editingRecord) {
         // Cập nhật một bản ghi hiện tại
-        await axios.put(`${apiUrl}/${editingRecord.userId}`, dataToSend, {
+        await axios.put(`${apiUrl}/user/${editingRecord.userId}`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Cập nhật thành công");
@@ -101,24 +101,39 @@ const UserManagement = () => {
   );
 
   const columns = [
-    { title: "User ID", dataIndex: "userId", key: "userId" },
-    { title: "Username", dataIndex: "username", key: "username" },
-    { title: "Phone", dataIndex: "phone", key: "phone" },
+    { title: "ID", dataIndex: "userID", key: "userID" },
+    { title: "Tên người dùng", dataIndex: "username", key: "username" },
+    { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Role", dataIndex: "role", key: "role" },
-    { title: "First Name", dataIndex: "firstName", key: "firstName" },
-    { title: "Last Name", dataIndex: "lastName", key: "lastName" },
-    { title: "Gender", dataIndex: "gender", key: "gender" },
-    { title: "Address", dataIndex: "address", key: "address" },
-    { title: "Note", dataIndex: "note", key: "note" },
+    { title: "Vai trò", dataIndex: "role", key: "role" },
+    { title: "Họ và tên", dataIndex: "fullName", key: "fullName" },
+    {
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      // render: (text) => {
+      //   switch (text) {
+      //     case "MALE":
+      //       return "Nam";
+      //     case "FEMALE":
+      //       return "Nữ";
+      //     case "OTHER":
+      //       return "Khác";
+      //     default:
+      //       return text;
+      //   }
+      // },
+    },
+    { title: "Địa chỉ", dataIndex: "address", key: "address" },
+    { title: "Ghi chú", dataIndex: "note", key: "note" },
     {
       title: "Action",
       key: "action",
       render: (_, record) => (
         <>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
+          {/* <Button onClick={() => handleEdit(record)}>Cập nhật</Button> */}
           <Button onClick={() => handleDelete(record.userID)} danger>
-            Delete
+            Xóa
           </Button>
         </>
       ),
@@ -141,104 +156,9 @@ const UserManagement = () => {
         <Table
           dataSource={filteredData}
           columns={columns}
-          rowKey="userId"
-          pagination={{ pageSize: 5 }}
+          rowKey="userID"
+          pagination={{ pageSize: 7 }}
         />
-
-        <Modal
-          title="Edit User"
-          visible={isModalVisible}
-          onCancel={handleCancel}
-          footer={null}
-          key={editingRecord ? editingRecord.userID : "edit"}
-        >
-          <Form
-            initialValues={editingRecord ? { ...editingRecord } : {}}
-            onFinish={handleOk}
-            layout="vertical"
-          >
-            <Form.Item
-              name="userId"
-              label="User ID"
-              rules={[{ required: true, message: "Vui lòng nhập User ID!" }]}
-            >
-              <Input disabled={!!editingRecord} />
-            </Form.Item>
-            <Form.Item
-              name="username"
-              label="Username"
-              rules={[
-                { required: true, message: "Vui lòng nhập tên người dùng!" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="phone"
-              label="Phone"
-              rules={[
-                { required: true, message: "Vui lòng nhập số điện thoại!" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[{ required: true, message: "Vui lòng nhập email!" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="role"
-              label="Role"
-              rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-            >
-              <Select>
-                <Select.Option value="MANAGER">Manager</Select.Option>
-                <Select.Option value="SALES">Sales</Select.Option>
-                <Select.Option value="CONSULTING">Consulting</Select.Option>
-                <Select.Option value="DELIVERING">Delivering</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="firstName"
-              label="First Name"
-              rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="lastName"
-              label="Last Name"
-              rules={[{ required: true, message: "Vui lòng nhập họ!" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="gender"
-              label="Gender"
-              rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
-            >
-              <Select>
-                <Select.Option value="MALE">Male</Select.Option>
-                <Select.Option value="FEMALE">Female</Select.Option>
-                <Select.Option value="OTHER">Other</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="address" label="Address">
-              <Input />
-            </Form.Item>
-            <Form.Item name="note" label="Note">
-              <Input.TextArea />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                {editingRecord ? "Cập nhật" : "Tạo mới"}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
       </div>
     </div>
   );

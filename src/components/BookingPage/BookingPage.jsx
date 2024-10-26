@@ -3,14 +3,7 @@ import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./BookingPage.css";
 import axios from "axios";
-import {
-  FaCreditCard,
-  FaMobileAlt,
-  FaMoneyBill,
-  FaMoneyBillWave,
-  FaPaypal,
-} from "react-icons/fa";
-import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { FaCreditCard, FaMoneyBill } from "react-icons/fa";
 
 const BookingPage = () => {
   const [formData, setFormData] = useState({
@@ -20,9 +13,11 @@ const BookingPage = () => {
     address: "",
     numberOfAdults: 1,
     numberOfChildren: 0,
-    paymentMethod: "vnpay",
+    paymentMethod: "vnpay", // Default to VNPay
     notes: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,23 +26,38 @@ const BookingPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Booking info:", formData);
+
+    if (
+      !formData.fullName ||
+      !formData.phone ||
+      !formData.email ||
+      !formData.address
+    ) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      // Gọi API để khởi tạo thanh toán
+      // Call the backend API to get VNPay URL
       const response = await axios.post(
-        "http://localhost:8082/api/payment/initiate",
-        formData
+        "http://localhost:8082/api/booking/paymentUrl",
+        { bookingId: "someBookingId" } // Replace with actual booking ID handling
       );
-      const paymentId = response.data.paymentId; // Giả sử API trả về paymentId
 
-      // Chuyển hướng đến trang thanh toán VNPay với paymentId
-      window.location.href = `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?data=${encodeURIComponent(
-        JSON.stringify({ ...formData, paymentId }) // Gửi thêm paymentId vào dữ liệu
-      )}`;
+      const vnpayUrl = response.data; // API should return the VNPay URL
+      if (vnpayUrl) {
+        // Redirect to VNPay for payment
+        window.location.href = vnpayUrl;
+      } else {
+        throw new Error("VNPay URL not found.");
+      }
     } catch (error) {
       console.error("Error initiating payment", error);
       alert("Có lỗi xảy ra khi khởi tạo thanh toán. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -150,7 +160,7 @@ const BookingPage = () => {
             <label>
               <input
                 type="radio"
-                name="vnpay"
+                name="paymentMethod"
                 value="vnpay"
                 checked={formData.paymentMethod === "vnpay"}
                 onChange={handleChange}
@@ -159,45 +169,6 @@ const BookingPage = () => {
               Thanh toán VNPay
             </label>
           </div>
-          {/* <div className="form-group-book">
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="momo"
-                checked={formData.paymentMethod === "momo"}
-                onChange={handleChange}
-              />
-              <FaMobileAlt style={{ marginRight: "15px" }} />
-              Thanh toán MOMO
-            </label>
-          </div>
-          <div className="form-group-book">
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="vnpay"
-                checked={formData.paymentMethod === "vnpay"}
-                onChange={handleChange}
-              />
-              <FaMoneyBillWave style={{ marginRight: "15px" }} />
-              Thanh toán VNPay
-            </label>
-          </div>
-          <div className="form-group-book">
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="bank-transfer"
-                checked={formData.paymentMethod === "bank-transfer"}
-                onChange={handleChange}
-              />
-              <FaMoneyBillTransfer style={{ marginRight: "15px" }} />
-              Thanh toán chuyển khoản ngân hàng
-            </label>
-          </div> */}
         </section>
 
         <section className="notes-section">
@@ -216,8 +187,8 @@ const BookingPage = () => {
             Tôi đồng ý với điều khoản khi đăng ký online
           </label>
         </div>
-        <button type="submit" className="submit-button">
-          Thanh Toán
+        <button type="submit" className="submit-button" disabled={loading}>
+          {loading ? "Đang xử lý..." : "Thanh Toán"}
         </button>
       </form>
       <Footer />

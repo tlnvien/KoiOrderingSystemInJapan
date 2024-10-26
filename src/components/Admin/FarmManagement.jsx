@@ -24,9 +24,16 @@ const FarmManagement = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setFarmList(response.data);
+
+      if (Array.isArray(response.data)) {
+        setFarmList(response.data);
+      } else {
+        console.error("Dữ liệu không phải là một mảng:", response.data);
+        setFarmList([]);
+      }
     } catch (error) {
       notification.error({ message: "Không thể lấy danh sách trang trại" });
+      console.error("Error fetching farm list:", error);
     }
   };
 
@@ -34,7 +41,7 @@ const FarmManagement = () => {
     setCurrentFarm(farm);
     setIsModalVisible(true);
     form.setFieldsValue(farm);
-    setSelectedFiles([]);
+    setSelectedFiles([]); // Đặt lại các tệp đã chọn
   };
 
   const handleDelete = (farmId) => {
@@ -54,6 +61,7 @@ const FarmManagement = () => {
           notification.success({ message: "Xóa trang trại thành công" });
         } catch (error) {
           notification.error({ message: "Không thể xóa trang trại" });
+          console.error("Error deleting farm:", error);
         }
       },
     });
@@ -83,11 +91,11 @@ const FarmManagement = () => {
       fetchFarmList();
       setIsModalVisible(false);
       form.resetFields();
-      setSelectedFiles([]);
+      setSelectedFiles([]); // Đặt lại các tệp đã chọn sau khi gửi
       notification.success({ message: "Lưu trang trại thành công" });
     } catch (error) {
       console.error(
-        "Error in handleSubmit:",
+        "Lỗi trong handleSubmit:",
         error.response ? error.response.data : error
       );
       notification.error({ message: "Không thể lưu trang trại" });
@@ -117,12 +125,24 @@ const FarmManagement = () => {
           notification.error({
             message: `Lỗi khi tải ảnh: ${error.message}`,
           });
-          return null;
+          return null; // Trả về null nếu tải lên thất bại
         });
     });
 
     const results = await Promise.all(uploadPromises);
-    return results.filter((result) => result !== null);
+    return results.filter((result) => result !== null); // Lọc bỏ các tải lên thất bại
+  };
+
+  const handleImageDelete = (imageLink) => {
+    if (currentFarm) {
+      const updatedImages = currentFarm.imageLinks.filter(
+        (image) => image.imageLink !== imageLink
+      );
+      setCurrentFarm((prevFarm) => ({
+        ...prevFarm,
+        imageLinks: updatedImages,
+      }));
+    }
   };
 
   return (
@@ -136,7 +156,7 @@ const FarmManagement = () => {
             setIsModalVisible(true);
             setCurrentFarm(null);
             form.resetFields();
-            setSelectedFiles([]);
+            setSelectedFiles([]); // Đặt lại các tệp đã chọn khi thêm một trang trại mới
           }}
         >
           Thêm Trang Trại
@@ -144,10 +164,11 @@ const FarmManagement = () => {
         <Table
           dataSource={farmList}
           rowKey="farmId"
-          pagination={{ pageSize: 5 }}
+          pagination={{ pageSize: 3 }}
           columns={[
             { title: "Mã Trang Trại", dataIndex: "farmId" },
             { title: "Tên Trang Trại", dataIndex: "farmName" },
+            { title: "Chủ Trang Trại", dataIndex: "farmHostId" },
             { title: "Mô Tả", dataIndex: "description" },
             {
               title: "Ảnh",
@@ -156,16 +177,27 @@ const FarmManagement = () => {
                 <div>
                   {imageLinks && imageLinks.length > 0
                     ? imageLinks.map((image, index) => (
-                        <img
+                        <div
                           key={index}
-                          src={image.imageLink}
-                          alt="Farm"
-                          style={{
-                            width: "70px",
-                            height: "70px",
-                            marginRight: "8px",
-                          }}
-                        />
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          <img
+                            src={image.imageLink}
+                            alt="Farm"
+                            style={{
+                              width: "70px",
+                              height: "70px",
+                              marginRight: "8px",
+                            }}
+                          />
+                          <Button
+                            type="link"
+                            danger
+                            onClick={() => handleImageDelete(image.imageLink)}
+                          >
+                            Xóa
+                          </Button>
+                        </div>
                       ))
                     : "Không có ảnh"}
                 </div>
@@ -192,13 +224,6 @@ const FarmManagement = () => {
         >
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item
-              name="farmId"
-              label="Mã Trang Trại"
-              rules={[{ required: true }]}
-            >
-              <Input disabled={!!currentFarm} />
-            </Form.Item>
-            <Form.Item
               name="farmName"
               label="Tên Trang Trại"
               rules={[
@@ -208,9 +233,18 @@ const FarmManagement = () => {
               <Input />
             </Form.Item>
             <Form.Item
+              name="farmHostId"
+              label="Chủ Trang Trại"
+              rules={[
+                { required: true, message: "Vui lòng nhập chủ trang trại" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               name="description"
               label="Mô Tả"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+              rules={[{ message: "Vui lòng nhập mô tả" }]}
             >
               <Input.TextArea />
             </Form.Item>
@@ -220,9 +254,9 @@ const FarmManagement = () => {
                 accept="image/jpeg, image/png"
                 onChange={(e) => {
                   const files = Array.from(e.target.files);
-                  setSelectedFiles(files);
+                  setSelectedFiles(files); // Đặt các tệp đã chọn vào trạng thái
                 }}
-                multiple
+                multiple // Cho phép chọn nhiều tệp
                 required
               />
             </Form.Item>

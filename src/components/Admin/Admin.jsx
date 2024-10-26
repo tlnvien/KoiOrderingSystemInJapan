@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Admin.css"; // Tùy chỉnh CSS cho layout
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   UserOutlined,
   FundViewOutlined,
@@ -14,6 +14,13 @@ import { GiFarmer, GiFarmTractor, GiHouse } from "react-icons/gi";
 
 const Admin = () => {
   const role = localStorage.getItem("role");
+
+  const handleLogout = () => {
+    // Remove token and navigate to homepage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    Navigate("/login");
+  };
   return (
     <div className="admin">
       <div className="sidebar">
@@ -26,13 +33,13 @@ const Admin = () => {
             </Link>
           </li>
           <li>
-            <Link to="/admin/tours" className="menu-items">
+            <Link to="/tours" className="menu-items">
               <FundViewOutlined style={{ marginRight: "8px" }} />
               Quản lý Tour
             </Link>
           </li>
           <li>
-            <Link to="/admin/invoices" className="menu-items">
+            <Link to="/invoices" className="menu-items">
               <FileTextOutlined style={{ marginRight: "8px" }} />
               Quản lý Hóa đơn
             </Link>
@@ -50,7 +57,7 @@ const Admin = () => {
             </Link>
           </li>
           <li>
-            <Link to="/admin/koies" className="menu-items">
+            <Link to="/admin/koi" className="menu-items">
               <FaFish style={{ marginRight: "8px" }} />
               Quản lý cá Koi
             </Link>
@@ -72,6 +79,12 @@ const Admin = () => {
             <Link to="/admin/mana-profile" className="menu-items">
               <FaUserCircle style={{ marginRight: "8px" }} />
               Profile
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/login" onClick={handleLogout} className="menu-items">
+              Đăng xuất
             </Link>
           </li>
         </ul>

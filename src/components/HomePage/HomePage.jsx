@@ -1,16 +1,13 @@
 import "./HomePage.css"; // Import your CSS file
 import Header from "../Header/Header"; // Import Header component
 import Footer from "../Footer/Footer";
-import koiFarmImage from "./assets/koi-farm.jpg"; // Example image for farms
-import koiVarietyImage1 from "./assets/koi-fish.jpg"; // Example image for Koi variety 1
-import koiVarietyImage2 from "./assets/koi-fish1.jpg"; // Example image for Koi variety 2
-import koiVarietyImage3 from "./assets/koi-fish2.jpg"; // Example image for Koi variety 3
-// import logo from "./assets/logo.jpg"; // Example logo
+// import logo from "./assets/logo.jpg";
 import HeroImage from "./assets/hero-image.jpg";
-import aboutImage1 from "./assets/about-us1.jpg";
-import aboutImage2 from "./assets/about-us2.jpg";
+import aboutImage1 from "./assets/office.jpg";
+import aboutImage2 from "./assets/team.jpg";
 import { Link } from "react-router-dom";
-import Slider from "./Slider";
+import SliderFarm from "./SliderFarm";
+import SliderKoi from "./SliderKoi";
 
 const HomePage = () => {
   return (
@@ -25,7 +22,7 @@ const HomePage = () => {
       </section>
 
       {/* Form Section */}
-      <div className="tour-form-container">
+      <div className="tour-form-container" id="dich-vu">
         <div className="tour-form-row">
           <Link to="/search" className="tour-label">
             Tour trọn gói
@@ -85,29 +82,32 @@ const HomePage = () => {
       <div className="about-us-section">
         <div className="about-us-content">
           <div className="about-us-text">
-            <h2>About Us</h2>
+            <h2>Về chúng tôi</h2>
             <p>
-              Matsue Nishikigoi Center là một trong các trại cá Koi Nhật Bản nổi
-              tiếng với quy mô lớn. Matsue Nishikigoi được thành lập bởi ông
-              Shoichi Iizuka vào tháng 4 năm 1996. Các dòng cá Koi tại trung tâm
-              Matsue rất đa dạng như Kohaku, Showa, Sanke, Doitsu. Nhưng trung
-              tâm được biết đến rộng rãi là nhờ dòng cá Koi Jumbo Kohaku.
+              Chào mừng bạn đến với Nền Tảng Đặt Tour và Du Lịch của chúng tôi!
+              Chúng tôi cam kết mang đến những trải nghiệm du lịch tốt nhất với
+              đa dạng các gói tour phù hợp cho mọi nhu cầu của khách hàng. Từ
+              những kỳ nghỉ thư giãn tại vùng nông thôn yên bình đến những
+              chuyến phiêu lưu khám phá quốc tế, các tour của chúng tôi được
+              thiết kế để tạo nên những kỷ niệm khó quên.
             </p>
             <p>
-              Nhờ kinh nghiệm và nỗ lực không ngừng của ông Iizuka, Matsue được
-              mọi người biết đến rộng rãi với dòng Jumbo Kohaku và trở thành nơi
-              đáng tin cậy cho những người yêu cá Koi.
+              Sứ mệnh của chúng tôi là làm cho việc du lịch trở nên dễ dàng và
+              thú vị cho mọi người bằng cách cung cấp các gói tour linh hoạt và
+              hợp lý. Cho dù bạn đang lên kế hoạch cho kỳ nghỉ gia đình, chuyến
+              đi lãng mạn hay cuộc phiêu lưu cùng bạn bè, đội ngũ tận tâm của
+              chúng tôi luôn sẵn sàng biến hành trình của bạn thành hiện thực.
             </p>
           </div>
           <div className="about-us-images">
             <img
               src={aboutImage1}
-              alt="Koi Farm"
+              alt="Office"
               className="about-image first-image"
             />
             <img
               src={aboutImage2}
-              alt="Koi Farm"
+              alt="Team"
               className="about-image second-image"
             />
           </div>
@@ -116,21 +116,7 @@ const HomePage = () => {
 
       <div className="famous-koi-farms-section">
         <h2>Các Trang Trại Cá Koi Nổi Tiếng</h2>
-        <Slider />
-        {/* <div className="farms-gallery">
-          <div className="farm-item">
-            <img src={koiFarmImage} alt="Farm 1" />
-            <h3>Trang Trại 1</h3>
-          </div>
-          <div className="farm-item">
-            <img src={aboutImage1} alt="Farm 2" />
-            <h3>Trang Trại 2</h3>
-          </div>
-          <div className="farm-item">
-            <img src={aboutImage2} alt="Farm 3" />
-            <h3>Trang Trại 3</h3>
-          </div>
-        </div> */}
+        <SliderFarm />
         <Link to="/farm" className="see-more-btn">
           Xem thêm
         </Link>
@@ -138,21 +124,7 @@ const HomePage = () => {
 
       <div className="famous-koi-varieties-section">
         <h2>Các Giống Cá Koi Nổi Tiếng</h2>
-        <Slider />
-        {/* <div className="varieties-gallery">
-          <div className="variety-item">
-            <img src={koiVarietyImage1} alt="Variety 1" />
-            <h3>Kohaku Koi</h3>
-          </div>
-          <div className="variety-item">
-            <img src={koiVarietyImage2} alt="Variety 2" />
-            <h3>Showa Koi</h3>
-          </div>
-          <div className="variety-item">
-            <img src={koiVarietyImage3} alt="Variety 3" />
-            <h3>Senke Koi</h3>
-          </div>
-        </div> */}
+        <SliderKoi />
         <Link to="/koi-fish" className="see-more-btn">
           Xem thêm
         </Link>

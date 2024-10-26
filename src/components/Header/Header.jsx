@@ -20,9 +20,9 @@ const Header = () => {
   const handleLogout = () => {
     // Remove token and navigate to homepage
     localStorage.removeItem("token");
-    localStorage.removeItem("userId"); // Optional: clear userId if necessary
-    localStorage.removeItem("googleId"); // Optional: clear googleId if necessary
-    localStorage.removeItem("loginType"); // Clear login type
+    localStorage.removeItem("userId");
+    localStorage.removeItem("googleId");
+    localStorage.removeItem("loginType");
     setIsLoading(false);
     setIsLoggedIn(false);
     navigate("/");
@@ -67,14 +67,15 @@ const Header = () => {
           {isLoggedIn ? (
             <>
               <li>
-                <button
-                  className="user-icon"
-                  onClick={handleUserIconClick} // Use the modified click handler
-                >
+                <button className="user-icon" onClick={handleUserIconClick}>
                   <FaUserCircle size={30} />
                 </button>
                 <span className="separator">|</span>
-                <Link to="/" onClick={handleLogout} className="logout-link">
+                <Link
+                  to="/login"
+                  onClick={handleLogout}
+                  className="logout-link"
+                >
                   Đăng xuất
                 </Link>
                 {isLoading && <p>Đang đăng xuất...</p>}

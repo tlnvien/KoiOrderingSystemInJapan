@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Button, Modal, Form, Input, notification } from "antd";
 import Sidebar from "./Admin.jsx";
@@ -10,8 +10,9 @@ const KoiManagement = () => {
   const [form] = Form.useForm();
   const apiUrl = "http://localhost:8082/api/koi"; // API URL của bạn
   const getApi = "http://localhost:8082/api/koi/list"; // API URL của bạn
+  const apiImage = "http://localhost:8082/api/koi/images";
   const token = localStorage.getItem("token");
-  const [selectedFiles, setSelectedFiles] = useState([]); // Trạng thái cho các tệp đã chọn
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(() => {
     fetchKoiList();
@@ -24,9 +25,17 @@ const KoiManagement = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setKoiList(response.data);
+      const data = response.data;
+
+      if (Array.isArray(data)) {
+        setKoiList(data);
+      } else {
+        console.error("Dữ liệu không phải là một mảng:", data);
+        setKoiList([]);
+      }
     } catch (error) {
       notification.error({ message: "Không thể lấy danh sách koi" });
+      console.error("Error fetching koi list:", error);
     }
   };
 
@@ -34,26 +43,66 @@ const KoiManagement = () => {
     setCurrentKoi(koi);
     setIsModalVisible(true);
     form.setFieldsValue(koi);
-    setSelectedFiles([]); // Đặt lại các tệp đã chọn
+    setSelectedFiles([]); // Reset selected files
   };
 
-  const handleDelete = (koiId) => {
+  const deleteImage = async (imageLink) => {
+    try {
+      await axios.delete(
+        `${apiImage}/remove/${currentKoi.koiId}?imageLink=${imageLink}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            imageLink: imageLink,
+          },
+        }
+      );
+      notification.success({ message: "Xóa ảnh thành công" });
+      fetchKoiList(); // Refresh the koi list
+    } catch (error) {
+      notification.error({ message: "Không thể xóa ảnh" });
+      console.error("Error deleting image:", error);
+    }
+  };
+
+  const handleDelete = (koiId, imageLinks) => {
     Modal.confirm({
-      title: "Bạn có chắc chắn muốn xóa koi này?",
+      title: "Bạn có chắc chắn muốn xóa cá koi này?",
       okText: "Có",
       okType: "danger",
       cancelText: "Không",
       onOk: async () => {
         try {
+          // Delete all associated images
+          // if (Array.isArray(imageLinks) && imageLinks.length > 0) {
+          //   for (let imageLink of imageLinks) {
+          //     await axios.delete(`${apiImage}/${koiId}`, {
+          //       headers: {
+          //         Authorization: `Bearer ${token}`,
+          //       },
+          //       data: {
+          //         koiId: koiId,
+          //         imageLink: imageLink,
+          //       },
+          //     });
+          //   }
+          // }
+
+          // Delete the koi after deleting images
           await axios.delete(`${apiUrl}/${koiId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
+
+          // Refresh the koi list after deletion
           fetchKoiList();
           notification.success({ message: "Xóa koi thành công" });
         } catch (error) {
           notification.error({ message: "Không thể xóa koi" });
+          console.error("Error deleting koi:", error);
         }
       },
     });
@@ -83,7 +132,7 @@ const KoiManagement = () => {
       fetchKoiList();
       setIsModalVisible(false);
       form.resetFields();
-      setSelectedFiles([]); // Đặt lại các tệp đã chọn sau khi gửi
+      setSelectedFiles([]); // Reset selected files after submission
       notification.success({ message: "Lưu koi thành công" });
     } catch (error) {
       console.error(
@@ -117,12 +166,12 @@ const KoiManagement = () => {
           notification.error({
             message: `Lỗi khi tải ảnh: ${error.message}`,
           });
-          return null;
+          return null; // Return null if upload fails
         });
     });
 
     const results = await Promise.all(uploadPromises);
-    return results.filter((result) => result !== null); // Lọc bỏ các tải lên thất bại
+    return results.filter((result) => result !== null); // Filter out failed uploads
   };
 
   return (
@@ -136,7 +185,7 @@ const KoiManagement = () => {
             setIsModalVisible(true);
             setCurrentKoi(null);
             form.resetFields();
-            setSelectedFiles([]); // Đặt lại các tệp đã chọn khi thêm một Koi mới
+            setSelectedFiles([]); // Reset selected files when adding a new koi
           }}
         >
           Thêm Koi
@@ -144,7 +193,7 @@ const KoiManagement = () => {
         <Table
           dataSource={koiList}
           rowKey="koiId"
-          pagination={{ pageSize: 5 }}
+          pagination={{ pageSize: 2 }}
           columns={[
             { title: "Koi ID", dataIndex: "koiId" },
             { title: "Loại Koi", dataIndex: "species" },
@@ -156,16 +205,27 @@ const KoiManagement = () => {
                 <div>
                   {imageLinks && imageLinks.length > 0
                     ? imageLinks.map((image, index) => (
-                        <img
+                        <div
                           key={index}
-                          src={image.imageLink}
-                          alt="Koi"
-                          style={{
-                            width: "70px",
-                            height: "70px",
-                            marginRight: "8px",
-                          }}
-                        />
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          <img
+                            src={image.imageLink}
+                            alt="Koi"
+                            style={{
+                              width: "70px",
+                              height: "70px",
+                              marginRight: "8px",
+                            }}
+                          />
+                          <Button
+                            type="link"
+                            danger
+                            onClick={() => deleteImage(image.imageLink)}
+                          >
+                            Xóa
+                          </Button>
+                        </div>
                       ))
                     : "Không có ảnh"}
                 </div>
@@ -176,7 +236,15 @@ const KoiManagement = () => {
               render: (text, koi) => (
                 <>
                   <Button onClick={() => handleEdit(koi)}>Sửa</Button>
-                  <Button danger onClick={() => handleDelete(koi.koiId)}>
+                  <Button
+                    danger
+                    onClick={() =>
+                      handleDelete(
+                        koi.koiId,
+                        koi.imageLinks.map((image) => image.imageLink)
+                      )
+                    }
+                  >
                     Xóa
                   </Button>
                 </>
@@ -191,9 +259,9 @@ const KoiManagement = () => {
           footer={null}
         >
           <Form form={form} onFinish={handleSubmit}>
-            <Form.Item name="koiId" label="Koi ID" rules={[{ required: true }]}>
+            {/* <Form.Item name="koiId" label="Koi ID" rules={[{ required: true }]} >
               <Input disabled={!!currentKoi} />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               name="species"
               label="Loại Koi"
@@ -204,7 +272,7 @@ const KoiManagement = () => {
             <Form.Item
               name="description"
               label="Mô Tả"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả koi" }]}
+              rules={[{ message: "Vui lòng nhập mô tả koi" }]}
             >
               <Input.TextArea />
             </Form.Item>
@@ -214,9 +282,9 @@ const KoiManagement = () => {
                 accept="image/jpeg, image/png"
                 onChange={(e) => {
                   const files = Array.from(e.target.files);
-                  setSelectedFiles(files); // Đặt các tệp đã chọn vào trạng thái
+                  setSelectedFiles(files); // Set selected files into state
                 }}
-                multiple // Cho phép chọn nhiều tệp
+                multiple // Allow multiple file selection
                 required
               />
             </Form.Item>

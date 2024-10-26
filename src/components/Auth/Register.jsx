@@ -147,7 +147,7 @@ const Register = () => {
       });
 
       if (response.ok) {
-        navigate("/verify-code", {});
+        navigate("/verify-code", { state: { email: formData.email } });
       } else {
         alert("Đăng ký thất bại. Vui lòng thử lại.");
       }
@@ -283,30 +283,34 @@ const Register = () => {
               Đăng ký
             </button>
             <div className="auth-links">
-              <Link to="/login">Bạn đã có tài khoản? Đăng nhập</Link>
+              <Link className="auth-link" to="/login">
+                Bạn đã có tài khoản? Đăng nhập
+              </Link>
             </div>
           </form>
         </div>
 
         <div className="social-login-section">
-          <h2>Đăng nhập bằng mạng xã hội</h2>
-          <div className="social-btns-container">
+          <div className="or-login">
+            <p>Hoặc đăng nhập bằng</p>
+          </div>
+          <div className="social-login1">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
-              onFailure={handleGoogleLoginFailure}
-              cookiePolicy="single_host_origin"
+              onError={handleGoogleLoginFailure}
+              useOneTap
             />
             <FacebookLogin
-              appId="YourFacebookAppId"
-              autoLoad={false}
+              appId="875093550843749"
               callback={handleFacebookLogin}
               render={(renderProps) => (
-                <button
-                  onClick={renderProps.onClick}
-                  className="facebook-login-btn"
-                >
-                  <img src={facebookLogo} alt="Facebook" />
-                  <span>Đăng nhập với Facebook</span>
+                <button onClick={renderProps.onClick} className="social-btn1">
+                  <span className="social-text1">Facebook</span>
+                  <img
+                    src={facebookLogo}
+                    alt="Facebook Logo"
+                    className="social-logo1"
+                  />
                 </button>
               )}
             />

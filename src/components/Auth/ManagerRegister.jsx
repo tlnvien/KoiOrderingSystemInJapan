@@ -142,7 +142,7 @@ const Register = () => {
       });
 
       if (response.ok) {
-        navigate("/verify-code", {});
+        navigate("/login", {});
       } else {
         alert("Đăng ký thất bại. Vui lòng thử lại.");
       }
@@ -285,22 +285,26 @@ const Register = () => {
           </form>
         </div>
         <div className="social-login-section">
-          <div className="social-login">
+          <div className="or-login">
+            <p>Hoặc đăng nhập bằng</p>
+          </div>
+          <div className="social-login1">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
-              onFailure={handleGoogleLoginFailure}
-              className="social-login-button"
+              onError={handleGoogleLoginFailure}
+              useOneTap
             />
-          </div>
-          <div className="social-login">
             <FacebookLogin
-              appId="Your_Facebook_App_ID"
-              fields="name,email,picture"
+              appId="875093550843749"
               callback={handleFacebookLogin}
               render={(renderProps) => (
-                <button onClick={renderProps.onClick}>
-                  <img src={facebookLogo} alt="Facebook" />
-                  Đăng nhập bằng Facebook
+                <button onClick={renderProps.onClick} className="social-btn1">
+                  <span className="social-text1">Facebook</span>
+                  <img
+                    src={facebookLogo}
+                    alt="Facebook Logo"
+                    className="social-logo1"
+                  />
                 </button>
               )}
             />

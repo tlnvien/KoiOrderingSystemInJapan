@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../Admin/Admin.jsx";
+import { DatePicker } from "antd";
+import moment from "moment";
 
 const ManaProfile = () => {
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
-    citizenID: "",
     gender: "",
     dob: "",
     address: "",
@@ -20,7 +20,7 @@ const ManaProfile = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8082/api/info/user";
+  const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();
@@ -28,7 +28,7 @@ const ManaProfile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/${userId}`, {
+      const response = await axios.get(`${apiUrl}/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,7 +51,7 @@ const ManaProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`${apiUrl}/${userId}`, userData, {
+      const response = await axios.put(apiUrl, userData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -89,21 +89,11 @@ const ManaProfile = () => {
           <h1>Thông tin cá nhân</h1>
           <form onSubmit={isEditing ? handleSave : null}>
             <div className="form-group">
-              <label>Họ:</label>
+              <label>Họ và tên:</label>
               <input
                 type="text"
-                name="lastName"
-                value={userData.lastName}
-                onChange={handleChange}
-                readOnly={!isEditing}
-              />
-            </div>
-            <div className="form-group">
-              <label>Tên:</label>
-              <input
-                type="text"
-                name="firstName"
-                value={userData.firstName}
+                name="fullName"
+                value={userData.fullName}
                 onChange={handleChange}
                 readOnly={!isEditing}
               />
@@ -118,20 +108,28 @@ const ManaProfile = () => {
               >
                 <option value="MALE">Nam</option>
                 <option value="FEMALE">Nữ</option>
-                <option value="OTHER">Khác</option>
               </select>
             </div>
+            {/* <div className="form-group">
+              <label>Ngày sinh:</label>
+              <DatePicker
+                value={userData.dob ? moment(userData.dob, "DD-MM-YYYY") : null}
+                format="DD-MM-YYYY"
+                onChange={(date, dateString) => {
+                  handleChange({
+                    target: { name: "dob", value: dateString },
+                  });
+                }}
+                disabled={!isEditing}
+              />
+            </div> */}
             <div className="form-group">
               <label>Ngày sinh:</label>
               <input
-                type="date"
+                type="LocalDate"
                 format="yyyy-MM-dd"
                 name="dob"
-                value={
-                  userData.dob
-                    ? new Date(userData.dob).toISOString().substring(0, 10)
-                    : ""
-                }
+                value={userData.dob}
                 onChange={handleChange}
                 readOnly={!isEditing}
               />

@@ -6,27 +6,30 @@ const Feedback = () => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [feedbackType, setFeedbackType] = useState("KOI"); // Loại phản hồi mặc định
-  const [koiSpecies, setKoiSpecies] = useState("");
-  const [farmName, setFarmName] = useState("");
-  const [staffId, setStaffId] = useState("");
-  const [reviews, setReviews] = useState([]);
-  const apiUrl = "http://localhost:8082/api/feedback"; // Cập nhật với URL API của bạn
-  const userRole = localStorage.getItem("role"); // Lấy vai trò từ localStorage
+  const [feedbackId, setFeedbackId] = useState(null);
+  const apiUrl = "http://localhost:8082/api/feedback";
+  const userRole = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
+  const tourId = localStorage.getItem("tourId");
 
   useEffect(() => {
-    // Lấy đánh giá hiện có khi component được gắn
-    const fetchReviews = async () => {
+    const fetchFeedback = async () => {
       try {
-        const response = await axios.get(apiUrl, { params: { type: "ALL" } });
-        setReviews(response.data);
+        const response = await axios.get(`${apiUrl}/${tourId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data) {
+          setRating(response.data.rating);
+          setComment(response.data.comment);
+          setFeedbackId(response.data.id);
+        }
       } catch (error) {
-        console.error("Lỗi khi lấy đánh giá:", error);
+        console.error("Error fetching feedback:", error);
       }
     };
 
-    fetchReviews();
-  }, []);
+    fetchFeedback();
+  }, [apiUrl, token, tourId]);
 
   const handleStarClick = (ratingValue) => {
     setRating(ratingValue);
@@ -38,32 +41,30 @@ const Feedback = () => {
 
   const handleSubmit = async () => {
     if (rating > 0 && comment !== "") {
-      const newFeedback = {
-        rating,
-        comment,
-        // Bao gồm các trường dựa trên loại phản hồi đã chọn
-        ...(feedbackType === "KOI" && { koiSpecies }),
-        ...(feedbackType === "FARM" && { farmName }),
-        ...(feedbackType === "STAFF" && { staffId }),
-      };
+      const feedbackData = { rating, comment, tourId };
 
       try {
-        // Gửi phản hồi đến API backend
-        await axios.post(apiUrl, newFeedback, {
-          params: { type: feedbackType },
-        }); // Chỉ định loại phản hồi nếu cần
-        // Lấy lại các đánh giá đã cập nhật sau khi gửi
-        const response = await axios.get(apiUrl, { params: { type: "ALL" } });
-        setReviews(response.data);
-        // Đặt lại các trường nhập
+        if (feedbackId) {
+          // Update feedback if it already exists
+          await axios.put(`${apiUrl}/${feedbackId}`, feedbackData, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          alert("Phản hồi của bạn đã được cập nhật thành công!");
+        } else {
+          // Create new feedback
+          await axios.post(apiUrl, feedbackData, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          alert("Phản hồi của bạn đã được gửi thành công!");
+        }
+
+        // Clear the form after successful submission or update
         setRating(0);
         setComment("");
-        setKoiSpecies("");
-        setFarmName("");
-        setStaffId("");
+        setFeedbackId(null);
       } catch (error) {
         alert("Gửi phản hồi không thành công. Vui lòng thử lại!");
-        console.error("Lỗi khi gửi phản hồi:", error);
+        console.error("Error submitting feedback:", error);
       }
     } else {
       alert("Vui lòng cung cấp đánh giá và bình luận!");
@@ -74,41 +75,6 @@ const Feedback = () => {
     <div className="feedback-page">
       <div className="review-container">
         <h2>Đánh Giá và Nhận Xét</h2>
-
-        {/* Chọn loại phản hồi */}
-        <select
-          value={feedbackType}
-          onChange={(e) => setFeedbackType(e.target.value)}
-        >
-          <option value="KOI">Phản Hồi cá Koi</option>
-          <option value="FARM">Phản Hồi Trang Trại</option>
-          <option value="STAFF">Phản Hồi Nhân Viên</option>
-        </select>
-
-        {/* {feedbackType === "KOI" && (
-          <input
-            type="text"
-            value={koiSpecies}
-            onChange={(e) => setKoiSpecies(e.target.value)}
-            placeholder="Loài Koi"
-          />
-        )}
-        {feedbackType === "FARM" && (
-          <input
-            type="text"
-            value={farmName}
-            onChange={(e) => setFarmName(e.target.value)}
-            placeholder="Tên Trang Trại"
-          />
-        )}
-        {feedbackType === "STAFF" && (
-          <input
-            type="text"
-            value={staffId}
-            onChange={(e) => setStaffId(e.target.value)}
-            placeholder="ID Nhân Viên"
-          />
-        )} */}
 
         {userRole === "CUSTOMER" ? (
           <>
@@ -137,39 +103,12 @@ const Feedback = () => {
             ></textarea>
 
             <button onClick={handleSubmit} className="buttonFeedback">
-              Gửi Đánh Giá
+              {feedbackId ? "Cập Nhật Đánh Giá" : "Gửi Đánh Giá"}
             </button>
           </>
         ) : (
           <p>Bạn phải là khách hàng để để lại phản hồi.</p>
         )}
-
-        {/* <div className="review-section">
-          <h3>Đánh Giá Của Người Dùng</h3>
-          <ul>
-            {reviews.map((review, index) => (
-              <li key={index} className="review-item">
-                <div className="stars">
-                  {Array(review.rating)
-                    .fill()
-                    .map((_, i) => (
-                      <span key={i} className="active">
-                        &#9733;
-                      </span>
-                    ))}
-                </div>
-                <p className="comment">{review.comment}</p>
-                {review.type === "KOI" && <p>Loài: {review.koiSpecies}</p>}
-                {review.type === "FARM" && (
-                  <p>Tên Trang Trại: {review.farmName}</p>
-                )}
-                {review.type === "STAFF" && (
-                  <p>ID Nhân Viên: {review.staffId}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div> */}
       </div>
     </div>
   );
