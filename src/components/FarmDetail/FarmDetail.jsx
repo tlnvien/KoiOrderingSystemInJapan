@@ -65,7 +65,7 @@ const FarmDetail = () => {
         : {};
     };
     axios
-      .get(`http://localhost:8082/api/farm/${farmId}`, getAuthHeaders())
+      .get(`http://localhost:8082/api/farm/details/${farmId}`, getAuthHeaders())
       .then((response) => {
         setFarm(response.data);
       })

@@ -8,15 +8,21 @@ const { Option } = Select;
 const FeedbackManagement = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
-  const [filter, setFilter] = useState("ALL"); // TẤT CẢ, 1, 2, 3, 4, 5
+  const [filter, setFilter] = useState("ALL"); // Default to "ALL"
+  const [selectedTourId, setSelectedTourId] = useState(""); // For tour feedback
+  const [selectedCustomerId, setSelectedCustomerId] = useState(""); // For customer feedback
+  const [customers, setCustomers] = useState([]); // List of customers
+  const [tours, setTours] = useState([]); // List of tours
   const token = localStorage.getItem("token");
 
-  const apiUrl = "http://localhost:8082/api/feedback"; // Cập nhật với URL API của bạn
+  const apiUrl = "http://localhost:8082/api/feedback"; // Update with your API URL
+  const customersApiUrl = "http://localhost:8082/api/info"; // API URL for customers
+  const toursApiUrl = "http://localhost:8082/api/tour"; // API URL for tours
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get(apiUrl, {
+        const response = await axios.get(`${apiUrl}/manage/all`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -29,19 +35,100 @@ const FeedbackManagement = () => {
       }
     };
 
-    fetchFeedbacks();
-  }, []);
+    const fetchCustomers = async () => {
+      try {
+        const response = await axios.get(customersApiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCustomers(response.data); // Assuming response.data contains an array of customer objects
+      } catch (error) {
+        message.error("Lỗi khi lấy danh sách khách hàng!");
+        console.error("Lỗi khi lấy khách hàng:", error);
+      }
+    };
 
-  const handleFilterChange = (value) => {
+    const fetchTours = async () => {
+      try {
+        const response = await axios.get(toursApiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTours(response.data); // Assuming response.data contains an array of tour objects
+      } catch (error) {
+        message.error("Lỗi khi lấy danh sách tour!");
+        console.error("Lỗi khi lấy tour:", error);
+      }
+    };
+
+    fetchFeedbacks();
+    fetchCustomers();
+    fetchTours();
+  }, [apiUrl, customersApiUrl, toursApiUrl, token]);
+
+  const handleFilterChange = async (value) => {
     setFilter(value);
-    if (value === "ALL") {
-      setFilteredFeedbacks(feedbacks);
-    } else {
-      const rating = parseInt(value);
-      setFilteredFeedbacks(
-        feedbacks.filter((feedback) => feedback.rating === rating)
-      );
+    try {
+      let response;
+      switch (value) {
+        case "ALL":
+          response = await axios.get(`${apiUrl}/manage/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          break;
+        case "POSITIVE":
+          response = await axios.get(`${apiUrl}/manage/positive`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          break;
+        case "NEGATIVE":
+          response = await axios.get(`${apiUrl}/manage/negative`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          break;
+        case "CUSTOMER":
+          if (selectedCustomerId) {
+            response = await axios.get(
+              `${apiUrl}/manage/customer/${selectedCustomerId}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+          }
+          break;
+        case "TOUR":
+          if (selectedTourId) {
+            response = await axios.get(
+              `${apiUrl}/manage/tour/${selectedTourId}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+          }
+          break;
+        default:
+          const rating = parseInt(value);
+          response = {
+            data: feedbacks.filter((feedback) => feedback.rating === rating),
+          };
+          break;
+      }
+      setFilteredFeedbacks(response ? response.data : []);
+    } catch (error) {
+      message.error("Lỗi khi lọc phản hồi!");
     }
+  };
+
+  const handleCustomerSelect = (value) => {
+    setSelectedCustomerId(value);
+    handleFilterChange("CUSTOMER");
+  };
+
+  const handleTourSelect = (value) => {
+    setSelectedTourId(value);
+    handleFilterChange("TOUR");
   };
 
   const columns = [
@@ -98,13 +185,15 @@ const FeedbackManagement = () => {
   ];
 
   const handleEdit = (record) => {
-    // Thực hiện chức năng chỉnh sửa
+    // Edit functionality
     message.info(`Đang chỉnh sửa phản hồi với ID: ${record.feedbackId}`);
   };
 
   const handleDelete = async (feedbackId) => {
     try {
-      await axios.delete(`${apiUrl}/${feedbackId}`);
+      await axios.delete(`${apiUrl}/${feedbackId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setFilteredFeedbacks(
         filteredFeedbacks.filter(
           (feedback) => feedback.feedbackId !== feedbackId
@@ -113,7 +202,6 @@ const FeedbackManagement = () => {
       message.success("Đã xóa phản hồi thành công!");
     } catch (error) {
       message.error("Lỗi khi xóa phản hồi!");
-      console.error("Lỗi khi xóa phản hồi:", error);
     }
   };
 
@@ -128,12 +216,45 @@ const FeedbackManagement = () => {
           style={{ width: 200, marginBottom: 16 }}
         >
           <Option value="ALL">Tất Cả Phản Hồi</Option>
+          <Option value="POSITIVE">Phản Hồi Tích Cực</Option>
+          <Option value="NEGATIVE">Phản Hồi Tiêu Cực</Option>
+          <Option value="CUSTOMER">Phản Hồi Theo Khách Hàng</Option>
+          <Option value="TOUR">Phản Hồi Theo Tour</Option>
           <Option value="1">1 Sao</Option>
           <Option value="2">2 Sao</Option>
           <Option value="3">3 Sao</Option>
           <Option value="4">4 Sao</Option>
           <Option value="5">5 Sao</Option>
         </Select>
+
+        {filter === "CUSTOMER" && (
+          <Select
+            onChange={handleCustomerSelect}
+            placeholder="Chọn Mã Khách Hàng"
+            style={{ width: 200, marginBottom: 16 }}
+          >
+            {customers.map((customer) => (
+              <Option key={customer.userId} value={customer.userID}>
+                {customer.userID}{" "}
+              </Option>
+            ))}
+          </Select>
+        )}
+
+        {filter === "TOUR" && (
+          <Select
+            onChange={handleTourSelect}
+            placeholder="Chọn Mã Tour"
+            style={{ width: 200, marginBottom: 16 }}
+          >
+            {tours.map((tour) => (
+              <Option key={tour.tourId} value={tour.tourId}>
+                {tour.tourName}
+              </Option>
+            ))}
+          </Select>
+        )}
+
         <Table
           dataSource={filteredFeedbacks}
           columns={columns}

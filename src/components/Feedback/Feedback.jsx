@@ -7,7 +7,7 @@ const Feedback = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [feedbackId, setFeedbackId] = useState(null);
-  const apiUrl = "http://localhost:8082/api/feedback";
+  const apiUrl = "http://localhost:8082/api/feedback"; // API URL
   const userRole = localStorage.getItem("role");
   const token = localStorage.getItem("token");
   const tourId = localStorage.getItem("tourId");

@@ -15,6 +15,9 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     phone: "",
+    fullName: "",
+    gender: "",
+    dob: "",
   });
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -83,6 +86,13 @@ const Register = () => {
     return "";
   };
 
+  const validateDateOfBirth = (value) => {
+    if (!value) return "Ngày sinh không được để trống";
+    const regex = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/;
+    if (!regex.test(value)) return "Ngày sinh phải đúng định dạng dd-MM-yyyy";
+    return "";
+  };
+
   const handleBlur = (e) => {
     const { name, value } = e.target;
     let error = "";
@@ -103,6 +113,15 @@ const Register = () => {
       case "username":
         error = validateUsername(value);
         break;
+      case "fullName":
+        error = validateFullName(value);
+        break;
+      case "dob":
+        error = validateDateOfBirth(value);
+        break;
+      // case "gender":
+      //   error = validateGender(value);
+      //   break;
       default:
         break;
     }
@@ -122,6 +141,17 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    newErrors.fullName = validateFullName(formData.fullName);
+    newErrors.username = validateUsername(formData.username);
+    newErrors.phone = validatePhoneNumber(formData.phone);
+    newErrors.email = validateEmail(formData.email);
+    newErrors.password = validatePassword(formData.password);
+    newErrors.confirmPassword = validateConfirmPassword(
+      formData.password,
+      formData.confirmPassword
+    );
+    newErrors.dob = validateDateOfBirth(formData.dob);
     if (!agreeToTerms) {
       alert("Bạn phải đồng ý với các điều khoản và điều kiện.");
       return;
@@ -129,6 +159,7 @@ const Register = () => {
 
     if (Object.keys(errors).length > 0) {
       alert("Vui lòng sửa các lỗi trước khi gửi.");
+      console.log(errors);
       return;
     }
 
@@ -137,6 +168,7 @@ const Register = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -175,6 +207,46 @@ const Register = () => {
         <h1 className="heading">Đăng ký</h1>
         <div className="form-section-register">
           <form onSubmit={handleSubmit}>
+            <label>Họ và tên:</label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+            />
+            <div className="error-container">
+              {errors.fullname && (
+                <span className="error">{errors.fullName}</span>
+              )}
+            </div>
+            <label>Giới tính:</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Chọn giới tính</option>
+              <option value="MALE">Nam</option>
+              <option value="FEMALE">Nữ</option>
+            </select>
+
+            <label>Ngày sinh (dd-MM-yyyy):</label>
+            <input
+              type="text"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+              placeholder="dd-MM-yyyy"
+            />
+            <div className="error-container">
+              {errors.dob && <span className="error">{errors.dob}</span>}
+            </div>
+
             <label>Email:</label>
             <input
               type="email"
