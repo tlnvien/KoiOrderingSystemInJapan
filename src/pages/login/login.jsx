@@ -34,6 +34,8 @@ function Login() {
         navigate("/dashboard/sale");
       } else if (role === "CONSULTING") {
         navigate("/dashboard/consulting");
+      } else if (role === "DELIVERING") {
+        navigate("/dashboard/delivering");
       }
     } catch (error) {
       console.error("Login error", error);

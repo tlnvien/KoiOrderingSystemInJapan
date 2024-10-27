@@ -26,11 +26,15 @@ const Dashboard = () => {
   // Tạo menu dựa trên role
   const saleItems = [
     getItem("Manage Tour", "/dashboard/sale/manage-tour", <PieChartOutlined />),
-    getItem("Sent Quote", "/dashboard/sale/sent-quote", <FileOutlined />),
     getItem(
       "Request from customer",
       "/dashboard/sale/request-customer",
       <TeamOutlined />
+    ),
+    getItem(
+      "Associate Booking",
+      "/dashboard/sale/associate-bookingtour",
+      <PieChartOutlined />
     ),
   ];
 
@@ -40,9 +44,35 @@ const Dashboard = () => {
       "/dashboard/consulting/tour-list",
       <PieChartOutlined />
     ),
+    getItem(
+      "Received Order",
+      "/dashboard/consulting/received-order",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Đơn đã tạo",
+      "/dashboard/consulting/list-order",
+      <PieChartOutlined />
+    ),
   ];
 
-  const items = role === "SALES" ? saleItems : consultingItems;
+  const deliveryItems = [
+    getItem(
+      "Get Order",
+      "/dashboard/delivering/get-order",
+      <PieChartOutlined />
+    ),
+  ];
+
+  let items;
+
+  if (role === "SALES") {
+    items = saleItems;
+  } else if (role === "DELIVERING") {
+    items = deliveryItems;
+  } else if (role === "CONSULTING") {
+    items = consultingItems;
+  }
 
   // Điều hướng khi chọn menu
   const handleMenuClick = ({ key }) => {

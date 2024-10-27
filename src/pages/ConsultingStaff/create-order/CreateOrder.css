@@ -1,0 +1,11 @@
+.highlight-input {
+    background-color: #f5f5c1; /* Màu nền vàng nhạt */
+    font-weight: bold; /* Đậm */
+  }
+  
+  .highlight-field {
+    background-color: #e6f7ff; /* Màu nền xanh nhạt */
+    font-weight: bold; /* Đậm */
+    border: 2px solid #1890ff; /* Viền xanh dương nổi bật */
+  }
+  

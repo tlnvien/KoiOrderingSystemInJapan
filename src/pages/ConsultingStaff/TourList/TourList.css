@@ -1,0 +1,41 @@
+.tour-list-container {
+    display: flex;
+    flex-direction: column; /* Stack the cards vertically */
+    gap: 20px; /* Space between rows */
+    padding: 20px;
+}
+
+.tour-card {
+    display: flex; /* Use flex to align items in a row */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.tour-card:hover {
+    transform: scale(1.05);
+}
+
+.tour-image {
+    width: 180px; /* Fixed width for the image */
+    height: auto; /* Keep aspect ratio */
+    object-fit: cover; /* Cover the area */
+}
+
+.tour-details {
+    padding: 16px;
+    display: flex; /* Allow details to be in a row */
+    flex-direction: column; /* Stack details vertically */
+}
+
+.tour-details h3 {
+    margin: 0 0 8px;
+    color: #333;
+}
+
+.tour-details p {
+    margin: 4px 0;
+    color: #555;
+}
