@@ -18,4 +18,8 @@ public interface KoiFarmRepository extends JpaRepository<KoiFarm, Long> {
     List<Farm> findFarmByKoiID(@Param("koiID") String koiID);
 
     KoiFarm findByFarm_farmIDAndKoi_koiID(String farmID, String koiID);
+
+    Farm findFarmByFarm_farmID(String farmID);
+
+    Koi findKoiByFarm_farmIDAndKoiID(String farmID, String koiID);
 }

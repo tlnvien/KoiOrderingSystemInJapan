@@ -58,9 +58,9 @@ public class OrderAPI {
         return ResponseEntity.ok(orderResponses);
     }
 
-    @PostMapping("transaction")
-    public ResponseEntity createNewOrder(@RequestParam UUID orderID) {
-         orderService.createTransaction(orderID);
-        return ResponseEntity.ok("Success");
+    @PostMapping("/paymentUrl/{orderId}")
+    public ResponseEntity createOrderPaymentUrl(@PathVariable String orderId, @RequestParam(value = "isFinalPayment") boolean isFinalPayment) {
+        String paymentUrl = orderService.createOrderPaymentUrl(orderId, isFinalPayment);
+        return ResponseEntity.ok(paymentUrl);
     }
 }

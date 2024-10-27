@@ -14,4 +14,7 @@ public interface ordersRepository extends JpaRepository<Orders, UUID>{
     List<Orders> findAll();
 
     List<Orders> findByTour_TourId(String tourId);
+
+    Orders findByOrderId(String orderId);
+
 }

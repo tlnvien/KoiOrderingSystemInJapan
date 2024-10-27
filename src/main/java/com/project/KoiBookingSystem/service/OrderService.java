@@ -6,6 +6,7 @@ import com.project.KoiBookingSystem.enums.PaymentEnums;
 import com.project.KoiBookingSystem.enums.Role;
 import com.project.KoiBookingSystem.enums.TransactionEnums;
 import com.project.KoiBookingSystem.exception.EmptyListException;
+import com.project.KoiBookingSystem.exception.InvalidRequestException;
 import com.project.KoiBookingSystem.exception.NotFoundException;
 import com.project.KoiBookingSystem.model.request.OrderDetailRequest;
 import com.project.KoiBookingSystem.model.request.OrderRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -33,7 +35,7 @@ public class OrderService {
     AuthenticationService authenticationService;
 
     @Autowired
-    private BookingRepository bookingRepository;
+    private KoiFarmRepository koiFarmRepository;
 
     @Autowired
     private KoiRepository koiRepository;
@@ -68,8 +70,8 @@ public class OrderService {
             List<OrderDetail> orderDetails = new ArrayList<>();
             for (OrderDetailRequest list: orderRequest.getOrderDetailRequests()) {
                 OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setFarms(farmRepository.findFarmByFarmID(String.valueOf(list.getFarmId())));//note fix
-                orderDetail.setKoi(koiRepository.findKoiByKoiID(String.valueOf(list.getKoiId())));//note fix
+                orderDetail.setFarms(koiFarmRepository.findFarmByFarm_farmID(list.getFarmId()))
+                orderDetail.setKoi(koiFarmRepository.findKoiByFarm_farmIDAndKoiID(list.getFarmId(), list.getKoiId()));
                 orderDetail.setQuantity(list.getQuantity());
                 orderDetail.setPrice(list.getPrice());
                 orderDetail.setOrder(orders);
@@ -281,6 +283,27 @@ public class OrderService {
 
         return orderResponse;
     }
-    
-    
+
+
+    public String createOrderPaymentUrl(String orderId, boolean isFinalPayment) {
+        Orders order = ordersRepository.findByOrderId(orderId);
+        if (order == null) {
+            throw new NotFoundException("Order not found!");
+        }
+        if (order.getStatus().equals(OrderStatus.CANCELLED)) {
+            throw new InvalidRequestException("This order is cancelled, can not process payment!");
+        }
+
+        double amount = 0;
+        if (isFinalPayment) {
+            amount = order.getRemainingPrice();
+        } else {
+            amount = order.getPaidPrice();
+        }
+        try {
+            return vnPayService.createPaymentUrl(orderId, amount, "Order");
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new PaymentException("Payment error: " + e.getMessage());
+        }
+    }
 }
