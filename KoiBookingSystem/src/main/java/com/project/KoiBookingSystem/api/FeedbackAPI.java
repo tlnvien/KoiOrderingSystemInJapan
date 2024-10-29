@@ -95,7 +95,7 @@ public class FeedbackAPI {
     @GetMapping("/manage/positive")
     @PreAuthorize("hasAnyAuthority('MANAGER', 'CONSULTING', 'SALES', 'DELIVERING')")
     public ResponseEntity managePositiveFeedbacks() {
-        List<FeedbackResponse> feedbackResponses = feedbackService.manageNegativeFeedbacks();
+        List<FeedbackResponse> feedbackResponses = feedbackService.managePositiveFeedbacks();
         return ResponseEntity.ok(feedbackResponses);
     }
 

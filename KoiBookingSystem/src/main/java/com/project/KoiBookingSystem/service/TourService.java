@@ -16,9 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -288,7 +290,9 @@ public class TourService {
         tourResponse.setConsultingId(tour.getConsulting().getUserId());
         tourResponse.setConsultingName(tour.getConsulting().getFullName());
         tourResponse.setTourType(tour.getType());
-        tourResponse.setPrice(tour.getPrice());
+
+        String formattedPrice = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(tour.getPrice());
+        tourResponse.setPrice(formattedPrice);
         tourResponse.setStatus(tour.getStatus());
         tourResponse.setTourImage(tour.getTourImage());
         tourResponse.setSalesId(tour.getSales().getUserId());

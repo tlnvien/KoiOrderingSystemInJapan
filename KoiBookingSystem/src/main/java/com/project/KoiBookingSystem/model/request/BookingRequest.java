@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class BookingRequest {
@@ -37,5 +38,7 @@ public class BookingRequest {
     private String description;
 
     private boolean hasVisa;
+
+    private List<BookingDetailRequest> bookingDetailRequests;
 
 }

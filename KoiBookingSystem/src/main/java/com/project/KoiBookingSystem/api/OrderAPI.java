@@ -130,6 +130,17 @@ public class OrderAPI {
         return ResponseEntity.ok(orderResponse);
     }
 
+    @GetMapping("/list/{deliveringId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'CONSULTING', 'DELIVERING')")
+    public ResponseEntity getOrdersByDeliveringId(@PathVariable String deliveringId) {
+        List<OrderResponse> orderResponses = orderService.getOrdersByDelivering(deliveringId);
+        return ResponseEntity.ok(orderResponses);
+    }
 
-
+    @GetMapping("/list/address")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'CONSULTING', 'DELIVERING')")
+    public ResponseEntity getOrdersByAddress(@RequestParam(required = false) String address) {
+        List<OrderResponse> orderResponses = orderService.getOrdersByAddress(address);
+        return ResponseEntity.ok(orderResponses);
+    }
 }

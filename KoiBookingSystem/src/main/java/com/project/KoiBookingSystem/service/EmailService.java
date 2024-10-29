@@ -94,7 +94,6 @@ public class EmailService {
             context.setVariable("numberOfAttendees", emailDetail.getBooking().getNumberOfAttendances());
             context.setVariable("totalPrice", emailDetail.getBooking().getTotalPrice());
             context.setVariable("currency", emailDetail.getBooking().getPayment().getCurrency());
-            context.setVariable("link", emailDetail.getLink());
 
             String template = templateEngine.process("booking-confirmation", context);
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -140,7 +139,6 @@ public class EmailService {
             context.setVariable("orderDate", emailDetail.getOrder().getOrderDate());
             context.setVariable("paidPrice", emailDetail.getOrder().getPaidPrice());
             context.setVariable("orderItems", emailDetail.getOrder().getOrderDetails());
-            context.setVariable("link", emailDetail.getLink());
 
             String template = templateEngine.process("order-confirmation", context);
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -165,7 +163,6 @@ public class EmailService {
             context.setVariable("deliveredDate", emailDetail.getOrder().getDeliveredDate());
             context.setVariable("remainingPrice", emailDetail.getOrder().getTotalPrice());
             context.setVariable("orderItems", emailDetail.getOrder().getOrderDetails());
-            context.setVariable("link", emailDetail.getLink());
 
             String template = templateEngine.process("delivering-successfully", context);
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();

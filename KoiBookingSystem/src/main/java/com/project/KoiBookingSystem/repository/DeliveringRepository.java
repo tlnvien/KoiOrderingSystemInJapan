@@ -18,4 +18,6 @@ public interface DeliveringRepository extends JpaRepository<Delivering, Long> {
     Delivering findByDeliveringId(String deliveringId);
 
     List<Delivering> findByStatus(DeliveringStatus status);
+
+
 }

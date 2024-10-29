@@ -19,11 +19,12 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
     List<Orders> findByDelivering_DeliveringIdAndExpiredFalse(String deliveringId);
 
-    List<Orders> findByFarm_FarmId(String farmId);
+    List<Orders> findByFarms_FarmId(String farmId);
 
-    @Query("SELECT o FROM Orders o WHERE o.status = com.project.KoiBookingSystem.enums.OrderStatus.RECEIVED")
-    List<Orders> findByStatusReceived();
+    List<Orders> findByStatusAndDeliveringIsNull(OrderStatus status);
 
+    @Query("SELECT o FROM Orders o WHERE o.customer.address LIKE CONCAT ('%', :address, '%') AND o.expired = false AND o.status = com.project.KoiBookingSystem.enums.OrderStatus.RECEIVED")
+    List<Orders> findByCustomer_AddressAndExpiredFalseAndStatusReceived(@Param("address") String address);
 
     @Query("SELECT o FROM Orders o WHERE o.status = :status AND o.expired = false")
     List<Orders> findUnpaidOrders(@Param("status") OrderStatus status);

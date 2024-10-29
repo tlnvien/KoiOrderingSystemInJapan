@@ -45,7 +45,7 @@ public class TourResponse {
     @Enumerated(EnumType.STRING)
     private TourStatus status;
 
-    private Double price;
+    private String price;
 
     private String tourImage;
 

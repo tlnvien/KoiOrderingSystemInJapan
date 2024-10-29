@@ -5,15 +5,10 @@ import com.project.KoiBookingSystem.entity.*;
 import com.project.KoiBookingSystem.enums.*;
 import com.project.KoiBookingSystem.exception.*;
 import com.project.KoiBookingSystem.model.request.BookingAvailableRequest;
+import com.project.KoiBookingSystem.model.request.BookingDetailRequest;
 import com.project.KoiBookingSystem.model.request.BookingRequest;
-import com.project.KoiBookingSystem.model.response.BookingAvailableResponse;
-import com.project.KoiBookingSystem.model.response.BookingResponse;
-import com.project.KoiBookingSystem.model.response.CustomerOfBookingResponse;
-import com.project.KoiBookingSystem.model.response.EmailDetail;
-import com.project.KoiBookingSystem.repository.AccountRepository;
-import com.project.KoiBookingSystem.repository.BookingRepository;
-import com.project.KoiBookingSystem.repository.PaymentRepository;
-import com.project.KoiBookingSystem.repository.TourRepository;
+import com.project.KoiBookingSystem.model.response.*;
+import com.project.KoiBookingSystem.repository.*;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +19,10 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -59,6 +57,9 @@ public class BookingService {
     EmailService emailService;
 
     @Autowired
+    BookingDetailRepository bookingDetailRepository;
+
+    @Autowired
     ModelMapper modelMapper;
 
 
@@ -73,11 +74,21 @@ public class BookingService {
             booking.setTotalPrice(0);
 
             Booking newBooking = bookingRepository.save(booking);
-            return convertToBookingResponse(newBooking);
+            List<BookingDetail> bookingDetails = createBookingDetails(bookingRequest, newBooking);
+
+            if (bookingDetails.size() != newBooking.getNumberOfAttendances() - 1) {
+                throw new InvalidRequestException("Thông tin chi tiết của booking phải được nhập tương đương với số người mà bạn đăng ký!");
+            }
+            bookingDetailRepository.saveAll(bookingDetails);
+            newBooking.setBookingDetails(bookingDetails);
+            Booking savedBooking = bookingRepository.save(newBooking);
+            return convertToBookingResponse(savedBooking);
         } catch (DataIntegrityViolationException e) {
             throw new InvalidRequestException(e.getMessage());
         }
     }
+
+
 
     public List<BookingResponse> getAllRequests() {
         List<Booking> requests = bookingRepository.findByRequestStatusAndIsExpiredFalse(RequestStatus.NOT_TAKEN);
@@ -228,7 +239,7 @@ public class BookingService {
         }
         double amount = booking.getTotalPrice();
         try {
-            return vnPayService.createPaymentUrl(bookingId, amount, "Booking");
+            return vnPayService.createPaymentUrl(bookingId, amount, "Booking", 0);
         } catch (UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new PaymentException("Tạo đường dẫn thanh toán thất bại: " + e.getMessage());
         }
@@ -260,9 +271,23 @@ public class BookingService {
         bookingResponse.setDescription(booking.getDescription());
         bookingResponse.setNumberOfAttendances(booking.getNumberOfAttendances());
         bookingResponse.setHasVisa(booking.isHasVisa());
-        bookingResponse.setTotalPrice(booking.getTotalPrice());
+
+        String formattedPrice = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(booking.getTotalPrice());
+        bookingResponse.setTotalPrice(formattedPrice);
         bookingResponse.setStatus(booking.getBookingStatus());
         bookingResponse.setCheckingDate(booking.getCheckingDate());
+
+        List<BookingDetailResponse> bookingDetailResponses = booking.getBookingDetails().stream().map(bookingDetail -> {
+            BookingDetailResponse bookingDetailResponse = new BookingDetailResponse();
+            bookingDetailResponse.setCustomerName(bookingDetail.getCustomerName());
+            bookingDetailResponse.setDob(bookingDetail.getDob());
+            bookingDetailResponse.setGender(bookingDetail.getGender());
+            bookingDetailResponse.setPhone(bookingDetail.getPhone());
+
+            return bookingDetailResponse;
+        }).collect(Collectors.toList());
+
+        bookingResponse.setBookingDetailResponses(bookingDetailResponses);
 
         return bookingResponse;
     }
@@ -330,6 +355,19 @@ public class BookingService {
         return payment;
     }
 
+    private List<BookingDetail> createBookingDetails(BookingRequest bookingRequest, Booking booking) {
+        return bookingRequest.getBookingDetailRequests().stream().map(bookingDetailRequest -> {
+            BookingDetail bookingDetail = new BookingDetail();
+            bookingDetail.setBooking(booking);
+            bookingDetail.setCustomerName(bookingDetailRequest.getCustomerName());
+            bookingDetail.setDob(bookingDetailRequest.getDob());
+            bookingDetail.setGender(bookingDetailRequest.getGender());
+            bookingDetail.setPhone(bookingDetailRequest.getPhone());
+
+            return bookingDetail;
+        }).collect(Collectors.toList());
+    }
+
     private void validateBooking(Booking booking) {
         if (booking == null) {
             throw new NotFoundException("Không tìm thấy booking với Id yêu cầu!");
@@ -375,6 +413,9 @@ public class BookingService {
     private Booking createBookingDefault(Account customer, Tour tour, BookingRequest bookingRequest) {
         Booking booking = new Booking();
         booking.setBookingId(generateBookingId());
+        if (!isMoreThanOrEquals18YearsOld(customer.getDob())) {
+            throw new InvalidRequestException("Bạn chưa đủ 18 tuổi để thực hiện việc đặt tour! Để có thể đặt tour, bạn cần phải đi kèm với người lớn!");
+        }
         booking.setCustomer(customer);
         booking.setTour(tour);
         booking.setPayment(null);
@@ -389,6 +430,11 @@ public class BookingService {
 
         return booking;
 
+    }
+
+    private boolean isMoreThanOrEquals18YearsOld(LocalDate dob) {
+        Period age = Period.between(dob, LocalDate.now());
+        return age.getYears() >= 18;
     }
 
     private void updateCustomerDetails(Account customer, BookingRequest bookingRequest) {
@@ -460,12 +506,12 @@ public class BookingService {
     }
 
     private void sendBookingConfirmation(Account account, Booking booking) {
-        EmailDetail emailDetail = createEmailDetail(account, booking, "Xác nhận đơn đặt Tour", "https://google.com/");
+        EmailDetail emailDetail = createEmailDetail(account, booking, "Xác nhận đơn đặt Tour", null);
         emailService.sendBookingCompleteEmail(emailDetail);
     }
 
     private void sendBookingPayment(Account account, Booking booking) {
-        EmailDetail emailDetail = createEmailDetail(account, booking, "Thanh toán đơn đặt Tour", "https://google.com/");
+        EmailDetail emailDetail = createEmailDetail(account, booking, "Thanh toán đơn đặt Tour", "https://localhost:5173/payment");
         emailService.sendBookingPaymentEmail(emailDetail);
     }
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,7 +113,7 @@ public class OrderService {
 
 
     public List<OrderResponse> getAllOrderReceived() {
-        List<Orders> orders = ordersRepository.findByStatusReceived();
+        List<Orders> orders = ordersRepository.findByStatusAndDeliveringIsNull(OrderStatus.RECEIVED);
         if (orders.isEmpty()) {
             throw new EmptyListException("Danh sách đơn hàng mà nhân viên tư vấn đã nhận trong hệ thống đang trống!");
         }
@@ -121,13 +122,12 @@ public class OrderService {
 
 
     public List<OrderResponse> getAllOrdersByFarm(String farmId) {
-        List<Orders> orders = ordersRepository.findByFarm_FarmId(farmId);
+        List<Orders> orders = ordersRepository.findByFarms_FarmId(farmId);
         if (orders.isEmpty()) {
             throw new EmptyListException("Danh sách đơn hàng trên trang trại này đang trống!");
         }
         return orders.stream().map(this::convertToOrdersResponse).collect(Collectors.toList());
     }
-
 
     public List<OrderResponse> getAllOrdersByFarmHost(String farmId) {
         Account farmHost = authenticationService.getCurrentAccount();
@@ -138,12 +138,35 @@ public class OrderService {
         if (!farmHost.getUserId().equals(farm.getFarmHost().getUserId())) {
             throw new InvalidRequestException("Bạn không phải là chủ trang trại của trang trại này!");
         }
-        List<Orders> orders = ordersRepository.findByFarm_FarmId(farm.getFarmId());
+        List<Orders> orders = ordersRepository.findByFarms_FarmId(farm.getFarmId());
         if (orders.isEmpty()) {
             throw new EmptyListException("Danh sách đơn hàng được yêu cầu của trang trại này đang trống");
         }
         return orders.stream().map(this::convertToOrdersResponse).collect(Collectors.toList());
     }
+
+
+    public List<OrderResponse> getOrdersByDelivering(String deliveringId) {
+        List<Orders> orders = ordersRepository.findByDelivering_DeliveringIdAndExpiredFalse(deliveringId);
+        if (orders.isEmpty()) {
+            throw new EmptyListException("Danh sách đơn hàng có trong đơn vận chuyển này đang trống!");
+        }
+        return orders.stream().map(this::convertToOrdersResponse).collect(Collectors.toList());
+    }
+
+    public List<OrderResponse> getOrdersByAddress(String address) {
+        List<Orders> orders;
+        if (address != null && !address.isEmpty()) {
+             orders = ordersRepository.findByCustomer_AddressAndExpiredFalseAndStatusReceived(address);
+        } else {
+            orders = ordersRepository.findByStatusAndDeliveringIsNull(OrderStatus.RECEIVED);
+        }
+        if (orders.isEmpty()) {
+            throw new EmptyListException("Danh sách đơn hàng đang chờ được giao trống!");
+        }
+        return orders.stream().map(this::convertToOrdersResponse).collect(Collectors.toList());
+    }
+
 
     @Transactional
     public OrderResponse updateOrderStatusByFarmHost(String orderId, OrderStatus status) {
@@ -456,13 +479,16 @@ public class OrderService {
         Orders order = ordersRepository.findByOrderIdAndExpiredFalse(orderId);
         validateOrder(order);
         double amount = 0;
+        int paymentAttempt = 0;
         if (status == OrderPaymentStatus.FINAL_PAYMENT) {
             amount = order.getRemainingPrice();
+            paymentAttempt = 2;
         } else {
             amount = order.getPaidPrice();
+            paymentAttempt = 1;
         }
         try {
-            return vnPayService.createPaymentUrl(orderId, amount, "Order");
+            return vnPayService.createPaymentUrl(orderId, amount, "Order", paymentAttempt);
         } catch (UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new PaymentException("Thanh toán thất bại: " + e.getMessage());
         }
@@ -633,11 +659,14 @@ public class OrderService {
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderId(orders.getOrderId());
         orderResponse.setCustomerId(orders.getCustomer().getUserId());
+        orderResponse.setCustomerName(orders.getCustomer().getFullName());
         orderResponse.setTourId(orders.getTour().getTourId());
         orderResponse.setFarmId(orders.getFarms().getFarmId());
         orderResponse.setOrderDate(orders.getOrderDate());
         orderResponse.setDeliveredDate(orders.getDeliveredDate());
-        orderResponse.setTotalPrice(orders.getTotalPrice());
+
+        String formattedTotalPrice = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(orders.getTotalPrice());
+        orderResponse.setTotalPrice(formattedTotalPrice);
         orderResponse.setCustomerAddress(orders.getCustomer().getAddress());
         orderResponse.setStatus(orders.getStatus());
         orderResponse.setNote(orders.getNote());
@@ -647,7 +676,9 @@ public class OrderService {
             orderDetailResponse.setKoiId(orderDetail.getKoi().getKoiId());
             orderDetailResponse.setDescription(orderDetail.getDescription());
             orderDetailResponse.setQuantity(orderDetail.getQuantity());
-            orderDetailResponse.setPrice(orderDetail.getPrice());
+
+            String formattedPrice = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(orderDetail.getPrice());
+            orderDetailResponse.setPrice(formattedPrice);
 
             return orderDetailResponse;
         }).collect(Collectors.toList());
@@ -659,21 +690,20 @@ public class OrderService {
 
 
     private void sendOrderConfirmation(Account account, Orders order) {
-        EmailDetail emailDetail = createEmailDetail(account, order, "Xác nhận đơn đặt cá", "https://google.com");
+        EmailDetail emailDetail = createEmailDetail(account, order, "Xác nhận đơn đặt cá");
         emailService.sendOrderCompleteEmail(emailDetail);
     }
 
     private void sendOrderDeliveredSuccessfully(Account account, Orders order) {
-        EmailDetail emailDetail = createEmailDetail(account, order, "Xác nhận giao hàng thành công", "https://google.com");
+        EmailDetail emailDetail = createEmailDetail(account, order, "Xác nhận giao hàng thành công");
         emailService.sendOrderDeliveredSuccessfully(emailDetail);
     }
 
-    private EmailDetail createEmailDetail(Account account, Orders order, String subject, String link) {
+    private EmailDetail createEmailDetail(Account account, Orders order, String subject) {
         EmailDetail emailDetail = new EmailDetail();
         emailDetail.setAccount(account);
         emailDetail.setOrder(order);
         emailDetail.setSubject(subject);
-        emailDetail.setLink(link);
 
         return emailDetail;
     }

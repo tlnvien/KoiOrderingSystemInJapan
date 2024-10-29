@@ -17,6 +17,8 @@ public class OrderResponse {
 
     private String customerId;
 
+    private String customerName;
+
     private String tourId;
 
     private String farmId;
@@ -27,7 +29,7 @@ public class OrderResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime deliveredDate;
 
-    private double totalPrice;
+    private String totalPrice;
 
     private String customerAddress;
 

@@ -23,7 +23,7 @@ public class VNPayService {
 
     private final String secretKey = "XJCDBBRSVGUXDDSHLLXMSGUCBHO9ZDL3"; // Nhập secretKey
 
-    public String createPaymentUrl(String entityId, double amount, String orderType) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+    public String createPaymentUrl(String entityId, double amount, String orderType, int paymentAttempt) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime createDate = LocalDateTime.now();
         String formattedCreateDate = createDate.format(formatter);
@@ -31,8 +31,10 @@ public class VNPayService {
         String tmnCode = "97AA91OX"; // Nhập code tmn
 
         String vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        String returnUrl = "https://google.com/?id=" + entityId;
+        String returnUrl = "http://localhost:5173/payment-success/?Id=" + entityId;
         String currCode = "VND";
+
+        String txnRef = entityId + "-" + paymentAttempt;
 
         double price = amount * 100;
         String totalAmount = String.valueOf((long)price);
@@ -43,7 +45,7 @@ public class VNPayService {
         vnpParams.put("vnp_TmnCode", tmnCode);
         vnpParams.put("vnp_Locale", "vn");
         vnpParams.put("vnp_CurrCode", currCode);
-        vnpParams.put("vnp_TxnRef", entityId);
+        vnpParams.put("vnp_TxnRef", txnRef);
         vnpParams.put("vnp_OrderInfo", "Thanh toán cho mã GD: " + entityId);
         vnpParams.put("vnp_OrderType", orderType);
         vnpParams.put("vnp_Amount", totalAmount);

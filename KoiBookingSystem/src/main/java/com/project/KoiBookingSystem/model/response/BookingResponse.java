@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class BookingResponse {
@@ -35,8 +36,10 @@ public class BookingResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime checkingDate;
 
-    private double totalPrice;
+    private String totalPrice;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+
+    private List<BookingDetailResponse> bookingDetailResponses;
 }
