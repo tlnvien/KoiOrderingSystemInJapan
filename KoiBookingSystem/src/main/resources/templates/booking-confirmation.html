@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận Đơn Đặt Tour</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; margin: 0; padding: 0; background-color: #f4f4f4;">
+<div style="padding: 20px; max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="color: #007BFF;">Xác Nhận Đơn Đặt Tour - Koi Booking System</h1>
+    <p>Chào <span th:text="${customerName}"></span>,</p>
+    <p>Cảm ơn bạn đã đặt tour của chúng tôi!</p>
+    <p>Dưới đây là thông tin chi tiết về đặt tour của bạn:</p>
+    <ul>
+        <li><strong>Booking ID:</strong> <span th:text="${bookingId}"></span></li>
+        <li><strong>Tên Tour:</strong> <span th:text="${tourName}"></span></li>
+        <li><strong>Ngày Khởi Hành:</strong> <span th:text="${departureDate}"></span></li>
+        <li><strong>Số Người Tham Gia:</strong> <span th:text="${numberOfAttendees}"></span></li>
+        <li><strong>Tổng Giá:</strong> <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 2, 'POINT')}"></span></li>
+        <li><strong>Đơn Vị:</strong> <span th:text="${currency}"></span></li>
+    </ul>
+    <p>Chúng tôi rất mong chờ được chào đón bạn trong chuyến đi này!</p>
+    <p>Để xem thêm thông tin chi tiết về tour hoặc quản lý đặt chỗ của bạn, vui lòng nhấn nút dưới đây:</p>
+
+    <table role="presentation" style="border-collapse: collapse;">
+        <tr>
+            <td style="border-radius: 5px; background-color: #007BFF;">
+                <a href="https://google.com"
+                   class="button"
+                   th:href="${link}"
+                   style="display: inline-block; padding: 10px 20px; color: white; text-decoration: none; border-radius: 5px;">
+                    Xem Chi Tiết Booking
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email: <a href="mailto:tranlenhat123456@gmail.com">tranlenhat123456@gmail.com</a>.</p>
+    <p>Cảm ơn bạn,<br>SWP391 Team 2</p>
+</div>
+</body>
+</html>
+
+
+

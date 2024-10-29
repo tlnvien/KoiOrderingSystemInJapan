@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận giao hàng thành công - Koi Booking System</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; line-height: 1.5; margin: 0; padding: 0; background-color: #f4f4f4;">
+<div
+        style="padding: 20px; max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="color: #007BFF;">Xác nhận giao hàng thành công - Koi Booking System</h1>
+    <p>Chào <span th:text="${customerName}"></span>,</p>
+    <p>Đơn hàng của bạn đã được giao thành công! Dưới đây là thông tin chi tiết về đơn
+        hàng của bạn:</p>
+
+    <h2 style="font-size: 20px; margin-top: 20px;">Thông Tin Đơn Hàng</h2>
+    <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 10px;"><strong>Mã giao hàng:</strong> <span th:text="${deliverId}"></span></li>
+        <li style="margin-bottom: 10px;"><strong>Mã đơn hàng:</strong> <span th:text="${orderId}"></span></li>
+        <li style="margin-bottom: 10px;"><strong>Ngày giao:</strong> <span th:text="${deliveredDate}"></span></li>
+        <li style="margin-bottom: 10px;"><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatDecimal(remainingPrice, 0, 'COMMA', 2, 'POINT')}"></span></li>
+        <li><strong>Đơn Vị:</strong> <span>VND</span></li>
+    </ul>
+
+    <h2 style="font-size: 20px; margin-top: 20px;">Chi tiết đơn hàng</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+        <tr>
+            <th
+                    style="padding: 8px 12px; border: 1px solid #ddd; background-color: #007BFF; color: white; text-align: left;">
+                Giống cá
+            </th>
+            <th
+                    style="padding: 8px 12px; border: 1px solid #ddd; background-color: #007BFF; color: white; text-align: left;">
+                Mô tả
+            </th>
+            <th
+                    style="padding: 8px 12px; border: 1px solid #ddd; background-color: #007BFF; color: white; text-align: left;">
+                Số lượng
+            </th>
+            <th
+                    style="padding: 8px 12px; border: 1px solid #ddd; background-color: #007BFF; color: white; text-align: left;">
+                Giá
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${orderItems}">
+            <td style="padding: 8px 12px; border: 1px solid #ddd;" th:text="${item.koi.species}"></td>
+            <td style="padding: 8px 12px; border: 1px solid #ddd;" th:text="${item.description}"></td>
+            <td style="padding: 8px 12px; border: 1px solid #ddd;" th:text="${item.quantity}"></td>
+            <td style="padding: 8px 12px; border: 1px solid #ddd;" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')}"> VND</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-bottom: 20px;">Chúng tôi rất hân hạnh được phục vụ bạn! Để xem chi tiết đơn hàng của bạn, vui lòng
+        nhấn vào liên kết bên dưới:</p>
+
+    <table role="presentation" style="border-collapse: collapse; margin-bottom: 20px;">
+        <tr>
+            <td style="border-radius: 5px; background-color: #007BFF;">
+                <a href="https://example.com/orders/details" class="button" th:href="${link}"
+                   style="display: inline-block; padding: 10px 20px; color: white; text-decoration: none; background-color: #007BFF; border-radius: 5px;">
+                    Xem chi tiết đơn hàng
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <p style="margin-bottom: 10px;">Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ: <a
+            href="mailto:tranlenhat123456@gmail.com" style="color: #007BFF;">tranlenhat123456@gmail.com</a>.</p>
+    <p>Cảm ơn bạn,<br>SWP391 Team 2</p>
+</div>
+</body>
+
+</html>
