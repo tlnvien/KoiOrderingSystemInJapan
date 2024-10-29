@@ -1,32 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Card, Row, Col, message, Divider } from "antd";
+import { Button, Card, Row, Col, message, Divider } from "antd";
 import api from "../../../config/axios";
-import "./ListOrder.css"; // Import file CSS
+import "./ListOrder.css"; // Import CSS file
 
-const ListOrderC = () => {
-  const [tourId, setTourId] = useState("");
+const ListOrderD = () => {
   const [orders, setOrders] = useState([]);
-  const [role, setRole] = useState(""); // User role
-  const [token, setToken] = useState(""); // Token for API calls
-  const FIRST_PAYMENT = "FIRST_PAYMENT";
+  const token = localStorage.getItem("token");
+  const deliveringId = localStorage.getItem("deliveringId"); // Get deliveringId from local storage
 
-  // Get role and token from local storage
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    const storedToken = localStorage.getItem("token");
-    setRole(storedRole);
-    setToken(storedToken);
-  }, []);
-
-  // Load orders based on tourId
-  const loadOrders = async () => {
-    if (!tourId) {
-      message.error("Vui lòng nhập mã tour.");
-      return;
-    }
-
+  // Function to fetch orders
+  const fetchData = async () => {
     try {
-      const response = await api.get(`order/tour/${tourId}`, {
+      const response = await api.get(`order/list/received`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the request
         },
@@ -38,43 +23,39 @@ const ListOrderC = () => {
     }
   };
 
-  // Handle payment
-  const handlePayment = async (orderId) => {
+  // Function to handle receiving the order
+  const handleReceiveOrder = async (orderId) => {
     try {
+      if (!deliveringId) {
+        message.error("deliveringId không tồn tại trong localStorage.");
+        return;
+      }
+
       const response = await api.post(
-        `order/paymentUrl/${orderId}?isFinalPayment=${FIRST_PAYMENT}`,
+        `delivering/order/${deliveringId}?orderId=${orderId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Include token in the request
           },
         }
       );
-      // Open the payment URL in a new tab
-      window.open(response.data, "_blank");
+
+      message.success(`Đơn hàng ${orderId} đã được nhận!`);
+      console.log("Response from receiving order:", response.data);
     } catch (error) {
-      console.error("Lỗi khi thanh toán:", error);
-      message.error("Không thể thực hiện thanh toán.");
+      console.error("Lỗi khi nhận đơn hàng:", error);
+      message.error("Không thể nhận đơn hàng.");
     }
   };
 
+  // Get role and token from local storage
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div>
-      <h2>Danh sách đơn hàng đã tạo theo tour</h2>
-      <Form layout="inline" onFinish={loadOrders}>
-        <Form.Item label="Mã Tour">
-          <Input
-            value={tourId}
-            onChange={(e) => setTourId(e.target.value)}
-            placeholder="Nhập mã tour"
-            required
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Xem Danh Sách
-          </Button>
-        </Form.Item>
-      </Form>
+      <h2>Xem Danh Sách Đơn Hàng</h2>
 
       <div className="order-list" style={{ marginTop: 16 }}>
         {orders.length > 0 ? (
@@ -84,7 +65,7 @@ const ListOrderC = () => {
               className="order-card"
               bordered={true}
               style={{ marginBottom: 16 }}
-              hoverable // Thêm hiệu ứng hover
+              hoverable
             >
               <Row gutter={16}>
                 <Col span={6}>
@@ -134,14 +115,16 @@ const ListOrderC = () => {
                   <Divider />
                 </div>
               ))}
-              {/* Conditional Payment Button */}
-              <Button
-                type="primary"
-                onClick={() => handlePayment(order.orderId)}
-                style={{ marginTop: 16 }}
-              >
-                Thanh Toán Tại Trang Trại
-              </Button>
+
+              <div className="order-buttons">
+                <Button
+                  type="primary"
+                  onClick={() => handleReceiveOrder(order.orderId)}
+                  style={{ marginRight: 8 }} // Adjust spacing
+                >
+                  Nhận Đơn
+                </Button>
+              </div>
             </Card>
           ))
         ) : (
@@ -152,4 +135,4 @@ const ListOrderC = () => {
   );
 };
 
-export default ListOrderC;
+export default ListOrderD;

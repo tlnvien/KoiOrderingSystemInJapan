@@ -10,6 +10,7 @@ function CreateOrder() {
   const customerId = params("customerId");
   const [description, setDescription] = useState();
   const [note, setNote] = useState();
+  const [customerAddress, setcustomerAddress] = useState();
   const [farmId, setFarmId] = useState(); // State for farmId
   const [orderDetails, setOrderDetails] = useState([
     {
@@ -42,7 +43,7 @@ function CreateOrder() {
 
   // Submit order data to the server
   const handleSubmit = async () => {
-    const orderData = { farmId, description, note, orderDetails }; // Include farmId here
+    const orderData = { farmId, description, note, customerAddress, orderDetails }; // Include farmId here
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -63,7 +64,7 @@ function CreateOrder() {
       localStorage.setItem("orderId", response.data.orderId);
     } catch (error) {
       console.error("Lỗi khi tạo đơn hàng:", error);
-      message.error("Tạo đơn hàng không thành công.");
+      message.error(error.response?.data);
     }
   };
 
@@ -108,6 +109,14 @@ function CreateOrder() {
             value={note}
             placeholder="Nhập ghi chú"
             onChange={(e) => setNote(e.target.value)}
+          />
+        </Form.Item>
+
+        <Form.Item label="Địa chỉ">
+          <Input
+            value={customerAddress}
+            placeholder="Nhập địa chỉ"
+            onChange={(e) => setcustomerAddress(e.target.value)}
           />
         </Form.Item>
 

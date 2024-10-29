@@ -40,7 +40,7 @@ function CustomerInTour() {
 
   return (
     <div className="customer-list-container">
-      <h2>Danh sách hành khách</h2>
+      <h2>Danh sách hành khách đã đặt tour</h2>
       {customers.length === 0 ? (
         <p>Chưa có hành khách nào trong tour này.</p>
       ) : (

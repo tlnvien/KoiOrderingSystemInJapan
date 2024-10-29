@@ -36,10 +36,10 @@ const AssociateBookingTour = () => {
 
   return (
     <div>
-      <h2>Liên kết Mã Đơn Hàng và Mã Tour</h2>
+      <h2>Liên kết Mã Booking và Mã Tour</h2>
       <Form form={form} onFinish={handleSubmit} layout="vertical">
         <Form.Item
-          label="Mã Đơn Hàng"
+          label="Mã booking"
           name="bookingId"
           rules={[{ required: true, message: "Vui lòng nhập mã đơn hàng" }]}
         >

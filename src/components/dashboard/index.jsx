@@ -54,12 +54,42 @@ const Dashboard = () => {
       "/dashboard/consulting/list-order",
       <PieChartOutlined />
     ),
+    getItem(
+      "Checkin",
+      "/dashboard/consulting/checkin",
+      <PieChartOutlined />
+    ),
   ];
 
   const deliveryItems = [
     getItem(
       "Get Order",
       "/dashboard/delivering/get-order",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "List Order",
+      "/dashboard/delivering/order-list",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Create Delivery Order",
+      "/dashboard/delivering/create-delivery",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Work",
+      "/dashboard/delivering/work",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Đơn đang giao",
+      "/dashboard/delivering/starting",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Đơn đã giao",
+      "/dashboard/delivering/done",
       <PieChartOutlined />
     ),
   ];
