@@ -37,7 +37,7 @@ public class BookingAvailableAPI {
 
     // Xem luồng payment.
     @PostMapping("api/booking/available/transaction/{bookingID}")
-    public ResponseEntity createNewOrder(@RequestParam String bookingID) {
+    public ResponseEntity createNewOrder( @PathVariable String bookingID) {
         bookingService.createTransaction(bookingID);
         return ResponseEntity.ok("Payment Successful");
     }

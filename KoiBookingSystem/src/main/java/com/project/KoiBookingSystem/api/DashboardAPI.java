@@ -18,7 +18,7 @@ import java.util.Map;
 public class DashboardAPI {
 
     @Autowired
-    private DashboardService dashboardService;
+    DashboardService dashboardService;
 
     // Tổng số tour trong ngày hiện tại // check
     @GetMapping("/countTour/today")
@@ -64,6 +64,15 @@ public class DashboardAPI {
         return ResponseEntity.ok(count);
     }
 
+    // Số lượng tour mà nhân viên bán hàng (SALE) nhận // check
+    @GetMapping("/saleTour/count")
+    @PreAuthorize("hasAuthority('SALES')")
+    public ResponseEntity<Long> countToursBySale() {
+        long count = dashboardService.getToursBySaleUserId();
+        return ResponseEntity.ok(count);
+    }
+
+
     // Số lượng tour đã đặt bởi một khách hàng trong tháng với trạng thái CHECKED // check
     @GetMapping("/count/customerTour/month")
     public ResponseEntity<Long> countToursByCustomerInMonth(@RequestParam String userID,
@@ -84,18 +93,11 @@ public class DashboardAPI {
     // Thống kê tổng quan các staff đăng kí (Manager) // check
     @GetMapping("/stats")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<Map<String, Object>> getDashboardStats(){
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
         Map<String, Object> stats = dashboardService.getDashBoardStats();
         return ResponseEntity.ok(stats);
     }
 
-    // Số lượng tour mà nhân viên bán hàng (SALE) nhận // check
-    @GetMapping("/saleTour/count")
-    @PreAuthorize("hasAuthority('SALES')")
-    public ResponseEntity<Long> countToursBySale() {
-        long count = dashboardService.getToursBySaleUserId();
-        return ResponseEntity.ok(count);
-    }
 
     // API Đơn hàng
 
@@ -105,31 +107,31 @@ public class DashboardAPI {
         return ResponseEntity.ok(dashboardService.countDeliveredOrders());
     }
 
-    // Số lượng đơn hàng trong ngày
+    // Số lượng đơn hàng trong ngày // check
     @GetMapping("/countOrders/today")
     public ResponseEntity<Long> getOrdersTodayCount() {
         return ResponseEntity.ok(dashboardService.countOrdersToday()); // check
     }
 
-    // Số lượng đơn hàng trong tuần
+    // Số lượng đơn hàng trong tuần // check
     @GetMapping("/countOrders/week")
     public ResponseEntity<Long> getOrdersThisWeekCount() {
         return ResponseEntity.ok(dashboardService.countOrdersThisWeek());
     }
 
-    // Số lượng đơn hàng trong tháng
+    // Số lượng đơn hàng trong tháng // check
     @GetMapping("/countOrders/month")
     public ResponseEntity<Long> getOrdersThisMonthCount() {
         return ResponseEntity.ok(dashboardService.countOrdersThisMonth());
     }
 
-    // Số lượng đơn hàng trong năm
+    // Số lượng đơn hàng trong năm //check
     @GetMapping("/countOrders/year")
     public ResponseEntity<Long> getOrdersThisYearCount() {
         return ResponseEntity.ok(dashboardService.countOrdersThisYear());
     }
 
-    // Số lượng đơn hàng của một khách hàng trong tháng
+    // Số lượng đơn hàng của một khách hàng trong tháng // check
     @GetMapping("/countOrders/customer/{userId}/{year}/{month}")
     public ResponseEntity<Long> getOrdersByCustomerInMonth(
             @PathVariable String userId,
@@ -138,11 +140,26 @@ public class DashboardAPI {
         return ResponseEntity.ok(dashboardService.countOrdersByCustomerInMonth(userId, year, month));
     }
 
-    // Danh sách khách hàng đặt nhiều đơn hàng nhất trong tháng
+    // Danh sách khách hàng đặt nhiều đơn hàng nhất trong tháng // check
     @GetMapping("/countOrders/top-customers/{year}/{month}")
     public ResponseEntity<List<Object[]>> getTopCustomersOrderInMonth(
             @PathVariable int year,
             @PathVariable int month) {
         return ResponseEntity.ok(dashboardService.getTopCustomersOrderInMonth(year, month));
+    }
+    //số lượng thanh toán có trạng thái COMPLETED và loại ORDER. // check
+    @GetMapping("/count/completed/orders")
+    public ResponseEntity<Long> getCompletedOrderPaymentsCount() {
+        return ResponseEntity.ok(dashboardService.countCompletedOrderPayments());
+    }
+    //số lượng thanh toán có trạng thái COMPLETED và loại TOUR. //check
+    @GetMapping("/count/completed/tour")
+    public ResponseEntity<Long> getCompletedTourPaymentsCount() {
+        return ResponseEntity.ok(dashboardService.countCompletedTourPayments());
+    }
+    //số lượng thanh toán có trạng thái COMPLETED và loại DELIVERING. // check
+    @GetMapping("/count/completed/delivering")
+    public ResponseEntity<Long> getCompletedDeliveringPaymentsCount() {
+        return ResponseEntity.ok(dashboardService.countCompletedDeliveringPayments());
     }
 }

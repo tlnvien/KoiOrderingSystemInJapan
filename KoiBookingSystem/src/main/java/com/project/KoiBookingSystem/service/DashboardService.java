@@ -1,11 +1,10 @@
 package com.project.KoiBookingSystem.service;
 
 import com.project.KoiBookingSystem.entity.Account;
-import com.project.KoiBookingSystem.enums.BookingStatus;
-import com.project.KoiBookingSystem.enums.OrderStatus;
-import com.project.KoiBookingSystem.enums.Role;
+import com.project.KoiBookingSystem.enums.*;
 import com.project.KoiBookingSystem.repository.AccountRepository;
 import com.project.KoiBookingSystem.repository.OrdersRepository;
+import com.project.KoiBookingSystem.repository.PaymentRepository;
 import com.project.KoiBookingSystem.repository.TourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +33,9 @@ public class DashboardService {
     @Autowired
     OrdersRepository ordersRepository;
 
+    @Autowired
+    PaymentRepository paymentRepository;
+
     // Dashboard thống kê chung
     public Map<String, Object> getDashBoardStats() {
         Map<String, Object> stats = new HashMap<>();
@@ -61,10 +63,7 @@ public class DashboardService {
         stats.put("Delivering", DeliveringStaff);
         return stats;
     }
-
-    //số lượng đơn hàng có trong tháng
-
-
+    // ===============================================TOUR=====================================================
     public long getToursToday() {
         return tourRepository.countToursToday();
     }
@@ -117,6 +116,7 @@ public class DashboardService {
     }
 
 
+    //=============================================BOOKING===================================================
 
     // Phương thức mới để đếm số lượng tour của tư vấn viên dựa trên userID
     public long getToursByConsultantUserId() {
@@ -161,11 +161,26 @@ public class DashboardService {
     }
 
 
-    // DASH BOARD ĐƠN HÀNG
+    // ========================================= ORDER VS PAYMENT ==================================================
 
-    // Đếm số lượng đơn hàng có trạng thái DELIVERED
+    // Đếm số lượng đơn hàng có trạng thái DELIVERED đã giao cho khách
     public long countDeliveredOrders() {
         return ordersRepository.countOrdersByStatus(OrderStatus.DELIVERED);
+    }
+
+    // Đếm số lượng đơn hàng thanh toán thành công loại ORDER
+    public long countCompletedOrderPayments() {
+        return paymentRepository.countPaymentsDeliveringByStatusAndType(PaymentStatus.COMPLETED, PaymentType.ORDER);
+    }
+
+    // Đếm số lượng đơn hàng thanh toán thành công loại DELIVERING
+    public long countCompletedDeliveringPayments() {
+        return paymentRepository.countPaymentsByStatusAndType(PaymentStatus.COMPLETED, PaymentType.DELIVERING);
+    }
+
+    // Đếm số lượng đơn hàng thanh toán thành công loại TOUR
+    public long countCompletedTourPayments() {
+        return paymentRepository.countPaymentsToursByStatusAndType(PaymentStatus.COMPLETED, PaymentType.TOUR);
     }
 
     // Đếm tổng số đơn hàng trong ngày
@@ -212,6 +227,5 @@ public class DashboardService {
         LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
         return ordersRepository.getTopCustomersInMonth(startDate, endDate);
     }
-
 
 }

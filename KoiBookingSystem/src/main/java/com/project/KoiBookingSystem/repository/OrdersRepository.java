@@ -17,6 +17,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
     List<Orders> findByTour_TourId(String tourId);
 
+
     // Đếm số lượng đơn hàng có trạng thái DELIVERED
     @Query("SELECT COUNT(o) FROM Orders o WHERE o.status = :status")
     long countOrdersByStatus(@Param("status") OrderStatus status);
@@ -54,4 +55,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     List<Object[]> getTopCustomersInMonth(@Param("startDate") LocalDateTime startDate,
                                           @Param("endDate") LocalDateTime endDate);
 }
+
+
 

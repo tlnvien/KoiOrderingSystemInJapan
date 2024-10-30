@@ -13,8 +13,6 @@ public interface FarmRepository extends JpaRepository<Farm, Long> {
 
     Farm findTopByOrderByIdDesc();
 
-    Farm findByFarmNameAndStatusTrue(String farmName);
-
     List<Farm> findByFarmNameContainingAndKoiFarmsKoiSpeciesContainingAndStatusTrue(String farmName, String species);
 
     List<Farm> findByFarmNameContainingAndStatusTrue(String farmName);

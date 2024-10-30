@@ -2,10 +2,7 @@ package com.project.KoiBookingSystem.service;
 
 import com.project.KoiBookingSystem.entity.*;
 import com.project.KoiBookingSystem.enums.*;
-import com.project.KoiBookingSystem.exception.ActionException;
-import com.project.KoiBookingSystem.exception.EmptyListException;
-import com.project.KoiBookingSystem.exception.NotFoundException;
-import com.project.KoiBookingSystem.exception.PaymentException;
+import com.project.KoiBookingSystem.exception.*;
 import com.project.KoiBookingSystem.model.request.BookingAvailableRequest;
 import com.project.KoiBookingSystem.model.request.BookingRequest;
 import com.project.KoiBookingSystem.model.response.BookingAvailableResponse;
@@ -448,30 +445,30 @@ public class BookingService {
 //    // yêu cầu booking ban đầu của khách sẽ không có tour
 
         // ĐẶT TOUR CÓ SẴN.
+        //=======================TOUR CÓ SẴN
         @Transactional
         public BookingAvailableResponse createTicket(BookingAvailableRequest bookingRequest) {
             try {
                 // Tìm tour theo ID
                 Tour tour = tourRepository.findTourByTourId(bookingRequest.getTourID());
                 if (tour == null) {
-                    throw new NotFoundException("Tour Not Found!");
+                    throw new NotFoundException("Tour không tìm thấy!!!");
                 }
 
                 // Kiểm tra xem khách hàng có tồn tại và có vai trò "CUSTOMER"
                 Account currentCustomer = authenticationService.getCurrentAccount();
                 if (currentCustomer == null || !currentCustomer.getRole().equals(Role.CUSTOMER)) {
-                    throw new NotFoundException("CUSTOMER Not Found!");
+                    throw new NotFoundException("Không tìm thấy thông tin khách hàng!!!");
                 }
 
                 // Kiểm tra số ghế còn lại của tour
                 int requestedSeats = bookingRequest.getNumberOfAttendances();
                 if (tour.getRemainSeat() < requestedSeats) {
-                    throw new ActionException("Not enough seats available!");
+                    throw new ActionException("Tour không đủ chỗ để đặt!");
                 }
 
-
-                // Kiểm tra thông tin khách hàng
-                validateCustomerInfo(bookingRequest, currentCustomer);
+                // Kiểm tra thông tin từng khách hàng trong danh sách
+                validateCustomerInfo(bookingRequest.getCustomers(), currentCustomer, requestedSeats);
 
 
                 // Tạo booking mới
@@ -483,7 +480,6 @@ public class BookingService {
                 booking.setHasVisa(bookingRequest.isHasVisa());
                 booking.setRequestStatus(RequestStatus.NULL);
                 booking.setExpired(false);
-                booking.setSeatBooked(requestedSeats);
                 booking.setCustomer(currentCustomer);
                 booking.setTour(tour);
 
@@ -491,9 +487,25 @@ public class BookingService {
                 float totalPrice = calculateTotalPrice(tour, bookingRequest.getNumberOfAttendances());
                 booking.setTotalPrice(totalPrice);
 
+                // Tạo danh sách BookingDetail
+                List<BookingDetail> bookingDetails = new ArrayList<>();
+                for (CustomerOfBookingResponse customer : bookingRequest.getCustomers()) {
+                    BookingDetail bookingDetail = new BookingDetail();
+                    bookingDetail.setBooking(booking);
+                    bookingDetail.setCustomerName(customer.getFullName());
+                    bookingDetail.setPhone(customer.getPhone());
+                    bookingDetail.setDob(customer.getDob());
+                    bookingDetail.setGender(customer.getGender());
+
+                    bookingDetails.add(bookingDetail);
+                }
+                booking.setBookingDetails(bookingDetails); // Gán danh sách BookingDetail cho booking
+
                 // Lưu booking
                 bookingRepository.save(booking);
 
+
+                // CẬP NHẬT BẢNG TOUR
                 // Cập nhật số ghế còn lại của tour
                 int updatedRemainSeats = tour.getRemainSeat() - requestedSeats;
                 tour.setRemainSeat(updatedRemainSeats);
@@ -505,6 +517,7 @@ public class BookingService {
 
                 BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
                 response.setPaymentStatus(PaymentStatus.PENDING);
+                response.setCustomers(bookingRequest.getCustomers()); // Thêm danh sách customers vào response
                 // Trả về response của booking
                 return response;
             } catch (DataIntegrityViolationException e) {
@@ -513,356 +526,318 @@ public class BookingService {
         }
 
 
-        //hàm để check lỗi username và phone
-        private void validateCustomerInfo(BookingAvailableRequest bookingRequest, Account currentCustomer) {
-            CustomerOfBookingResponse customerInfo = bookingRequest.getCustomer();
+    // Hàm để kiểm tra lỗi tên người dùng và số điện thoại
+    private void validateCustomerInfo(List<CustomerOfBookingResponse> customers, Account currentCustomer, int numberOfAttendances) {
+        try {
 
-            // Kiểm tra thông tin khách hàng
-            if (customerInfo == null || customerInfo.getFullName() == null || customerInfo.getFullName().isEmpty()) {
-                throw new IllegalArgumentException("Customer full name is required!");
+            // Kiểm tra nếu số khách tham gia khác với số lượng khách hàng được cung cấp
+            if (numberOfAttendances != customers.size()) {
+                throw new ActionException("Số lượng khách hàng không khớp với số người tham gia đã nhập.");
             }
 
-            // Kiểm tra và cập nhật fullName
-            if (currentCustomer.getFullName() == null || !currentCustomer.getFullName().equals(customerInfo.getFullName())) {
-                currentCustomer.setFullName(customerInfo.getFullName());
+            boolean updated = false;
+
+            for (CustomerOfBookingResponse customerInfo : customers) {
+                if (customerInfo == null || customerInfo.getFullName() == null || customerInfo.getFullName().isEmpty()) {
+                    throw new IllegalArgumentException("Yêu cầu nhập tên đầy đủ của từng khách hàng!");
+                }
+
+                // Kiểm tra và cập nhật nếu thông tin thiếu
+                if (currentCustomer.getFullName() == null || currentCustomer.getFullName().isEmpty()) {
+                    currentCustomer.setFullName(customerInfo.getFullName());
+                    updated = true;
+                }
+
+                if (customerInfo.getPhone() == null || customerInfo.getPhone().isEmpty()) {
+                    throw new ActionException("Số điện thoại không được để trống hoặc sai thông tin!");
+                } else if (currentCustomer.getPhone() == null || currentCustomer.getPhone().isEmpty()) {
+                    currentCustomer.setPhone(customerInfo.getPhone());
+                    updated = true;
+                }
+
+                if (currentCustomer.getGender() == null && customerInfo.getGender() != null) {
+                    currentCustomer.setGender(customerInfo.getGender());
+                    updated = true;
+                }
+            }
+
+            // Lưu vào cơ sở dữ liệu chỉ khi có thay đổi
+            if (updated) {
                 accountRepository.save(currentCustomer);
             }
 
-            // Kiểm tra số điện thoại
-            if (customerInfo.getPhone() == null || customerInfo.getPhone().isEmpty()) {
-                throw new ActionException("Customer phone number is required!");
-            } else if (!currentCustomer.getPhone().equals(customerInfo.getPhone())) {
-                currentCustomer.setPhone(customerInfo.getPhone());
-                accountRepository.save(currentCustomer);
-            }
-        }
-
-        //kiểm tra thanh toán
-        public boolean isPaymentCompleted(String bookingID) {
-            Booking booking = (Booking) bookingRepository.findByBookingId(bookingID)
-                    .orElseThrow(() -> new NotFoundException("Booking not found"));
-
-            // Lấy danh sách payment liên quan đến booking
-            Payment payment = booking.getPayment();
-            if (payment == null || payment.getTransactions() == null || payment.getTransactions().isEmpty()) {
-                return false; // Nếu không có giao dịch nào, nghĩa là chưa thanh toán
-            }
-
-            // Kiểm tra tất cả các giao dịch
-            for (Transactions transaction : payment.getTransactions()) {
-                if (transaction.getStatus() == TransactionsEnum.SUCCESS) {
-                    payment.setStatus(PaymentStatus.COMPLETED);
-                    return true; // Nếu có giao dịch nào thành công, nghĩa là đã thanh toán
-                }
-            }
-            return false; // Nếu không có giao dịch nào thành công, nghĩa là chưa thanh toán
-        }
-
-
-        private void scheduleBookingCancellation(String bookingID) {
-            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-            scheduler.schedule(() -> {
-                try {
-                    // Kiểm tra trạng thái thanh toán dựa trên transaction
-                    if (!isPaymentCompleted(bookingID)) {
-                        Booking booking = (Booking) bookingRepository.findByBookingId(bookingID)
-                                .orElseThrow(() -> new NotFoundException("Booking not found"));
-
-                        // Kiểm tra nếu trạng thái thanh toán vẫn là UNPAID
-                        if (booking.getBookingStatus() == BookingStatus.UNCHECKED) {
-                            // Hủy booking
-                            booking.setBookingStatus(BookingStatus.CANCELLED);
-                            booking.setExpired(false);
-                            bookingRepository.save(booking);  // Lưu lại trạng thái hủy của booking
-
-                            // Lấy thông tin tour để cập nhật lại số ghế
-                            Tour tour = booking.getTour();
-                            if (tour != null) {
-                                // Cập nhật lại số ghế còn lại
-                                int updatedRemainSeats = tour.getRemainSeat() + booking.getNumberOfAttendances();
-                                tour.setRemainSeat(updatedRemainSeats);
-                                // Lưu cập nhật tour
-                                tourRepository.save(tour);
-                            }
-                        }
-                    } else {
-                        System.out.println("Payment has already been completed, no cancellation.");
-                    }
-                } catch (Exception e) {
-                    throw new NotFoundException("Error checking");  // Log lỗi nếu có
-                } finally {
-                    // Đảm bảo Thread Pool được tắt sau khi thực hiện xong nhiệm vụ
-                    scheduler.shutdown();
-                }
-            }, 3, TimeUnit.HOURS); // Hủy booking sau 24 giờ nếu chưa thanh toán
-        }
-
-
-        private float calculateTotalPrice(Tour tour, int numberOfPersons) {
-            // Implement logic for calculating total price
-            return (float) (tour.getPrice() * numberOfPersons);
-        }
-
-        // tạo transaction
-        @Transactional
-        public void createTransaction(String bookingID) {
-            // Tìm cái Booking
-            Booking booking = (Booking) bookingRepository.findByBookingId(bookingID)
-                    .orElseThrow(() -> new NotFoundException("Booking not found"));
-
-            // Kiểm tra nếu BookingStatus là CANCELLED
-            if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
-                // Nếu trạng thái booking là CANCELLED, đặt PaymentStatus là CANCELLED
-                Payment payment = booking.getPayment();
-                if (payment == null) {
-                    payment = new Payment(); // Tạo payment mới nếu chưa có
-                    payment.setPaymentId(paymentService.generatePaymentId()); // Gán paymentId mới
-                    payment.setBooking(booking);
-                }
-
-                // Đặt trạng thái Payment là CANCELLED
-                payment.setStatus(PaymentStatus.CANCELLED);
-                payment.setPaymentDate(LocalDateTime.now());
-                payment.setMethod(PaymentMethod.BANKING);
-                payment.setPaymentType(PaymentType.TOUR);
-                payment.setDescription("Payment for cancelled booking");
-                payment.setCurrency(PaymentCurrency.VND);
-
-                // Lưu Payment
-                paymentRepository.save(payment);
-
-                throw new ActionException("Booking has been cancelled, payment is also cancelled.");
-            }
-
-            // Tạo Payment cho các booking không bị hủy, trạng thái ban đầu là PENDING
-            Payment payment = new Payment();
-            payment.setPaymentId(paymentService.generatePaymentId()); // Gán paymentId mới
-            payment.setBooking(booking);
-            payment.setPaymentDate(LocalDateTime.now());
-            payment.setMethod(PaymentMethod.BANKING);
-            payment.setStatus(PaymentStatus.PENDING); // Trạng thái ban đầu là PENDING
-            payment.setPaymentType(PaymentType.TOUR);
-            payment.setDescription("Thanh toán Tour có sẵn!!");
-            payment.setCurrency(PaymentCurrency.VND);
-            payment.setPrice(booking.getTotalPrice());
-
-            Set<Transactions> setTransactions = new HashSet<>();
-
-            // Tạo các Transactions cho giao dịch
-            // 1. Từ VNPAY -> CUSTOMER
-            Account customer = authenticationService.getCurrentAccount();
-            Transactions transaction1 = new Transactions();
-            transaction1.setFromAccount(null);
-            transaction1.setToAccount(customer);
-            transaction1.setPayment(payment);
-            transaction1.setStatus(TransactionsEnum.SUCCESS);
-            transaction1.setAmount(0);
-            transaction1.setDescription("VNPay TO CUSTOMER");
-            setTransactions.add(transaction1);
-
-            // 2. Từ CUSTOMER -> ADMIN
-            Account admin = accountRepository.findAccountByRole(Role.ADMIN);
-            Transactions transaction2 = new Transactions();
-            transaction2.setFromAccount(customer);
-            transaction2.setToAccount(admin);
-            transaction2.setPayment(payment);
-            transaction2.setStatus(TransactionsEnum.SUCCESS);
-            transaction2.setDescription("CUSTOMER TO ADMIN");
-            transaction2.setAmount(booking.getTotalPrice());
-
-            // Cập nhật số dư cho ADMIN
-            float newBalance = (float) (admin.getBalance() + booking.getTotalPrice());
-            admin.setBalance(newBalance);
-            setTransactions.add(transaction2);
-
-            // Lưu thông tin vào Payment và Booking
-            payment.setTransactions(setTransactions);
-            payment.setStatus(PaymentStatus.COMPLETED); // Sau khi các giao dịch thành công
-            booking.setBookingStatus(BookingStatus.NOT_CONFIRMED);
-            booking.setExpired(true);
-
-
-            // Lưu các đối tượng
-            paymentRepository.save(payment);
-            bookingRepository.save(booking);
-            accountRepository.save(admin); // Cần phải lưu ADMIN sau khi cập nhật số dư
-
-            // Gửi email xác nhận
-            EmailDetail emailDetail = new EmailDetail();
-            emailDetail.setSubject("Xác Nhận Đơn Đặt Tour");
-            emailDetail.setBooking(booking);
-            emailDetail.setAccount(customer);
-            emailDetail.setLink("https://yourbookinglink.com"); // Thay thế bằng link phù hợp để quản lý đặt chỗ
-            emailService.sendBookingCompleteEmail(emailDetail);
-        }
-
-        // update thông tin ticket khi khách hàng hướng đến sân bay.
-        @Transactional
-        public BookingAvailableResponse confirm (String bookingID, String userID) {
-            Booking booking = (Booking) bookingRepository.findByBookingId(bookingID)
-                    .orElseThrow(() -> new NotFoundException("Booking not found"));
-
-
-            Account consulting = accountRepository.findAccountByUserId(userID);
-            if (consulting == null || !consulting.getRole().equals(Role.CONSULTING)) {
-                throw new NotFoundException("You are not consulting!!!");
-            }
-            Account customer = booking.getCustomer();
-            if (customer == null) {
-                throw new NotFoundException("Customer not found for this booking!");
-            }
-
-            booking.setLastUpdate(new Date());
-            booking.setConsulting(consulting);
-            booking.setBookingStatus(BookingStatus.CHECKED);
-            bookingRepository.save(booking);
-            return modelMapper.map(booking, BookingAvailableResponse.class);
-        }
-
-
-        // lấy danh sách booking dựa vào mã userID
-        @Transactional
-        public List<BookingAvailableResponse> getAllBookings(String userID) {
-            // Kiểm tra xem tài khoản có tồn tại hay không
-            Account account = accountRepository.findAccountByUserId(userID);
-            if (account == null) {
-                throw new NotFoundException("Account not found");
-            }
-
-            // Tìm tất cả các booking của customer bằng tài khoản
-            List<Booking> bookings = bookingRepository.findBookingsByCustomer(account);
-
-
-
-            // Kiểm tra nếu không có booking nào
-            if (bookings.isEmpty()) {
-                throw new NotFoundException("No bookings found for this account");
-            }
-
-            // Chuyển đổi danh sách booking thành danh sách BookingResponse sử dụng ModelMapper
-            return bookings.stream()
-                    .map(booking -> {
-                        BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
-                        // Cập nhật paymentStatus tương ứng với trạng thái booking
-                        if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
-                            response.setPaymentStatus(PaymentStatus.CANCELLED); // Cập nhật thành CANCELLED nếu booking đã hủy
-                        } else if (booking.getPayment() != null) {
-                            response.setPaymentStatus(booking.getPayment().getStatus()); // Lấy paymentStatus từ payment
-                        } else {
-                            response.setPaymentStatus(PaymentStatus.PENDING); // Hoặc có thể đặt giá trị mặc định nào đó
-                        }
-                        return response;
-                    })
-                    .collect(Collectors.toList());
-        }
-
-
-
-
-        // lấy danh sách booking IsExprie
-        @Transactional
-        public List<BookingAvailableResponse> getExpiredBookings(String tourId) {
-            // Tìm tất cả các booking có isExpired = true
-            List<Booking> expiredBookings = bookingRepository.findBookingsByIsExpiredAndTour_TourId(true, tourId);
-
-            // Kiểm tra nếu không có booking nào
-            if (expiredBookings.isEmpty()) {
-                throw new NotFoundException("No expired bookings found");
-            }
-
-            // Chuyển đổi danh sách booking thành danh sách BookingResponse sử dụng ModelMapper
-            return expiredBookings.stream()
-                    .map(booking ->{
-                        BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
-                        // Cập nhật paymentStatus tương ứng với trạng thái booking
-                        if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
-                            response.setPaymentStatus(PaymentStatus.CANCELLED); // Cập nhật thành CANCELLED nếu booking đã hủy
-                        } else if (booking.getPayment() != null) {
-                            response.setPaymentStatus(booking.getPayment().getStatus()); // Lấy paymentStatus từ payment
-                        } else {
-                            response.setPaymentStatus(PaymentStatus.PENDING); // Hoặc có thể đặt giá trị mặc định nào đó
-                        }
-                        return response;
-                    })
-                    .collect(Collectors.toList());
-        }
-
-
-
-        // thanh toan bang tien mat
-        @Transactional
-        public BookingAvailableResponse createTicketCast(BookingAvailableRequest bookingAvailableRequest) {
-            try {
-                Tour tour = tourRepository.findTourByTourId(bookingAvailableRequest.getTourID());
-                if (tour == null) {
-                    throw new NotFoundException("Tour Not Found!");
-                }
-
-                // Kiểm tra xem khách hàng có tồn tại và có vai trò "CUSTOMER" hay không
-                Account customer = authenticationService.getCurrentAccount();
-                if (customer == null || !customer.getRole().equals(Role.CUSTOMER)) {
-                    throw new NotFoundException("CUSTOMER Not Found!");
-                }
-
-
-                // Kiểm tra số ghế còn lại của tour
-                int requestedSeats = bookingAvailableRequest.getNumberOfAttendances(); // số ghế hành khách đặt = hành khách đi
-                if (tour.getRemainSeat() < requestedSeats) {
-                    throw new ActionException("Not enough seats available!");
-                }
-
-                Booking booking = new Booking();
-                booking.setBookingId(generateBookingId());
-                booking.setBookingStatus(BookingStatus.NOT_CONFIRMED); // chưa check tại sân bay
-                booking.setNumberOfAttendances(requestedSeats);
-                booking.setRequestStatus(RequestStatus.NULL);
-                booking.setExpired(true);
-                booking.setCreatedDate(LocalDateTime.now());
-                booking.setSeatBooked(requestedSeats);
-
-                float totalPrice = calculateTotalPrice(tour, bookingAvailableRequest.getNumberOfAttendances());
-                booking.setTotalPrice(totalPrice);
-
-
-                booking.setCustomer(customer);
-                booking.setTour(tour);
-                bookingRepository.save(booking);
-
-                // Cập nhật số ghế còn lại của tour
-                int updatedRemainSeats = tour.getRemainSeat() - requestedSeats;
-                tour.setRemainSeat(updatedRemainSeats);
-                tour.setType(TourType.AVAILABLE_TOUR);
-                tourRepository.save(tour);
-
-                validateCustomerInfo(bookingAvailableRequest, customer);
-
-                // Tạo payment
-                Payment payment = new Payment();
-                payment.setBooking(booking);
-                payment.setPaymentDate(LocalDateTime.now());
-                payment.setMethod(PaymentMethod.CASH);
-                payment.setPaymentId(paymentService.generatePaymentId()); // Gán paymentId mới
-                payment.setStatus(PaymentStatus.COMPLETED); // Trạng thái ban đầu là PENDING
-                payment.setPaymentType(PaymentType.TOUR);
-                payment.setCurrency(PaymentCurrency.VND);
-                payment.setDescription("Pay by Cash");
-                payment.setCurrency(PaymentCurrency.VND);
-                payment.setPrice(booking.getTotalPrice());
-                paymentRepository.save(payment);
-
-                EmailDetail emailDetail = new EmailDetail();
-                emailDetail.setSubject("Xác Nhận Đơn Đặt Tour");
-                emailDetail.setBooking(booking);
-                emailDetail.setAccount(customer);
-                emailDetail.setLink("https://google.com"); // Thay thế bằng link phù hợp để quản lý đặt chỗ
-                emailService.sendBookingCompleteEmail(emailDetail);
-
-                BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
-                response.setPaymentStatus(PaymentStatus.COMPLETED);
-
-                return response;
-            } catch (DataIntegrityViolationException e) {
-                throw new DataIntegrityViolationException(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("phone")) {
+                throw new DuplicatedException("Số điện thoại này đã tồn tại trong hệ thống!");
+            } else {
+                throw new ActionException(e.getMessage());
             }
         }
     }
+
+    //kiểm tra thanh toán
+    public boolean isPaymentCompleted(String bookingID) {
+        Booking booking = (Booking) bookingRepository.findByBookingId(bookingID)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy thông tin vé"));
+
+        // Lấy danh sách payment liên quan đến booking
+        Payment payment = booking.getPayment();
+        if (payment == null || payment.getTransactions() == null || payment.getTransactions().isEmpty()) {
+            return false; // Nếu không có giao dịch nào, nghĩa là chưa thanh toán
+        }
+
+        // Kiểm tra tất cả các giao dịch
+        for (Transactions transaction : payment.getTransactions()) {
+            if (transaction.getStatus() == TransactionsEnum.SUCCESS) {
+                payment.setStatus(PaymentStatus.COMPLETED);
+                return true; // Nếu có giao dịch nào thành công, nghĩa là đã thanh toán
+            }
+        }
+        return false; // Nếu không có giao dịch nào thành công, nghĩa là chưa thanh toán
+    }
+
+
+    private void scheduleBookingCancellation(String bookingID) {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.schedule(() -> {
+            try {
+                // Kiểm tra trạng thái thanh toán dựa trên transaction
+                if (!isPaymentCompleted(bookingID)) {
+                    Booking booking = (Booking) bookingRepository.findByBookingId(bookingID)
+                            .orElseThrow(() -> new NotFoundException("Không tìm thấy thông tin vé"));
+
+                    // Kiểm tra nếu trạng thái thanh toán vẫn là UNPAID
+                    if (booking.getBookingStatus() == BookingStatus.UNCHECKED) {
+                        // Hủy booking
+                        booking.setBookingStatus(BookingStatus.CANCELLED);
+                        booking.setExpired(true);
+                        bookingRepository.save(booking);  // Lưu lại trạng thái hủy của booking
+
+                        // Lấy thông tin tour để cập nhật lại số ghế
+                        Tour tour = booking.getTour();
+                        if (tour != null) {
+                            // Cập nhật lại số ghế còn lại
+                            int updatedRemainSeats = tour.getRemainSeat() + booking.getNumberOfAttendances();
+                            tour.setRemainSeat(updatedRemainSeats);
+                            // Lưu cập nhật tour
+                            tourRepository.save(tour);
+                        }
+                    }
+                } else {
+                    System.out.println("Việc thanh toán đã hoàn tất, không được hủy!!!");
+                }
+            } catch (Exception e) {
+                throw new NotFoundException("Error checking");  // Log lỗi nếu có
+            } finally {
+                // Đảm bảo Thread Pool được tắt sau khi thực hiện xong nhiệm vụ
+                scheduler.shutdown();
+            }
+        }, 3, TimeUnit.HOURS); // Hủy booking sau 24 giờ nếu chưa thanh toán
+    }
+
+
+    private float calculateTotalPrice(Tour tour, int numberOfPersons) {
+        // Implement logic for calculating total price
+        return (float) (tour.getPrice() * numberOfPersons);
+    }
+
+    @Transactional
+    public void createTransaction(String bookingID) {
+        // Tìm Booking
+        Booking newBooking = (Booking) bookingRepository.findByBookingId(bookingID)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy đặt phòng"));
+
+        Account oldCustomer = authenticationService.getCurrentAccount();
+        if (oldCustomer == null) {
+            throw new IllegalArgumentException("Khách hàng không hợp lệ.");
+        }
+
+        // Kiểm tra nếu BookingStatus là CANCELLED
+        if (newBooking.getBookingStatus() == BookingStatus.CANCELLED) {
+            // Nếu trạng thái đặt phòng là CANCELLED, đặt PaymentStatus là CANCELLED
+            Payment payment = newBooking.getPayment();
+            if (payment == null) {
+                payment = new Payment(); // Tạo payment mới nếu chưa có
+                payment.setPaymentId(paymentService.generatePaymentId()); // Gán paymentId mới
+                payment.setBooking(newBooking);
+            }
+
+            // Đặt trạng thái Payment là CANCELLED
+            payment.setStatus(PaymentStatus.CANCELLED);
+            payment.setPaymentDate(LocalDateTime.now());
+            payment.setMethod(PaymentMethod.BANKING);
+            payment.setPaymentType(PaymentType.TOUR);
+            payment.setDescription("Thanh toán cho việc hủy đặt phòng");
+            payment.setCurrency(PaymentCurrency.VND);
+
+            // Lưu Payment
+            paymentRepository.save(payment);
+            throw new ActionException("Đặt phòng đã bị hủy, thanh toán cũng bị hủy.");
+        }
+
+        // Kiểm tra nếu đã thanh toán
+        Payment existingPayment = newBooking.getPayment();
+        if (existingPayment != null && existingPayment.getStatus() == PaymentStatus.COMPLETED) {
+            throw new ActionException("Đặt phòng đã được thanh toán trước đó, không thể thanh toán lại.");
+        }
+
+        // Tạo Payment cho các booking không bị hủy, trạng thái ban đầu là PENDING
+        Payment payment = new Payment();
+        payment.setPaymentId(paymentService.generatePaymentId()); // Gán paymentId mới
+        payment.setBooking(newBooking);
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setMethod(PaymentMethod.BANKING);
+        payment.setStatus(PaymentStatus.PENDING); // Trạng thái ban đầu là PENDING
+        payment.setPaymentType(PaymentType.TOUR);
+        payment.setDescription("Thanh toán Tour có sẵn!!");
+        payment.setCurrency(PaymentCurrency.VND);
+        payment.setPrice(newBooking.getTotalPrice());
+
+        Set<Transactions> setTransactions = new HashSet<>();
+
+        Account customer = authenticationService.getCurrentAccount();
+        if (customer == null) {
+            throw new IllegalArgumentException("Khách hàng không hợp lệ.");
+        }
+
+        // Tạo các Transactions cho giao dịch
+        // 1. Từ VNPAY -> CUSTOMER
+        Transactions transaction1 = new Transactions();
+        transaction1.setFromAccount(null);
+        transaction1.setToAccount(customer);
+        transaction1.setPayment(payment);
+        transaction1.setStatus(TransactionsEnum.SUCCESS);
+        transaction1.setAmount(0); // Hoặc gán giá trị phù hợp nếu cần
+        transaction1.setDescription("Giao dịch từ VNPay tới Customer");
+        setTransactions.add(transaction1);
+
+        // 2. Từ CUSTOMER -> ADMIN
+        Account admin = accountRepository.findAccountByRole(Role.ADMIN);
+        if (admin == null) {
+            throw new NotFoundException("Admin không tồn tại.");
+        }
+
+        Transactions transaction2 = new Transactions();
+        transaction2.setFromAccount(customer);
+        transaction2.setToAccount(admin);
+        transaction2.setPayment(payment);
+        transaction2.setStatus(TransactionsEnum.SUCCESS);
+        transaction2.setDescription("Giao dịch từ Customer tới Admin");
+        transaction2.setAmount(newBooking.getTotalPrice());
+
+        // Cập nhật số dư cho ADMIN
+        float newBalance = (float) (admin.getBalance() + newBooking.getTotalPrice());
+        admin.setBalance(newBalance);
+        setTransactions.add(transaction2);
+
+        // Lưu thông tin vào Payment và Booking
+        payment.setTransactions(setTransactions);
+        payment.setStatus(PaymentStatus.COMPLETED); // Sau khi các giao dịch thành công
+        newBooking.setBookingStatus(BookingStatus.NOT_CONFIRMED);
+        newBooking.setPayment(payment);
+        newBooking.setExpired(false);
+
+
+        // Lưu các đối tượng
+        paymentRepository.save(payment);
+        bookingRepository.save(newBooking);
+        accountRepository.save(admin); // Cần phải lưu ADMIN sau khi cập nhật số dư
+
+        // Gửi email xác nhận
+        sendBookingConfirmation(customer, newBooking);
+    }
+
+
+    // lấy danh sách booking dựa vào mã userID
+    @Transactional
+    public List<BookingAvailableResponse> getAllBookings(String userID) {
+        // Kiểm tra xem tài khoản có tồn tại hay không
+        Account account = accountRepository.findAccountByUserId(userID);
+        if (account == null) {
+            throw new NotFoundException("Không tìm thấy tài khoản");
+        }
+
+        // Tìm tất cả các booking của customer bằng tài khoản
+        List<Booking> bookings = bookingRepository.findBookingsByCustomer(account);
+
+
+        // Kiểm tra nếu không có booking nào
+        if (bookings.isEmpty()) {
+            throw new NotFoundException("Không có vé nào được đặt bởi tài khoản này");
+            //No bookings found for this account
+        }
+
+        // Chuyển đổi danh sách booking thành danh sách BookingResponse sử dụng ModelMapper
+        return bookings.stream()
+                .map(booking -> {
+                    BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
+                    // Lấy danh sách khách hàng từ bookingDetails
+                    List<CustomerOfBookingResponse> customers = booking.getBookingDetails().stream()
+                            .map(bookingDetail -> {
+                                CustomerOfBookingResponse customerResponse = new CustomerOfBookingResponse();
+                                customerResponse.setFullName(bookingDetail.getCustomerName());
+                                customerResponse.setPhone(bookingDetail.getPhone());
+                                customerResponse.setGender(bookingDetail.getGender());
+                                customerResponse.setDob(bookingDetail.getDob());
+                                return customerResponse;
+                            })
+                            .collect(Collectors.toList());
+
+                    response.setCustomers(customers);
+                    // Cập nhật paymentStatus dựa trên trạng thái booking
+                    if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
+                        response.setPaymentStatus(PaymentStatus.CANCELLED);
+                    } else if (booking.getPayment() != null) {
+                        response.setPaymentStatus(booking.getPayment().getStatus());
+                    } else {
+                        response.setPaymentStatus(PaymentStatus.PENDING);
+                    }
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    // lấy danh sách booking IsExpire
+    @Transactional
+    public List<BookingAvailableResponse> getExpiredBookings(String tourId) {
+        // Tìm tất cả các booking có isExpired = fales
+        List<Booking> expiredBookings = bookingRepository.findBookingsByIsExpiredAndTour_TourId(false, tourId);
+
+        // Kiểm tra nếu không có booking nào
+        if (expiredBookings.isEmpty()) {
+            throw new NotFoundException("vé đã hết hạn");
+        }
+
+        // Chuyển đổi danh sách booking thành danh sách BookingResponse sử dụng ModelMapper
+        return expiredBookings.stream()
+                .map(booking -> {
+                    BookingAvailableResponse response = modelMapper.map(booking, BookingAvailableResponse.class);
+
+
+                    // Lấy danh sách khách hàng từ bookingDetails
+                    List<CustomerOfBookingResponse> customers = booking.getBookingDetails().stream()
+                            .map(bookingDetail -> {
+                                CustomerOfBookingResponse customerResponse = new CustomerOfBookingResponse();
+                                customerResponse.setFullName(bookingDetail.getCustomerName());
+                                customerResponse.setPhone(bookingDetail.getPhone());
+                                customerResponse.setGender(bookingDetail.getGender());
+                                customerResponse.setDob(bookingDetail.getDob());
+                                return customerResponse;
+                            })
+                            .collect(Collectors.toList());
+
+                    response.setCustomers(customers);
+                    // Cập nhật paymentStatus tương ứng với trạng thái booking
+                    if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
+                        response.setPaymentStatus(PaymentStatus.CANCELLED); // Cập nhật thành CANCELLED nếu booking đã hủy
+                    } else if (booking.getPayment() != null) {
+                        response.setPaymentStatus(booking.getPayment().getStatus()); // Lấy paymentStatus từ payment
+                    } else {
+                        response.setPaymentStatus(PaymentStatus.PENDING); // Hoặc có thể đặt giá trị mặc định nào đó
+                    }
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+}

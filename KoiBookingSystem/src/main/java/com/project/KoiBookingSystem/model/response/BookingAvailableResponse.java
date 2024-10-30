@@ -11,6 +11,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class BookingAvailableResponse {
@@ -38,15 +39,11 @@ public class BookingAvailableResponse {
     @Enumerated(EnumType.STRING)
     private TourType tourType;
 
-    @NotNull(message = "seatBooked can not be null")
-    private int seatBooked;
-
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    private CustomerOfBookingResponse customer;
+    // Thay đổi từ một đối tượng thành danh sách
+    private List<CustomerOfBookingResponse> customers;
 
     private BookingAvailableTour tourID;
-//
 }
-

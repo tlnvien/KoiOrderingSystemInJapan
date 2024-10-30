@@ -35,7 +35,7 @@ public class VNPayServiceAvailableTour {
 
         BookingAvailableResponse booking = bookingService.createTicket(bookingAvailableRequest);
         float money = booking.getTotalPrice() * 100;  // để mất thập phân kiểu int (sân nhà của ng ta) vnp_Amount
-        String amount = String.valueOf((int) money);
+        String amount = String.valueOf((long) money);
         // muốn tạo order thì chỉ cần thêm hàm order ở đây
 
 

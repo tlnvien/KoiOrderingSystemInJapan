@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -78,4 +79,8 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "consulting_ID", referencedColumnName = "userID")
     private Account consulting;//.
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<BookingDetail> bookingDetails;
 }

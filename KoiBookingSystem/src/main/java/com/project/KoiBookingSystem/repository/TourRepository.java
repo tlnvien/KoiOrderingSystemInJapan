@@ -46,6 +46,11 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     List<Tour> findByTypeAndTourApproval(TourType type, TourApproval approval);
 
+    @Query("SELECT t FROM Tour t WHERE t.type = :type AND t.status <> com.project.KoiBookingSystem.enums.TourStatus.CANCELLED")
+    List<Tour> findByTypeAndStatusNotCancelled(@Param("type") TourType type);
+
+    @Query("SELECT t FROM Tour t WHERE t.consulting.userId = :consultingId AND t.status <> com.project.KoiBookingSystem.enums.TourStatus.CANCELLED")
+    List<Tour> findByConsulting_UserId(@Param("consultingId") String consultingId);
 
     //tổng số tour trong ngày
     @Query("SELECT COUNT(t) FROM Tour t WHERE t.departureDate = CURRENT_DATE")
@@ -93,3 +98,4 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     @Query("SELECT COUNT(b) FROM Tour b WHERE b.sales.userId = :userId")
     long countToursBySaleUserId(String userId);
 }
+
