@@ -8,8 +8,7 @@ import facebookLogo from "./assets/facebook-logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
-import { auth, googleProvider } from "../../config/firebase"; // Adjust the path as necessary
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import api from "../../config/axios";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -18,8 +17,6 @@ function Login() {
   const [isGoogleLogin, setIsGoogleLogin] = useState(false);
 
   const navigate = useNavigate();
-
-  const apiUrl = "http://localhost:8082/api/login";
 
   // Updated Google login success handler
   const handleGoogleLoginSuccess = async (response) => {
@@ -94,7 +91,7 @@ function Login() {
     setIsGoogleLogin(false);
 
     try {
-      const response = await axios.post(apiUrl, {
+      const response = await api.post("login", {
         username: username,
         password: password,
       });
@@ -112,6 +109,12 @@ function Login() {
         navigate("/");
       } else if (role === "FARM_HOST") {
         navigate("/farm-host");
+      } else if (role === "SALES") {
+        navigate("/dashboard/sale");
+      } else if (role === "CONSULTING") {
+        navigate("/dashboard/consulting");
+      } else if (role === "DELIVERING") {
+        navigate("/dashboard/delivering");
       } else {
         navigate("/");
       }

@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import "./ForgotPassword.css";
 import axios from "axios"; // Import axios for making API calls
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom";
+import api from "../../config/axios";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState(""); // Changed identifier to email
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
-  const [successMessage, setSuccessMessage] = useState(""); // State for success messages
-  const navigate = useNavigate(); // Initialize useNavigate hook
-  const forgotApi = "http://localhost:8082/api/forgot-password"; // API endpoint for sending the verification code
-  const token = localStorage.getItem("token"); // Get token from local storage
+  const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(forgotApi, { email });
+      const response = await api.post("forgot-password", { email });
 
       if (response.status === 200) {
         setSuccessMessage("Mã xác minh đã được gửi!");

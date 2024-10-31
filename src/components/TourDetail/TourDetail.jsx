@@ -1,191 +1,110 @@
-import React from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./TourDetail.css";
-
-// Assuming you're using the same image imports as in SearchPage
-import Tour1 from "./assets/tour1.jpg";
-import Tour2 from "./assets/tour2.jpg";
-import Tour3 from "./assets/tour3.jpg";
-import Tour4 from "./assets/tour4.jpg";
-import Tour5 from "./assets/tour5.jpg";
-import Tour6 from "./assets/tour6.jpg";
-import Tour7 from "./assets/tour7.jpg";
-import Tour8 from "./assets/tour8.jpg";
-import Tour9 from "./assets/tour9.jpg";
-import Tour10 from "./assets/tour10.jpg";
-import Koi1 from "./assets/koi-fish.jpg"; // Koi images
-import Koi2 from "./assets/koi-fish1.jpg";
-import Koi3 from "./assets/koi-fish2.jpg";
-
-const tourData = [
-  {
-    id: 1,
-    title: "Matsue Nishikigoi Center - Dainichi Koi Farm - Otsuka Koi Farm",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 20000000, // Giá dưới dạng số
-    duration: "7days", // Thời gian tour
-    image: Tour1,
-  },
-  {
-    id: 2,
-    title: "Tour Nhật Bản Tiêu Chuẩn 2",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 15000000, // Giá dưới dạng số
-    duration: "5days", // Thời gian tour
-    image: Tour2,
-  },
-  {
-    id: 3,
-    title: "Tour Khám Phá Tokyo",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 18000000,
-    duration: "4days",
-    image: Tour3,
-  },
-  {
-    id: 4,
-    title: "Tour Kyoto Cổ Kính",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 22000000,
-    duration: "6days",
-    image: Tour4,
-  },
-  {
-    id: 5,
-    title: "Tour Thưởng Thức Ẩm Thực Nhật Bản",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 16000000,
-    duration: "3days",
-    image: Tour5,
-  },
-  {
-    id: 6,
-    title: "Tour Tham Quan Fuji",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 12000000,
-    duration: "2days",
-    image: Tour6,
-  },
-  {
-    id: 7,
-    title: "Tour Châu Á Kỳ Diệu",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 30000000,
-    duration: "10days",
-    image: Tour7,
-  },
-  {
-    id: 8,
-    title: "Tour Mùa Hoa Anh Đào",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 25000000,
-    duration: "5days",
-    image: Tour8,
-  },
-  {
-    id: 9,
-    title: "Tour Đắm Chìm Trong Văn Hóa",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 23000000,
-    duration: "7days",
-    image: Tour9,
-  },
-  {
-    id: 10,
-    title: "Tour Biển Okinawa",
-    description:
-      "Mã tour: T001\nThời gian: 4N3Đ\nNgày khởi hành: 01/10/2024\nSố chỗ còn: 5",
-    price: 21000000,
-    duration: "5days",
-    image: Tour10,
-  },
-];
-
-const koiVarieties = [
-  {
-    name: "Kohaku",
-    image: Koi1,
-  },
-  {
-    name: "Sanke",
-    image: Koi2,
-  },
-  {
-    name: "Showa",
-    image: Koi3,
-  },
-];
+import api from "../../config/axios";
 
 const TourDetailPage = () => {
-  const { id } = useParams(); // Get the tour ID from the URL
-  const tour = tourData.find((tour) => tour.id === Number(id));
+  const { tourId } = useParams();
+
   const navigate = useNavigate();
+  const [tour, setTour] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!tour) {
-    return <div>Tour not found</div>;
-  }
+  useEffect(() => {
+    const fetchTourDetail = async () => {
+      try {
+        if (!tourId) {
+          console.error("tourId is not available.");
+          return;
+        }
+        const response = await api.get(`tour/search/${tourId}`);
+        setTour(response.data);
+      } catch (error) {
+        console.error("Error fetching tour details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleBooking = () => {
-    navigate(`/booking/${tour.id}`);
+    fetchTourDetail();
+  }, [tourId]);
+
+  const handleBookingClick = () => {
+    navigate(`/booking/available?tourId=${tourId}`);
   };
+
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="tour-detail-container">
       <Header />
-      <h1 className="tour-title">{tour.title}</h1>
-      <div className="tour-detail-content">
-        <div className="tour-left">
-          <img
-            src={tour.image}
-            alt={tour.title}
-            className="tour-detail-image"
-          />
+      <div className="tour-main-content">
+        <div className="tour-detail-header">
+          <h1 className="tour-title">Thông tin chi tiết</h1>
         </div>
-        <div className="tour-right">
-          <form className="tour-description-form">
-            <div className="tour-description">
+        <div className="tour-content-wrapper">
+          <div className="tour-image-section">
+            <img
+              src={tour.tourImage || "default_image_path.jpg"}
+              className="tour-detail-image"
+            />
+          </div>
+          <div className="tour-info-section">
+            <div className="tour-info-content">
+              <h2>{tour.tourName}</h2>
               <p>
-                {tour.description.split("\n").map((line, index) => (
-                  <span key={index}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
+                <strong>Mã tour:</strong> {tour.tourId}
               </p>
-              <p>Giá: {tour.price.toLocaleString()} VND</p>
+              <p>
+                <strong>Số chỗ còn:</strong> {tour.remainSeat}
+              </p>
+              <p>
+                <strong>Ngày khởi hành:</strong> {tour.departureDate}
+              </p>
+              <p>
+                <strong>Thời gian:</strong> {tour.duration}
+              </p>
+              <p>
+                <strong>Ngày kết thúc:</strong> {tour.endDate}
+              </p>
+              <p>
+                <strong>Mô tả:</strong> {tour.description}
+              </p>
+              <div className="tour-price">
+                <strong>Giá:</strong> {tour.price.toLocaleString()} VND
+              </div>
+              <button className="tour-button" onClick={handleBookingClick}>
+                Đặt Tour
+              </button>
             </div>
-            <button className="tour-button" onClick={handleBooking}>
-              Đặt Tour
-            </button>
-          </form>
+          </div>
         </div>
-      </div>
-
-      {/* New Section for Koi Fish Varieties */}
-      <div className="koi-varieties-section1">
-        <h2 className="koi-title1">Các Giống Cá Koi Nổi Bật</h2>
-        <div className="koi-varieties1">
-          {koiVarieties.map((koi, index) => (
-            <div key={index} className="koi-item1">
-              <img src={koi.image} alt={koi.name} className="koi-image1" />
-              <p className="koi-name1">{koi.name}</p>
-            </div>
-          ))}
+        <div className="tour-schedule-section">
+          <h2>Lịch trình tour</h2>
+          {tour.tourSchedules && tour.tourSchedules.length > 0 ? (
+            tour.tourSchedules.map((schedule, index) => (
+              <div key={index} className="schedule-item">
+                <h3>
+                  Ngày {index + 1}: {schedule.farmName}
+                </h3>
+                <p>
+                  <strong>Chi tiết:</strong> {schedule.scheduleDescription}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>Chưa có lịch trình cho tour này.</p>
+          )}
         </div>
-        <Link to="/search" className="back-button">
-          Quay lại danh sách
-        </Link>
       </div>
       <Footer />
     </div>

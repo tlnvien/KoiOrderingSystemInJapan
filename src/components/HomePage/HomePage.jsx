@@ -8,8 +8,61 @@ import aboutImage2 from "./assets/team.jpg";
 import { Link } from "react-router-dom";
 import SliderFarm from "./SliderFarm";
 import SliderKoi from "./SliderKoi";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import api from "../../config/axios";
 
 const HomePage = () => {
+  const [farms, setFarms] = useState([]);
+  const [varieties, setVarieties] = useState([]);
+  const [prices, setPrices] = useState([]);
+  const [durations, setDurations] = useState([]);
+  useEffect(() => {
+    api
+      .get("farm/list")
+      .then((response) => {
+        setFarms(response.data); // Giả sử API trả về một mảng các trang trại
+      })
+      .catch((error) => {
+        console.error("Error fetching farms:", error);
+      });
+  }, []);
+
+  // Fetch data for "Chọn giống cá"
+  useEffect(() => {
+    api
+      .get("koi/list")
+      .then((response) => {
+        setVarieties(response.data); // Giả sử API trả về một mảng các giống cá
+      })
+      .catch((error) => {
+        console.error("Error fetching varieties:", error);
+      });
+  }, []);
+
+  // Fetch data for "Chọn mức giá"
+  useEffect(() => {
+    axios
+      .get("/api/prices")
+      .then((response) => {
+        setPrices(response.data); // Giả sử API trả về một mảng các mức giá
+      })
+      .catch((error) => {
+        console.error("Error fetching prices:", error);
+      });
+  }, []);
+
+  // Fetch data for "Chọn thời gian"
+  useEffect(() => {
+    axios
+      .get("/api/durations")
+      .then((response) => {
+        setDurations(response.data); // Giả sử API trả về một mảng các thời gian tour
+      })
+      .catch((error) => {
+        console.error("Error fetching durations:", error);
+      });
+  }, []);
   return (
     <div className="homepage-container">
       <Header />
@@ -24,16 +77,15 @@ const HomePage = () => {
       {/* Form Section */}
       <div className="tour-form-container" id="dich-vu">
         <div className="tour-form-row">
-          <Link to="/search" className="tour-label">
+          <Link to="/list-tour" className="tour-label">
             Tour trọn gói
           </Link>
-          <Link to="/search" className="tour-label1">
+          <Link to="/booking" className="tour-label1">
             Đặt tour
           </Link>
         </div>
 
-        <div className="tour-form-row">
-          {/* Trang trại Input with Select */}
+        {/* <div className="tour-form-row-content">
           <div className="dropdown-container">
             <select className="form-input">
               <option value="">Chọn trang trại</option>
@@ -43,7 +95,6 @@ const HomePage = () => {
             </select>
           </div>
 
-          {/* Giống cá Input with Select */}
           <div className="dropdown-container">
             <select className="form-input">
               <option value="">Chọn giống cá</option>
@@ -53,7 +104,6 @@ const HomePage = () => {
             </select>
           </div>
 
-          {/* Mức giá Input with Select */}
           <div className="dropdown-container">
             <select className="form-input">
               <option value="">Chọn mức giá</option>
@@ -63,7 +113,6 @@ const HomePage = () => {
             </select>
           </div>
 
-          {/* Thời gian Input with Select */}
           <div className="dropdown-container">
             <select className="form-input">
               <option value="">Chọn thời gian</option>
@@ -73,13 +122,13 @@ const HomePage = () => {
             </select>
           </div>
 
-          <Link to="/search" className="search">
+          <Link to="/list-tour" className="search">
             Tìm kiếm
           </Link>
-        </div>
+        </div> */}
       </div>
 
-      <div className="about-us-section">
+      {/* <div className="about-us-section">
         <div className="about-us-content">
           <div className="about-us-text">
             <h2>Về chúng tôi</h2>
@@ -112,7 +161,7 @@ const HomePage = () => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="famous-koi-farms-section">
         <h2>Các Trang Trại Cá Koi Nổi Tiếng</h2>

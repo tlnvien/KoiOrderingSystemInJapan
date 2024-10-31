@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Input, Select } from "antd";
 import axios from "axios";
 import Sidebar from "./Admin.jsx";
+import api from "../../config/axios.js";
 
 const UserManagement = () => {
   const [data, setData] = useState([]);
@@ -9,7 +10,7 @@ const UserManagement = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const apiUrl = "http://localhost:8082/api/info"; // URL API
+  // const apiUrl = "http://localhost:8082/api/info";
   const token = localStorage.getItem("token");
 
   // Fetch user data when component mounts
@@ -19,7 +20,7 @@ const UserManagement = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(apiUrl, {
+      const response = await api.get("/info", {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "*/*",
@@ -45,7 +46,7 @@ const UserManagement = () => {
       cancelText: "Không",
       onOk: async () => {
         try {
-          await axios.delete(`${apiUrl}/${userId}`, {
+          await api.delete(`/info/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           fetchData();
@@ -69,13 +70,13 @@ const UserManagement = () => {
 
       if (editingRecord) {
         // Cập nhật một bản ghi hiện tại
-        await axios.put(`${apiUrl}/user/${editingRecord.userId}`, dataToSend, {
+        await api.put(`/info/user/${editingRecord.userId}`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Cập nhật thành công");
       } else {
         // Tạo một bản ghi mới
-        await axios.post(apiUrl, dataToSend, {
+        await api.post("/info", dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

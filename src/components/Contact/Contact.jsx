@@ -12,10 +12,10 @@ const Contact = () => {
         <h1>Liên Hệ Chúng Tôi</h1>
 
         <section className="contact-details">
-          <h2>Thông Tin Liên Hệ</h2>
-          <p>Địa chỉ: 123 Đường ABC, Thành phố XYZ, Nhật Bản</p>
+          {/* <h2>Thông Tin Liên Hệ</h2> */}
+          <p>Địa chỉ: Nhà Văn Hóa Sinh Viên TP.HCM</p>
           <p>Email: contact@koibookingsystem.com</p>
-          <p>Điện thoại: +81 123 456 789</p>
+          <p>Điện thoại: +84 123 456 789</p>
         </section>
 
         <section className="contact-map">

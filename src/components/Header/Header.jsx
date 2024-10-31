@@ -10,7 +10,6 @@ const Header = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for token in localStorage
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
@@ -18,11 +17,11 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    // Remove token and navigate to homepage
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("googleId");
     localStorage.removeItem("loginType");
+    localStorage.removeItem("bookingId");
     setIsLoading(false);
     setIsLoggedIn(false);
     navigate("/");
@@ -31,11 +30,18 @@ const Header = () => {
   const handleUserIconClick = () => {
     const loginType = localStorage.getItem("loginType");
     if (loginType === "google") {
-      navigate("/google-profile"); // Navigate to Google profile
+      navigate("/google-profile");
     } else if (loginType === "username") {
-      navigate("/view-profile"); // Navigate to user profile
+      navigate("/view-profile");
     } else {
-      navigate("/facebook-profile"); // Navigate to Facebook profile
+      navigate("/facebook-profile");
+    }
+  };
+
+  const handleServiceChange = (event) => {
+    const value = event.target.value;
+    if (value) {
+      navigate(value);
     }
   };
 
@@ -58,9 +64,16 @@ const Header = () => {
           <li>
             <Link to="/koi-fish">Cá Koi</Link>
           </li>
+
+          {/* Dịch vụ dropdown */}
           <li>
-            <a href="#dich-vu">Dịch vụ</a>
+            <select onChange={handleServiceChange} className="service-select">
+              <option value="">Dịch vụ</option>
+              <option value="/list-tour">Tour trọn gói</option>
+              <option value="/booking">Đặt tour</option>
+            </select>
           </li>
+
           <li>
             <Link to="/contact">Liên hệ</Link>
           </li>

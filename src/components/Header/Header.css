@@ -77,4 +77,28 @@
     color: #333; /* Màu của icon phân cách */
     line-height: 30px; /* Căn giữa với icon người dùng */
   }
+
+  .service-select {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    background-color: rgb(190, 245, 207);
+    color: black; /* Màu chữ đậm để dễ đọc */
+    border: 1px solid rgb(160, 220, 190); 
+    cursor: pointer;
+    font-family: Rokkitt;
+    font-weight: bold;
+}
+
+.service-select:hover {
+    background-color: rgb(170, 225, 187); /* Đổi nền hơi nhạt hơn khi hover */
+}
+
+.service-select option {
+    color: #333; /* Màu chữ của các option */
+    background-color: rgb(190, 245, 207); /* Màu nền của các option cũng giống navbar */
+}
+
+  
+
   

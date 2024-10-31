@@ -7,6 +7,8 @@ import logo from "./assets/logo.jpg";
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../../config/axios";
+import dayjs from "dayjs";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +26,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const registerApi = "http://localhost:8082/api/register/staff";
+  const registerApi = "register/staff";
   const token = localStorage.getItem("token");
   const [role, setRole] = useState("SALES");
 
@@ -162,16 +164,14 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(`${registerApi}?role=${role}`, {
-        method: "POST",
+      e.dob = dayjs(e.dob).format("DD-MM-YYYY");
+      const response = await api.post(`register/staff?role=${role}`, formData, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         navigate("/login", {});
       } else {
         alert("Đăng ký thất bại. Vui lòng thử lại.");
@@ -247,7 +247,7 @@ const Register = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              placeholder="dd-MM-yyyy"
+              placeholder="DD-MM-YYYY"
             />
             <div className="error-container">
               {errors.dob && <span className="error">{errors.dob}</span>}

@@ -1,0 +1,45 @@
+.delivery-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #d9d9d9; /* Uniform light border color */
+}
+
+.delivery-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid #d9d9d9; /* Change border color on hover */
+}
+
+.delivery-info {
+  margin-bottom: 8px;
+}
+
+.delivery-info strong {
+  color: #1890ff;
+}
+
+.order-response {
+  border: 1px solid #d9d9d9; /* Matching border with delivery card */
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background-color: #fafafa;
+  transition: border-color 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.order-response:hover {
+  border-color: #ff4d4f; /* Red border color on hover */
+}
+
+.order-response strong {
+  color: #ff4d4f;
+}
+
+.delivery-card:nth-child(even) {
+  background-color: #f0f7ff;
+  border: 1px solid grey;
+}

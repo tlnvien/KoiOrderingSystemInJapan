@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Select, Space, message } from "antd";
 import axios from "axios";
 import Sidebar from "./Admin.jsx";
+import api from "../../config/axios.js";
 
 const { Option } = Select;
 
@@ -22,7 +23,7 @@ const FeedbackManagement = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/manage/all`, {
+        const response = await api.get(`feedback/manage/all`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -37,7 +38,7 @@ const FeedbackManagement = () => {
 
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get(customersApiUrl, {
+        const response = await api.get(`info`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -51,7 +52,7 @@ const FeedbackManagement = () => {
 
     const fetchTours = async () => {
       try {
-        const response = await axios.get(toursApiUrl, {
+        const response = await api.get(`tour`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -74,24 +75,24 @@ const FeedbackManagement = () => {
       let response;
       switch (value) {
         case "ALL":
-          response = await axios.get(`${apiUrl}/manage/all`, {
+          response = await api.get(`feedback/manage/all`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           break;
         case "POSITIVE":
-          response = await axios.get(`${apiUrl}/manage/positive`, {
+          response = await api.get(`feedback/manage/positive`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           break;
         case "NEGATIVE":
-          response = await axios.get(`${apiUrl}/manage/negative`, {
+          response = await api.get(`feedback/manage/negative`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           break;
         case "CUSTOMER":
           if (selectedCustomerId) {
-            response = await axios.get(
-              `${apiUrl}/manage/customer/${selectedCustomerId}`,
+            response = await api.get(
+              `feedback/manage/customer/${selectedCustomerId}`,
               {
                 headers: { Authorization: `Bearer ${token}` },
               }
@@ -100,12 +101,9 @@ const FeedbackManagement = () => {
           break;
         case "TOUR":
           if (selectedTourId) {
-            response = await axios.get(
-              `${apiUrl}/manage/tour/${selectedTourId}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            );
+            response = await api.get(`feedback/manage/tour/${selectedTourId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
           }
           break;
         default:

@@ -1,95 +1,162 @@
-import React from "react";
-import { Table, Card, Statistic, Row, Col, Button } from "antd";
+import { useState } from "react";
 import {
-  UserOutlined,
-  HomeOutlined,
-  ShoppingCartOutlined,
-  FileTextOutlined,
-  DollarOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import "./Dashboard.css";
-import Sidebar from "../Admin/Admin";
+  PieChartOutlined,
+  TeamOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons"; // Import Logout icon
+import { Layout, Menu, Button, theme } from "antd";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 
-// Columns for the table
-const columns = [
-  {
-    title: "Order ID",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "Customer",
-    dataIndex: "customer",
-    key: "customer",
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-];
+const { Content, Sider, Footer } = Layout;
 
-// Sample data for the table
-const dataSource = [
-  { id: "1", customer: "John Doe", date: "2024-09-01", amount: "$1200" },
-  { id: "2", customer: "Jane Smith", date: "2024-09-05", amount: "$1500" },
-];
+function getItem(label, key, icon) {
+  return { key, icon, label };
+}
 
 const Dashboard = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+  const navigate = useNavigate();
+
+  // Get role from localStorage
+  const role = localStorage.getItem("role");
+
+  // Menu items based on role
+  const saleItems = [
+    getItem(
+      "Quản lý tour",
+      "/dashboard/sale/manage-tour",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Yêu cầu từ khách hàng",
+      "/dashboard/sale/request-customer",
+      <TeamOutlined />
+    ),
+    getItem(
+      "Liên kết booking",
+      "/dashboard/sale/associate-bookingtour",
+      <PieChartOutlined />
+    ),
+  ];
+
+  const consultingItems = [
+    getItem(
+      "Danh sách tour",
+      "/dashboard/consulting/tour-list",
+      <PieChartOutlined />
+    ),
+    getItem("Check-in", "/dashboard/consulting/checkin", <PieChartOutlined />),
+    getItem(
+      "Đơn đã tạo",
+      "/dashboard/consulting/list-order",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Đơn đã nhận",
+      "/dashboard/consulting/received-order",
+      <PieChartOutlined />
+    ),
+  ];
+
+  const deliveryItems = [
+    getItem(
+      "List Order",
+      "/dashboard/delivering/order-list",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Create Delivery Order",
+      "/dashboard/delivering/create-delivery",
+      <PieChartOutlined />
+    ),
+    getItem("Work", "/dashboard/delivering/work", <PieChartOutlined />),
+    getItem(
+      "Đơn đang giao",
+      "/dashboard/delivering/starting",
+      <PieChartOutlined />
+    ),
+    getItem("Đơn đã giao", "/dashboard/delivering/done", <PieChartOutlined />),
+  ];
+
+  let items;
+  if (role === "SALES") {
+    items = saleItems;
+  } else if (role === "DELIVERING") {
+    items = deliveryItems;
+  } else if (role === "CONSULTING") {
+    items = consultingItems;
+  }
+
+  // Handle menu item click
+  const handleMenuClick = ({ key }) => {
+    navigate(key);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    navigate("/login"); // Redirect to login page
+  };
+
   return (
-    <div className="dashboard">
-      {/* Sidebar */}
-      <Sidebar />
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+        <Menu
+          theme="dark"
+          mode="inline"
+          items={items}
+          onClick={handleMenuClick}
+        />
+        <Link
+          to="/staff-profile"
+          className="menu-items"
+          style={{ padding: "14px", display: "block", color: "#fff" }}
+        >
+          <FaUserCircle style={{ marginRight: "8px" }} />
+          Profile
+        </Link>
+        <Button
+          type="primary"
+          icon={<LogoutOutlined />}
+          onClick={handleLogout}
+          style={{ margin: "16px", width: "90%" }} // Style the button
+        >
+          Đăng xuất
+        </Button>
+      </Sider>
 
-      {/* Main content */}
-      <div className="main-content">
-        <Row gutter={16} style={{ marginBottom: 20 }}>
-          <Col span={6}>
-            <Card>
-              <Statistic title="Total Orders" value={1128} />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic title="Total Revenue" value="$25,600" />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic title="New Customers" value={43} />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic title="Pending Orders" value={8} />
-            </Card>
-          </Col>
-        </Row>
-
-        <Card title="Orders Summary" bordered={false} className="card">
-          <Table columns={columns} dataSource={dataSource} pagination={false} />
-        </Card>
-
-        <Card title="Recent Activities" bordered={false} className="card">
-          <p>Activity 1: Order #12345 processed.</p>
-          <p>Activity 2: Payment received from John Doe.</p>
-          <p>Activity 3: New customer registration: Jane Smith.</p>
-        </Card>
-
-        <div style={{ marginTop: 20 }}>
-          <Button type="primary" style={{ marginRight: 10 }}>
-            Add New Order
-          </Button>
-          <Button type="default">Generate Report</Button>
-        </div>
-      </div>
-    </div>
+      <Layout>
+        {/* <Header
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        ></Header> */}
+        <Content style={{ margin: "16px" }}>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 360,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            <Outlet /> {/* Render child components */}
+          </div>
+        </Content>
+        <Footer style={{ textAlign: "center" }}>
+          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        </Footer>
+      </Layout>
+    </Layout>
   );
 };
 

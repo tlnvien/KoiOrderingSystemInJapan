@@ -37,7 +37,7 @@ const ViewProfile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/user/${userId}`, {
+      const response = await axios.get(`info/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +60,7 @@ const ViewProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(apiUrl, userData, {
+      const response = await axios.put(`info`, userData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ const ViewProfile = () => {
               <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
               hàng
             </li>
-            <li onClick={() => navigate("/feedback")}>
+            <li onClick={() => navigate("/feedback-page")}>
               <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
             </li>
             <li onClick={() => navigate("/reset-password")}>
@@ -158,7 +158,7 @@ const ViewProfile = () => {
               <label>Ngày sinh:</label>
               <input
                 type="LocalDate"
-                format="yyyy-MM-dd"
+                format="DD-MM-YYYY"
                 name="dob"
                 value={userData.dob}
                 onChange={handleChange}

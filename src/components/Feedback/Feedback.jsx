@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../config/axios";
 import "./Feedback.css";
 
 const Feedback = () => {
@@ -7,37 +7,65 @@ const Feedback = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [feedbackId, setFeedbackId] = useState(null);
-  const apiUrl = "http://localhost:8082/api/feedback"; // API URL
-  const userRole = localStorage.getItem("role");
+  const [tourId, setTourId] = useState(null);
+  const [customerTours, setCustomerTours] = useState([]);
   const token = localStorage.getItem("token");
-  const tourId = localStorage.getItem("tourId");
+  const userRole = localStorage.getItem("role");
+  const customerID = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await api.get(
+          `booking/available/listBooking/${customerID}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (response.data && response.data.length > 0) {
+          setCustomerTours(
+            response.data.map((booking) => ({
+              bookingId: booking.bookingId,
+              tourId: booking.tourID.tourID,
+              createdDate: booking.createdDate,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      }
+    };
+
+    fetchBookings();
+  }, [customerID, token]);
 
   useEffect(() => {
     const fetchFeedback = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/${tourId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.data) {
-          setRating(response.data.rating);
-          setComment(response.data.comment);
-          setFeedbackId(response.data.id);
+      if (tourId) {
+        try {
+          const response = await api.get(`feedback/${tourId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.data) {
+            setRating(response.data.rating);
+            setComment(response.data.comment);
+            setFeedbackId(response.data.id);
+          } else {
+            setRating(0);
+            setComment("");
+            setFeedbackId(null);
+          }
+        } catch (error) {
+          console.error("Error fetching feedback:", error);
         }
-      } catch (error) {
-        console.error("Error fetching feedback:", error);
       }
     };
 
     fetchFeedback();
-  }, [apiUrl, token, tourId]);
+  }, [tourId, token]);
 
-  const handleStarClick = (ratingValue) => {
-    setRating(ratingValue);
-  };
-
-  const handleStarHover = (ratingValue) => {
-    setHoverRating(ratingValue);
-  };
+  const handleStarClick = (ratingValue) => setRating(ratingValue);
+  const handleStarHover = (ratingValue) => setHoverRating(ratingValue);
 
   const handleSubmit = async () => {
     if (rating > 0 && comment !== "") {
@@ -45,20 +73,17 @@ const Feedback = () => {
 
       try {
         if (feedbackId) {
-          // Update feedback if it already exists
-          await axios.put(`${apiUrl}/${feedbackId}`, feedbackData, {
+          await api.put(`feedback/${feedbackId}`, feedbackData, {
             headers: { Authorization: `Bearer ${token}` },
           });
           alert("Phản hồi của bạn đã được cập nhật thành công!");
         } else {
-          // Create new feedback
-          await axios.post(apiUrl, feedbackData, {
+          await api.post(`feedback?tourId=${tourId}`, feedbackData, {
             headers: { Authorization: `Bearer ${token}` },
           });
           alert("Phản hồi của bạn đã được gửi thành công!");
         }
 
-        // Clear the form after successful submission or update
         setRating(0);
         setComment("");
         setFeedbackId(null);
@@ -75,9 +100,22 @@ const Feedback = () => {
     <div className="feedback-page">
       <div className="review-container">
         <h2>Đánh Giá và Nhận Xét</h2>
-
         {userRole === "CUSTOMER" ? (
           <>
+            <label htmlFor="tourSelect">Chọn Tour của bạn:</label>
+            <select
+              id="tourSelect"
+              value={tourId || ""}
+              onChange={(e) => setTourId(e.target.value)}
+            >
+              <option value="">Chọn tour</option>
+              {customerTours.map((tour) => (
+                <option key={tour.bookingId} value={tour.tourId}>
+                  {`Tour ID: ${tour.tourId} - Ngày đặt: ${tour.createdDate}`}
+                </option>
+              ))}
+            </select>
+
             <div className="star-rating">
               {[1, 2, 3, 4, 5].map((starValue) => (
                 <span
@@ -95,13 +133,11 @@ const Feedback = () => {
                 </span>
               ))}
             </div>
-
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Để lại bình luận của bạn ở đây..."
             ></textarea>
-
             <button onClick={handleSubmit} className="buttonFeedback">
               {feedbackId ? "Cập Nhật Đánh Giá" : "Gửi Đánh Giá"}
             </button>

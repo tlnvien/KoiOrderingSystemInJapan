@@ -1,126 +1,110 @@
-
-
-.tour-title {
-    text-align: left;
-    margin-bottom: 20px;
-    color: blue;
-    font-size: 32px;
-    margin-left: 20px;
-    text-decoration: none;
+.tour-detail-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.tour-detail-content {
-    display: flex;
-    justify-content: space-between; /* Đảm bảo nội dung và hình ảnh được giãn đều */
-    align-items: flex-start;
-    gap: 20px; /* Khoảng cách giữa ảnh và nội dung */
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng box-shadow */
+.tour-main-content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
 }
 
-.tour-left {
-    flex: 1;
-    max-width: 50%; /* Giới hạn chiều rộng của ảnh */
+.tour-detail-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tour-content-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+h2 {
+  margin-bottom: 25px;
+  font-size: 30px;
+  color: #333;
+}
+
+.tour-image-section {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .tour-detail-image {
-    width: 75%; /* Ảnh sẽ chiếm toàn bộ chiều rộng của .tour-left */
-    height: auto;
-    border-radius: 10px;
+  width: 80%;
+  height: auto;
+  border-radius: 10px;
 }
 
-.tour-right {
-    flex: 1;
-    padding-left: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Đảm bảo nội dung được căn giữa theo chiều dọc */
+.tour-info-section {
+  flex: 2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
 }
 
-.tour-description-form {
-    display: flex;
-    flex-direction: column;
+.tour-info-content {
+  margin-left: 180px;
 }
 
-.tour-description {
-    margin-bottom: 20px;
+.tour-info-section p,
+.tour-price {
+  margin: 8px 0;
 }
 
-.tour-right h2 {
-    font-size: 28px;
-    color: #007bff;
-    margin-bottom: 15px;
-}
-
-.tour-right p {
-    margin: 5px 0;
-    font-size: 20px;
-    line-height: 1.6;
-    color: black;
+.tour-price {
+  font-size: 1.5em;
+  color: #ff5733;
+  font-weight: bold;
 }
 
 .tour-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    margin-top: 20px;
+  background-color: #ff5733;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 10px;
 }
 
-.tour-button:hover {
-    background-color: #0056b3;
+.tour-schedule-section {
+  margin-top: 30px;
 }
 
-.koi-varieties-section1 {
-    margin-top: 50px;
-    text-align: left;
-    margin-left: 20px;
-  }
-  
-  .koi-title1 {
-    font-size: 28px;
-    font-weight: bold;
-    color: blue; /* Highlighting color */
-    margin-bottom: 20px;
-  }
-  
-  .koi-varieties1 {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .koi-item1 {
-    width: 200px;
-    text-align: center;
-  }
-  
-  .koi-image1 {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 3/5;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-  }
-  
-  .koi-image1:hover {
-    transform: scale(1.05);
-  }
-  
-  .koi-name1 {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 10px;
-  }
+.schedule-item {
+  margin-bottom: 15px;
+}
 
-  
-  
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #ff5733;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

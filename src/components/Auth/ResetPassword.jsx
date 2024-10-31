@@ -3,6 +3,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./ResetPassword.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../../config/axios";
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -15,7 +16,6 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const resetApi = "http://localhost:8082/api/reset-password";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +26,8 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${resetApi}?requestCode=${code}&email=${encodeURIComponent(email)}`,
+      const response = await api.post(
+        `reset-password?requestCode=${code}&email=${encodeURIComponent(email)}`,
         {
           password,
         }

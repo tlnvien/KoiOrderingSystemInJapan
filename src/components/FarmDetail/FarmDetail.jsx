@@ -5,6 +5,7 @@ import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./Slider.css";
 import { useParams, Link } from "react-router-dom";
+import api from "../../config/axios";
 
 const Slider = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -64,8 +65,8 @@ const FarmDetail = () => {
           }
         : {};
     };
-    axios
-      .get(`http://localhost:8082/api/farm/details/${farmId}`, getAuthHeaders())
+    api
+      .get(`farm/details/${farmId}`, getAuthHeaders())
       .then((response) => {
         setFarm(response.data);
       })
@@ -74,11 +75,8 @@ const FarmDetail = () => {
         setError("Trang trại không tồn tại.");
       });
 
-    axios
-      .get(
-        `http://localhost:8082/api/koiFarm/listKoi/${farmId}`,
-        getAuthHeaders()
-      )
+    api
+      .get(`koiFarm/listKoi/${farmId}`, getAuthHeaders())
       .then((response) => {
         setKoiVarieties(response.data);
         setLoading(false);

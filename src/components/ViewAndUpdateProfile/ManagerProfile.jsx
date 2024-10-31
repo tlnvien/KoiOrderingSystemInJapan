@@ -4,6 +4,7 @@ import axios from "axios";
 import Sidebar from "../Admin/Admin.jsx";
 import { DatePicker } from "antd";
 import moment from "moment";
+import api from "../../config/axios.js";
 
 const ManaProfile = () => {
   const [userData, setUserData] = useState({
@@ -20,7 +21,7 @@ const ManaProfile = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8082/api/info";
+  // const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();
@@ -28,7 +29,7 @@ const ManaProfile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/user/${userId}`, {
+      const response = await api.get(`info/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,7 +52,7 @@ const ManaProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(apiUrl, userData, {
+      const response = await api.put("info", userData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

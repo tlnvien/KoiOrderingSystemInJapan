@@ -1,0 +1,104 @@
+.tour-card {
+  display: flex;
+  flex-direction: row;
+  margin: 20px 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff; /* Nền trắng cho thẻ */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.image-container {
+  flex: 1;
+  height: 200px; /* Height of image section */
+  overflow: hidden;
+  position: relative;
+  display: flex; /* Sử dụng flex để căn giữa nội dung */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin-top: 23px;
+}
+
+.image-container img {
+  border-radius: 12px; /* Bo góc cho ảnh */
+  max-width: 100%; /* Đảm bảo ảnh không vượt quá chiều rộng của container */
+  max-height: 100%; /* Đảm bảo ảnh không vượt quá chiều cao của container */
+  object-fit: cover; /* Đảm bảo ảnh không bị méo và sẽ lấp đầy không gian */
+}
+
+.tour-info {
+  flex: 2;
+  padding: 16px; /* Khoảng cách bên trong */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tour-info h3 {
+  font-size: 1.5em; /* Kích thước tiêu đề */
+  margin: 0; /* Bỏ margin cho tiêu đề */
+  color: #333; /* Màu cho tiêu đề */
+}
+
+.tour-info p {
+  margin: 8px 0; /* Tăng khoảng cách giữa các đoạn văn */
+  line-height: 1.5; /* Tăng khoảng cách dòng */
+}
+
+.tour-schedules {
+  margin-top: 16px;
+  border-top: 1px solid #eaeaea; /* Thêm đường viền cho phần lịch trình */
+  padding-top: 10px; /* Khoảng cách cho phần lịch trình */
+}
+
+.schedule-description {
+  margin-top: 8px;
+  color: #555; /* Màu chữ cho mô tả lịch trình */
+}
+
+.tour-card-content {
+  display: flex; /* Flexbox cho bố cục */
+  flex-direction: row; /* Hình ảnh bên trái, thông tin bên phải */
+}
+
+.tour-card-content .image-container {
+  flex-basis: 40%; /* Chiếm 40% chiều rộng cho hình ảnh */
+  max-width: 300px; /* Đảm bảo không vượt quá 300px */
+}
+
+.tour-card-content .tour-info {
+  flex-basis: 60%; /* Chiếm 60% chiều rộng cho thông tin */
+  padding-left: 16px; /* Khoảng cách bên trái giữa ảnh và thông tin */
+}
+
+.create-tour-btn {
+  background-color: #28a745; /* Màu nền */
+  color: #ffffff; /* Màu chữ */
+  border: none; /* Bỏ viền */
+  border-radius: 8px; /* Bo góc */
+  padding: 12px 24px; /* Khoảng cách bên trong */
+  font-size: 1em; /* Kích thước chữ */
+  cursor: pointer; /* Con trỏ khi di chuột */
+  transition: background-color 0.3s, transform 0.3s; /* Hiệu ứng chuyển màu và biến đổi */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+}
+
+.create-tour-btn:hover {
+  background-color: #218838; /* Màu nền khi hover */
+  transform: translateY(-2px); /* Nâng nút lên khi hover */
+}
+
+.create-tour-btn:active {
+  transform: translateY(0); /* Quay lại vị trí ban đầu khi nhấn */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Giảm độ đổ bóng khi nhấn */
+}
+
+.create-tour-btn:focus {
+  outline: none; /* Bỏ viền khi nút được chọn */
+}

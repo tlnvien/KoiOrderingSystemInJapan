@@ -1,99 +1,98 @@
 /* Profile.css */
 .profile-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .profile-content {
-    display: flex; /* Sử dụng flexbox để sắp xếp sidebar và form */
-    flex: 1; /* Chiếm toàn bộ chiều cao của container */
-  }
-  
-  .sidebar-profile {
-    width: 250px;
-    background: rgba(0, 0, 0, 0.808);; /* Màu nền sáng */
-    color: white; /* Màu chữ tối để tương phản với nền sáng */
-    padding: 20px;
-    border-radius: 8px; /* Bo góc cho sidebar */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-    height: calc(100vh);
-
-  }
-
-  .sidebar-profile li {
-    padding: 15px 0; /* Khoảng cách trên dưới cho mỗi mục */
-    cursor: pointer; /* Con trỏ tay khi di chuột qua */
-    transition: background 0.3s; /* Hiệu ứng chuyển đổi cho màu nền khi hover */
-    display: flex; /* Để căn chỉnh icon và text */
-    align-items: center; /* Căn giữa icon và text theo chiều dọc */
-  }
-  
-  .sidebar-profile li svg {
-    font-size: 20px; /* Kích thước của icon */
-    color: white; /* Màu của icon */
-  }
-  
-  .profile-form {
-    flex: 0.6;
-    padding: 20px; /* Padding cho form */
-    background-color: #fff; /* Màu nền cho form */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Bóng đổ cho form */
-    margin-left: 200px; /* Khoảng cách giữa sidebar và form */
-    
-  }
-
-  .profile-form input[readonly], 
-.profile-form select[disabled] {
-    background-color: #f0f0f0; /* Màu nền xám */
-    color: #666; /* Màu chữ xám tối */
-    border: 1px solid #ccc; /* Đường viền cho các trường không cho phép chỉnh sửa */
-    cursor: not-allowed; /* Con trỏ không cho phép khi di chuột */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
+
+.profile-content {
+  display: flex; /* Sử dụng flexbox để sắp xếp sidebar và form */
+  flex: 1; /* Chiếm toàn bộ chiều cao của container */
+}
+
+.sidebar-profile {
+  width: 250px;
+  background: rgba(0, 0, 0, 0.808);; /* Màu nền sáng */
+  color: white; /* Màu chữ tối để tương phản với nền sáng */
+  padding: 20px;
+  border-radius: 8px; /* Bo góc cho sidebar */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  height: calc(100vh);
+
+}
+
+.sidebar-profile li {
+  padding: 15px 0; /* Khoảng cách trên dưới cho mỗi mục */
+  cursor: pointer; /* Con trỏ tay khi di chuột qua */
+  transition: background 0.3s; /* Hiệu ứng chuyển đổi cho màu nền khi hover */
+  display: flex; /* Để căn chỉnh icon và text */
+  align-items: center; /* Căn giữa icon và text theo chiều dọc */
+}
+
+.sidebar-profile li svg {
+  font-size: 20px; /* Kích thước của icon */
+  color: white; /* Màu của icon */
+}
+
+.profile-form {
+  flex: 0.6;
+  padding: 20px; /* Padding cho form */
+  background-color: #fff; /* Màu nền cho form */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Bóng đổ cho form */
+  margin-left: 200px; /* Khoảng cách giữa sidebar và form */
   
-  .form-group {
-    margin-bottom: 15px; /* Khoảng cách giữa các trường trong form */
-  }
-  
-  h1 {
-    margin-bottom: 20px; /* Khoảng cách giữa tiêu đề và form */
-  }
+}
+
+.profile-form input[readonly], 
+.profile-form select[disabled] {
+  background-color: #f0f0f0; /* Màu nền xám */
+  color: #666; /* Màu chữ xám tối */
+  border: 1px solid #ccc; /* Đường viền cho các trường không cho phép chỉnh sửa */
+  cursor: not-allowed; /* Con trỏ không cho phép khi di chuột */
+}
+
+.form-group {
+  margin-bottom: 15px; /* Khoảng cách giữa các trường trong form */
+}
+
+h1 {
+  margin-bottom: 20px; /* Khoảng cách giữa tiêu đề và form */
+}
 
 /* Nút chung cho cả hai nút */
 .button {
-    padding: 10px 20px; /* Padding cho nút */
-    border: none; /* Bỏ viền */
-    border-radius: 5px; /* Bo góc cho nút */
-    font-size: 16px; /* Kích thước chữ */
-    cursor: pointer; /* Con trỏ tay khi di chuột */
-    transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển đổi */
-  }
-  
-  /* Nút Lưu thay đổi */
-  .button-save {
-    background-color: #007bff; /* Màu nền xanh */
-    color: white; /* Màu chữ trắng */
-  }
-  
-  .button-save:hover {
-    background-color: #0056b3; /* Màu nền khi hover */
-    transform: translateY(-2px); /* Hiệu ứng nâng khi hover */
-  }
-  
-  /* Nút Chỉnh sửa thông tin */
-  .button-edit {
-    background-color: #007bff; /* Màu nền xanh lá */
-    color: white; /* Màu chữ trắng */
-  }
-  
-  .button-edit:hover {
-    background-color: #0056b3; /* Màu nền khi hover */
-    transform: translateY(-2px); /* Hiệu ứng nâng khi hover */
-  }
-  
-  /* Thêm khoảng cách giữa hai nút */
-  .button + .button {
-    margin-left: 10px; /* Khoảng cách giữa các nút */
-  }
-  
-  
+  padding: 10px 20px; /* Padding cho nút */
+  border: none; /* Bỏ viền */
+  border-radius: 5px; /* Bo góc cho nút */
+  font-size: 16px; /* Kích thước chữ */
+  cursor: pointer; /* Con trỏ tay khi di chuột */
+  transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển đổi */
+}
+
+/* Nút Lưu thay đổi */
+.button-save {
+  background-color: #007bff; /* Màu nền xanh */
+  color: white; /* Màu chữ trắng */
+}
+
+.button-save:hover {
+  background-color: #0056b3; /* Màu nền khi hover */
+  transform: translateY(-2px); /* Hiệu ứng nâng khi hover */
+}
+
+/* Nút Chỉnh sửa thông tin */
+.button-edit {
+  background-color: #007bff; /* Màu nền xanh lá */
+  color: white; /* Màu chữ trắng */
+}
+
+.button-edit:hover {
+  background-color: #0056b3; /* Màu nền khi hover */
+  transform: translateY(-2px); /* Hiệu ứng nâng khi hover */
+}
+
+/* Thêm khoảng cách giữa hai nút */
+.button + .button {
+  margin-left: 10px; /* Khoảng cách giữa các nút */
+}
+

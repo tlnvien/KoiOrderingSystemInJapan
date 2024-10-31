@@ -2,15 +2,16 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Button, Modal, Form, Input, notification } from "antd";
 import Sidebar from "./Admin.jsx";
+import api from "../../config/axios.js";
 
 const KoiManagement = () => {
   const [koiList, setKoiList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentKoi, setCurrentKoi] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8082/api/koi"; // API URL của bạn
-  const getApi = "http://localhost:8082/api/koi/list"; // API URL của bạn
-  const apiImage = "http://localhost:8082/api/koi/images";
+  const apiUrl = "koi";
+  const getApi = "koi/list"; // API URL của bạn
+  const apiImage = "koi/images";
   const token = localStorage.getItem("token");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -20,7 +21,7 @@ const KoiManagement = () => {
 
   const fetchKoiList = async () => {
     try {
-      const response = await axios.get(getApi, {
+      const response = await api.get(getApi, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -48,7 +49,7 @@ const KoiManagement = () => {
 
   const deleteImage = async (imageLink) => {
     try {
-      await axios.delete(
+      await api.delete(
         `${apiImage}/remove/${currentKoi.koiId}?imageLink=${imageLink}`,
         {
           headers: {
@@ -78,7 +79,7 @@ const KoiManagement = () => {
           // Delete all associated images
           // if (Array.isArray(imageLinks) && imageLinks.length > 0) {
           //   for (let imageLink of imageLinks) {
-          //     await axios.delete(`${apiImage}/${koiId}`, {
+          //     await api.delete(`${apiImage}/${koiId}`, {
           //       headers: {
           //         Authorization: `Bearer ${token}`,
           //       },
@@ -91,7 +92,7 @@ const KoiManagement = () => {
           // }
 
           // Delete the koi after deleting images
-          await axios.delete(`${apiUrl}/${koiId}`, {
+          await api.delete(`${apiUrl}/${koiId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -120,11 +121,11 @@ const KoiManagement = () => {
       };
 
       if (currentKoi) {
-        await axios.put(`${apiUrl}/${currentKoi.koiId}`, koiData, {
+        await api.put(`${apiUrl}/${currentKoi.koiId}`, koiData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post(apiUrl, koiData, {
+        await api.post(apiUrl, koiData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

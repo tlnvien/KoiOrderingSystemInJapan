@@ -30,7 +30,7 @@ const VerifyCode = () => {
     }
 
     try {
-      const verifyApi = `http://localhost:8082/api/register/confirm/${encodeURIComponent(
+      const verifyApi = `register/confirm/${encodeURIComponent(
         email
       )}?code=${code}`;
 
@@ -51,21 +51,21 @@ const VerifyCode = () => {
     }
   };
 
-  const handleResendCode = async () => {
-    const resendApi = "http://localhost:8082/api/register/resend";
+  // const handleResendCode = async () => {
+  //   const resendApi = "http://localhost:8082/api/register/resend";
 
-    try {
-      const response = await axios.post(resendApi, { email });
-      if (response.data.success) {
-        setSuccessMessage("Mã xác minh đã được gửi lại!");
-      } else {
-        setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
-      }
-    } catch (error) {
-      setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
-      console.error("Resend code error:", error);
-    }
-  };
+  //   try {
+  //     const response = await axios.post(resendApi, { email });
+  //     if (response.data.success) {
+  //       setSuccessMessage("Mã xác minh đã được gửi lại!");
+  //     } else {
+  //       setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
+  //     }
+  //   } catch (error) {
+  //     setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
+  //     console.error("Resend code error:", error);
+  //   }
+  // };
 
   return (
     <div className="forgot-password-container">
@@ -101,10 +101,10 @@ const VerifyCode = () => {
           </p>
         )}
 
-        <p>Không nhận được mã?</p>
+        {/* <p>Không nhận được mã?</p>
         <button onClick={handleResendCode} className="search-btn">
           Gửi lại mã
-        </button>
+        </button> */}
 
         <Link to="/register/customer" className="back-link">
           Quay lại trang đăng ký

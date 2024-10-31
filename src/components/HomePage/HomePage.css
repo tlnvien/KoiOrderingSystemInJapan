@@ -21,76 +21,66 @@ body {
   background-color: white;
 }
 
-.hero-image {
-  position: relative;
-  width: 100%;
-  margin-bottom: 20px; /* Space between hero image and additional content */
-  aspect-ratio: 10/4;
-}
-
-.hero-image img {
-  width: 100%;
-  height: 100%; /* Maintain aspect ratio */
-}
-
-/* Tour Form Section */
 .tour-form-container {
+  position: relative;
+  top: -20px; 
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
-  background-color: #F9F8F8;
-  box-shadow: 4px 4px 4px 4px grey;
-  width: 80%;
-  height: 200px;
-  padding: 20px;
+  margin: 0 auto;
+  background-color: #FFFFFF; /* Màu nền trắng để rõ hơn */
+  border: 2px solid rgba(0, 0, 0, 0.1); /* Thêm viền nhẹ */
+  box-shadow: 4px 10px 20px rgba(0, 0, 0, 0.3); /* Tăng độ bóng để khung nổi bật */
+  width: 60%;
+  height: 200px; /* Tăng nhẹ chiều cao để nội dung dễ nhìn hơn */
+  padding: 25px;
+  border-radius: 20px; /* Tăng độ bo của góc để nhìn mềm mại hơn */
+}
+
+.hero-image {
+  position: relative;
+  z-index: 0; /* Đảm bảo ảnh nằm dưới khung */
+  text-align: center;
+}
+
+.hero-image img {
+  width: 70%;
+  height: 80%;
+  margin: 0 auto;
+  display: block;
 }
 
 .tour-form-row {
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: space-around; /* Căn đều khoảng cách giữa các liên kết */
+  width: 100%;
+  max-width: 600px; /* Đảm bảo chiều rộng hợp lý cho các nút */
+  margin-top: 20px;
 }
 
-.tour-label {
-  margin-right: 100px;
-  font-size: 20px;
-}
-
+.tour-label,
 .tour-label1 {
-  margin-left: 100px;
-  font-size: 20px;
+  text-align: center;
+  background-color: #007bff; /* Màu nền */
+  color: white; /* Màu chữ */
+  text-decoration: none;
+  padding: 15px 30px;
+  border-radius: 8px; /* Bo tròn góc */
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng mượt mà khi hover */
+  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3); /* Bóng mờ nhẹ cho nút */
+  margin-bottom: 50px;
 }
 
-.tour-label {
-  display: inline-block; /* Để liên kết có thể nhận padding và margin */
-  padding: 10px 10px; /* Khoảng cách bên trong */
-  background-color: #007bff; /* Màu nền xanh */
-  color: white; /* Màu chữ trắng */
-  text-decoration: none; /* Bỏ gạch chân */
-  border-radius: 5px; /* Bo tròn góc */
-  transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
-}
-
-.tour-label:hover {
-  background-color: #0056b3; /* Màu nền tối hơn khi hover */
-  color: #fff; /* Giữ nguyên màu chữ khi hover */
-}
-
-.tour-label1 {
-  display: inline-block; /* Để liên kết có thể nhận padding và margin */
-  padding: 10px 10px; /* Khoảng cách bên trong */
-  background-color: #007bff; /* Màu nền xanh */
-  color: white; /* Màu chữ trắng */
-  text-decoration: none; /* Bỏ gạch chân */
-  border-radius: 5px; /* Bo tròn góc */
-  transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
-}
-
+/* Hover effect */
+.tour-label:hover,
 .tour-label1:hover {
-  background-color: #0056b3; /* Màu nền tối hơn khi hover */
-  color: #fff; /* Giữ nguyên màu chữ khi hover */
+  background-color: #0056b3; /* Màu tối hơn khi hover */
+  transform: translateY(-3px); /* Hiệu ứng nâng nhẹ khi hover */
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.5); /* Bóng mờ tăng khi hover */
 }
 
 .search{
@@ -114,15 +104,35 @@ body {
   display: inline-block;
   width: 20%;
   margin-right: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển động mượt */
 }
 
-/* .form-input {
+.dropdown-container:hover {
+  transform: translateY(-3px); /* Tạo hiệu ứng khi hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Bóng đổ khi hover */
+}
+
+.form-input {
   width: 100%;
   padding: 12px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px; /* Tăng độ bo góc */
   box-sizing: border-box;
-} */
+  font-size: 16px; /* Kích thước chữ */
+  background-color: #F9F9F9; /* Nền nhẹ */
+  transition: border 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển màu khi tương tác */
+}
+
+.form-input:focus {
+  border: 1px solid #007bff; /* Đổi màu viền khi input được focus */
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); /* Tạo bóng đổ xanh khi focus */
+  outline: none; /* Bỏ viền outline mặc định */
+}
+
+.form-input:hover {
+  border: 1px solid #007bff; /* Đổi màu viền khi hover */
+}
+
 
 /* About Us Section */
 .about-us-section {

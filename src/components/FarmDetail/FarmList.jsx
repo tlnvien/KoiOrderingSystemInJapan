@@ -5,10 +5,11 @@ import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import { Link } from "react-router-dom";
 import { notification } from "antd";
+import api from "../../config/axios";
 
 const FarmList = () => {
   const [farms, setFarms] = useState([]);
-  const getApi = "http://localhost:8082/api/farm/list"; // API URL from FarmManagement
+  // const getApi = "http://localhost:8082/api/farm/list";
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -17,7 +18,7 @@ const FarmList = () => {
 
   const fetchFarmList = async () => {
     try {
-      const response = await axios.get(getApi, {
+      const response = await api.get("farm/list", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

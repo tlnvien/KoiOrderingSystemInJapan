@@ -7,6 +7,9 @@ import logo from "./assets/logo.jpg";
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import dayjs from "dayjs";
+import { DatePicker } from "antd";
+import api from "../../config/axios";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,13 +18,14 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     phone: "",
+    dob: "",
+    gender: "",
   });
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const registerApi = "http://localhost:8082/api/register";
 
   const handleChange = (e) => {
     setFormData({
@@ -138,8 +142,8 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(registerApi, {
-        method: "POST",
+      e.dob = dayjs(e.dob).format("DD-MM-YYYY");
+      const response = await api.post("register", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -218,6 +222,32 @@ const Register = () => {
             />
             <div className="error-container">
               {errors.phone && <span className="error">{errors.phone}</span>}
+            </div>
+
+            <label>Giới tính:</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Chọn giới tính</option>
+              <option value="MALE">Nam</option>
+              <option value="FEMALE">Nữ</option>
+            </select>
+
+            <label>Ngày sinh (dd-MM-yyyy):</label>
+            <input
+              type="text"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+              placeholder="dd-MM-yyyy"
+            />
+            <div className="error-container">
+              {errors.dob && <span className="error">{errors.dob}</span>}
             </div>
 
             <label>Mật khẩu:</label>

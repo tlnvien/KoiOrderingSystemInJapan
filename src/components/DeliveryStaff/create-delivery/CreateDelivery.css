@@ -1,0 +1,55 @@
+/* Container styling */
+.create-delivery-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Title styling */
+.create-delivery-title {
+  text-align: center;
+  font-size: 24px;
+  color: #1890ff;
+  margin-bottom: 16px;
+}
+
+/* Form card styling */
+.create-delivery-form-card {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input area */
+.create-delivery-input {
+  border-radius: 4px;
+  padding: 8px;
+}
+
+/* Submit button styling */
+.create-delivery-submit-btn {
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+  height: 40px;
+}
+
+/* Card for delivery info */
+.delivery-info-card {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Divider styling for clear separation */
+.delivery-info-divider {
+  margin: 8px 0;
+}
+
+/* Text styling for labels */
+.delivery-info-label {
+  font-weight: 600;
+  margin-right: 4px;
+}

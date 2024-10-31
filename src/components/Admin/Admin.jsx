@@ -9,7 +9,7 @@ import {
   DashboardOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { FaFish, FaUserCircle } from "react-icons/fa";
+import { FaFish, FaLink, FaUserCircle } from "react-icons/fa";
 import { GiFarmer, GiFarmTractor, GiHouse } from "react-icons/gi";
 
 const Admin = () => {
@@ -30,18 +30,6 @@ const Admin = () => {
             <Link to="/admin/dashboard" className="menu-items">
               <DashboardOutlined style={{ marginRight: "8px" }} />
               Thống kê
-            </Link>
-          </li>
-          <li>
-            <Link to="/tours" className="menu-items">
-              <FundViewOutlined style={{ marginRight: "8px" }} />
-              Quản lý Tour
-            </Link>
-          </li>
-          <li>
-            <Link to="/invoices" className="menu-items">
-              <FileTextOutlined style={{ marginRight: "8px" }} />
-              Quản lý Hóa đơn
             </Link>
           </li>
           <li>
@@ -68,10 +56,18 @@ const Admin = () => {
               Quản lý trang trại
             </Link>
           </li>
+
           <li>
-            <Link to="/tourSchedule-management" className="menu-items">
-              <GiHouse style={{ marginRight: "8px" }} />
-              Quản lý lịch trình tour
+            <Link to="/admin/koi-farm" className="menu-items">
+              <FaLink style={{ marginRight: "8px" }} />
+              Liên kết koi với trang trại
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/admin/tour-request-from-sale" className="menu-items">
+              <FaLink style={{ marginRight: "8px" }} />
+              Nhận yêu cầu từ sale
             </Link>
           </li>
 
@@ -79,6 +75,13 @@ const Admin = () => {
             <Link to="/admin/mana-profile" className="menu-items">
               <FaUserCircle style={{ marginRight: "8px" }} />
               Profile
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/register/staff" className="menu-items">
+              <FaUserCircle style={{ marginRight: "8px" }} />
+              Đăng ký tài khoản cho nhân viên
             </Link>
           </li>
 

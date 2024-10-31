@@ -1,196 +1,278 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  Checkbox,
+  Button,
+  Divider,
+  Row,
+  Col,
+  message,
+  Typography,
+  Card,
+  DatePicker,
+  Select,
+} from "antd";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./BookingPage.css";
-import axios from "axios";
-import { FaCreditCard, FaMoneyBill } from "react-icons/fa";
+import api from "../../config/axios";
+import dayjs from "dayjs";
+
+const { Title } = Typography;
 
 const BookingPage = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phone: "",
-    email: "",
-    address: "",
-    numberOfAdults: 1,
-    numberOfChildren: 0,
-    paymentMethod: "vnpay", // Default to VNPay
-    notes: "",
-  });
+  const [form] = Form.useForm();
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId"); // Get userId from localStorage
+  const [numberOfAttendees, setNumberOfAttendees] = useState(1);
+  const [bookingDetails, setBookingDetails] = useState([
+    { customerName: "", phone: "", gender: "", dob: null },
+  ]);
 
-  const [loading, setLoading] = useState(false);
+  const fetchData = async () => {
+    try {
+      const response = await api.get(`info/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userData = response.data;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+      // Populate form with user data
+      form.setFieldsValue({
+        fullName: userData.fullName || "",
+        phone: userData.phone || "",
+      });
+    } catch (error) {
+      message.error("Không thể lấy thông tin người dùng!");
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    fetchData();
+  }, [form, userId, token]);
 
-    if (
-      !formData.fullName ||
-      !formData.phone ||
-      !formData.email ||
-      !formData.address
-    ) {
-      alert("Vui lòng nhập đầy đủ thông tin!");
-      return;
-    }
+  // Update the number of attendee fields dynamically
+  useEffect(() => {
+    setBookingDetails((prevDetails) => {
+      const newDetails = [...prevDetails];
 
-    setLoading(true);
+      if (numberOfAttendees > prevDetails.length) {
+        for (let i = prevDetails.length; i < numberOfAttendees; i++) {
+          newDetails.push({
+            customerName: "",
+            phone: "",
+            gender: "",
+            dob: null,
+          });
+        }
+      } else if (numberOfAttendees < prevDetails.length) {
+        newDetails.length = numberOfAttendees; // Reduce the length to match
+      }
+
+      form.setFieldsValue({ bookingDetailRequests: newDetails });
+      return newDetails;
+    });
+  }, [numberOfAttendees, form]);
+
+  // Submit form data to the API
+  const handleSubmit = async (values) => {
+    const formattedDetails = (values.bookingDetailRequests || []).map(
+      (detail) => ({
+        ...detail,
+        dob: detail.dob ? dayjs(detail.dob).format("DD-MM-YYYY") : null,
+      })
+    );
+
+    values.dob = dayjs(values.dob).format("DD-MM-YYYY");
+
+    const submissionData = {
+      ...values,
+      bookingDetailRequests: formattedDetails,
+    };
 
     try {
-      // Call the backend API to get VNPay URL
-      const response = await axios.post(
-        "http://localhost:8082/api/booking/paymentUrl",
-        { bookingId: "someBookingId" } // Replace with actual booking ID handling
-      );
-
-      const vnpayUrl = response.data; // API should return the VNPay URL
-      if (vnpayUrl) {
-        // Redirect to VNPay for payment
-        window.location.href = vnpayUrl;
-      } else {
-        throw new Error("VNPay URL not found.");
-      }
+      const response = await api.post("booking/request", submissionData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Yêu cầu đặt tour thành công!");
+      form.resetFields();
+      setNumberOfAttendees(1);
+      setBookingDetails([
+        { customerName: "", phone: "", gender: "", dob: null },
+      ]);
     } catch (error) {
-      console.error("Error initiating payment", error);
-      alert("Có lỗi xảy ra khi khởi tạo thanh toán. Vui lòng thử lại.");
-    } finally {
-      setLoading(false);
+      message.error(error.response?.data || "Có lỗi xảy ra, vui lòng thử lại!");
     }
   };
 
   return (
     <div className="booking-page">
       <Header />
-      <h1>Đặt Tour</h1>
-
-      <div className="booking-process">
-        <div className="process-steps">
-          <div className="process-step">
-            <div className="circle-icon">
-              <span className="icon-text">📝</span>
-            </div>
-            <p>Nhập thông tin</p>
-          </div>
-          <span className="arrow">→</span>
-          <div className="process-step">
-            <div className="circle-icon">
-              <span className="icon-text">💳</span>
-            </div>
-            <p>Thanh toán</p>
-          </div>
-          <span className="arrow">→</span>
-          <div className="process-step">
-            <div className="circle-icon">
-              <span className="icon-text">✅</span>
-            </div>
-            <p>Hoàn tất</p>
-          </div>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="booking-form">
-        <section className="contact-info">
-          <h2>Thông tin liên hệ</h2>
-          <div className="form-group-book">
-            <label>Họ và tên:</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group-book">
-            <label>Số điện thoại:</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group-book">
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group-book">
-            <label>Địa chỉ:</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </section>
-
-        <section className="passenger-info">
-          <h2>Hành khách</h2>
-          <div className="form-group-book">
-            <label>Người lớn</label>
-            <select
-              name="numberOfAdults"
-              value={formData.numberOfAdults}
-              onChange={handleChange}
+      <Row justify="center" style={{ padding: "20px 0" }}>
+        <Col xs={22} sm={18} md={16} lg={12} xl={10}>
+          <Card bordered={false} className="booking-card">
+            <Title
+              level={3}
+              style={{ textAlign: "center", marginBottom: "20px" }}
             >
-              {[...Array(10).keys()].map((n) => (
-                <option key={n + 1} value={n + 1}>
-                  {n + 1}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
+              Đặt Tour
+            </Title>
+            <Divider orientation="left">Thông tin liên hệ</Divider>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleSubmit}
+              initialValues={{
+                fullName: "",
+                phone: "",
+                gender: "",
+                dob: "",
+                numberOfAttendees: 1,
+                description: "",
+                hasVisa: false,
+                bookingDetailRequests: bookingDetails, // Initialize here
+              }}
+              className="booking-form"
+            >
+              <Form.Item
+                label="Họ và tên"
+                name="fullName"
+                rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+              >
+                <Input placeholder="Nhập họ và tên" />
+              </Form.Item>
 
-        <section className="payment-method">
-          <h2>Các hình thức thanh toán</h2>
-          <div className="form-group-book">
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="vnpay"
-                checked={formData.paymentMethod === "vnpay"}
-                onChange={handleChange}
-              />
-              <FaMoneyBill style={{ marginRight: "15px" }} />
-              Thanh toán VNPay
-            </label>
-          </div>
-        </section>
+              <Form.Item
+                label="Số điện thoại"
+                name="phone"
+                rules={[
+                  { required: true, message: "Vui lòng nhập số điện thoại" },
+                  {
+                    pattern: /^[0-9]{10}$/,
+                    message: "Số điện thoại không hợp lệ",
+                  },
+                ]}
+              >
+                <Input type="tel" placeholder="Nhập số điện thoại" />
+              </Form.Item>
 
-        <section className="notes-section">
-          <h2>Ghi chú</h2>
-          <textarea
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            placeholder="Nhập ghi chú nếu có"
-          ></textarea>
-        </section>
+              <Form.Item
+                label="Ngày Sinh"
+                name="dob"
+                rules={[{ required: true, message: "Vui lòng nhập ngày sinh" }]}
+              >
+                <DatePicker format="DD-MM-YYYY" style={{ width: "100%" }} />
+              </Form.Item>
 
-        <div className="form-group-book">
-          <label>
-            <input type="checkbox" required />
-            Tôi đồng ý với điều khoản khi đăng ký online
-          </label>
-        </div>
-        <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? "Đang xử lý..." : "Thanh Toán"}
-        </button>
-      </form>
+              <Form.Item
+                label="Số lượng người tham gia"
+                name="numberOfAttendees"
+              >
+                <Input
+                  type="number"
+                  min={1}
+                  value={numberOfAttendees}
+                  onChange={(e) =>
+                    setNumberOfAttendees(parseInt(e.target.value, 10) || 1)
+                  }
+                />
+              </Form.Item>
+
+              <Form.Item name="hasVisa" valuePropName="checked">
+                <Checkbox>VISA</Checkbox>
+              </Form.Item>
+
+              <Form.Item label="Yêu cầu về tour" name="description">
+                <Input.TextArea placeholder="Nhập mô tả nếu có" rows={4} />
+              </Form.Item>
+
+              {numberOfAttendees > 1 && (
+                <>
+                  <Divider orientation="left">Thông tin người tham gia</Divider>
+                  {bookingDetails.map((attendee, index) => (
+                    <div key={index}>
+                      <Form.Item
+                        label={`Tên người tham gia: ${index + 1}`}
+                        name={["bookingDetailRequests", index, "customerName"]}
+                        rules={[
+                          { required: true, message: "Vui lòng nhập tên" },
+                        ]}
+                      >
+                        <Input placeholder="Nhập họ và tên" />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Ngày Sinh"
+                        name={["bookingDetailRequests", index, "dob"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập ngày sinh",
+                          },
+                        ]}
+                      >
+                        <DatePicker
+                          format="DD-MM-YYYY"
+                          style={{ width: "100%" }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Giới tính"
+                        name={["bookingDetailRequests", index, "gender"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn giới tính",
+                          },
+                        ]}
+                      >
+                        <Select placeholder="Chọn giới tính">
+                          <Select.Option value="MALE">Nam</Select.Option>
+                          <Select.Option value="FEMALE">Nữ</Select.Option>
+                          <Select.Option value="OTHER">Khác</Select.Option>
+                        </Select>
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Số điện thoại"
+                        name={["bookingDetailRequests", index, "phone"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập số điện thoại",
+                          },
+                          {
+                            pattern: /^[0-9]{10}$/,
+                            message: "Số điện thoại không hợp lệ",
+                          },
+                        ]}
+                      >
+                        <Input type="tel" placeholder="Nhập số điện thoại" />
+                      </Form.Item>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="submit-button"
+                  block
+                >
+                  Gửi Yêu Cầu
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+      </Row>
       <Footer />
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Select, Form, notification, Button } from "antd";
 import { useNavigate } from "react-router-dom"; // Đổi từ useHistory sang useNavigate
+import api from "../../config/axios";
 
 const { Option } = Select;
 
@@ -11,13 +12,13 @@ const FarmHost = () => {
   const token = localStorage.getItem("token");
   const farmId = localStorage.getItem("farmId");
   const userId = localStorage.getItem("userId");
-  const apiUrl = `http://localhost:8082/api/orders?farmId=${farmId}`;
+  const apiUrl = `order/farmHost/${farmId}`;
   const navigate = useNavigate(); // Sử dụng useNavigate
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(apiUrl, {
+        const response = await api.get(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -35,8 +36,8 @@ const FarmHost = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(
-        `http://localhost:8082/api/orders/${orderId}/status`,
+      await api.post(
+        `order/farmHost/${orderId}`,
         { status: newStatus },
         {
           headers: {
@@ -72,8 +73,8 @@ const FarmHost = () => {
   const columns = [
     {
       title: "Mã Đơn Hàng",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "orderId",
+      key: "orderId",
       render: (text) => <strong>#{text}</strong>,
     },
     {
@@ -82,7 +83,7 @@ const FarmHost = () => {
       key: "customerName",
     },
     {
-      title: "Trạng Thái Hiện Tại",
+      title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
       render: (text, record) => (
@@ -91,11 +92,11 @@ const FarmHost = () => {
             value={text}
             onChange={(value) => handleStatusChange(record.id, value)}
           >
-            <Option value="PENDING">Chờ xử lý</Option>
-            <Option value="CONFIRMED">Đã xác nhận</Option>
-            <Option value="SHIPPED">Đã giao hàng</Option>
-            <Option value="COMPLETED">Hoàn thành</Option>
-            <Option value="CANCELLED">Đã hủy</Option>
+            {/* <Option value="PENDING">Chờ xử lý</Option> */}
+            {/* <Option value="CONFIRMED">Đã xác nhận</Option> */}
+            <Option value="SHIPPING">Đã giao hàng</Option>
+            {/* <Option value="COMPLETED">Hoàn thành</Option> */}
+            {/* <Option value="CANCELLED">Đã hủy</Option> */}
           </Select>
         </Form.Item>
       ),
@@ -126,7 +127,7 @@ const FarmHost = () => {
       <Table
         columns={columns}
         dataSource={orders}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record.orderId}
         pagination={{ pageSize: 10 }}
         bordered
       />

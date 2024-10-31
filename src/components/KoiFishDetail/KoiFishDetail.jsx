@@ -3,10 +3,11 @@ import axios from "axios";
 import "./KoiFishDetail.css"; // Import CSS riêng cho trang này
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
+import api from "../../config/axios";
 
 const KoiDetails = () => {
   const [koiVarieties, setKoiVarieties] = useState([]);
-  const getApi = "http://localhost:8082/api/koi/list"; // Same API to get koi list
+  // const getApi = "http://localhost:8082/api/koi/list";
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -15,7 +16,7 @@ const KoiDetails = () => {
 
   const fetchKoiList = async () => {
     try {
-      const response = await axios.get(getApi, {
+      const response = await api.get("koi/list", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

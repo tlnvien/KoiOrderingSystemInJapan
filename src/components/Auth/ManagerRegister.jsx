@@ -7,6 +7,7 @@ import logo from "./assets/logo.jpg";
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../../config/axios";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,6 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const registerApi = "http://localhost:8082/api/register/manager";
   const token = localStorage.getItem("token");
 
   const handleChange = (e) => {
@@ -164,16 +164,14 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(registerApi, {
-        method: "POST",
+      const response = await api.post("register/manager", {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         navigate("/login", {});
       } else {
         alert("Đăng ký thất bại. Vui lòng thử lại.");

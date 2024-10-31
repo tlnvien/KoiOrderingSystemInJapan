@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Button, Modal, Form, Input, notification } from "antd";
 import Sidebar from "./Admin.jsx";
+import api from "../../config/axios.js";
 
 const FarmManagement = () => {
   const [farmList, setFarmList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentFarm, setCurrentFarm] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8082/api/farm"; // API URL của bạn
-  const getApi = "http://localhost:8082/api/farm/list"; // API URL của bạn
+  const apiUrl = "http://localhost:8082/api/farm";
   const token = localStorage.getItem("token");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -19,7 +19,7 @@ const FarmManagement = () => {
 
   const fetchFarmList = async () => {
     try {
-      const response = await axios.get(getApi, {
+      const response = await api.get("farm/list", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,7 +52,7 @@ const FarmManagement = () => {
       cancelText: "Không",
       onOk: async () => {
         try {
-          await axios.delete(`${apiUrl}/${farmId}`, {
+          await api.delete(`farm/${farmId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -79,7 +79,7 @@ const FarmManagement = () => {
       };
 
       if (currentFarm) {
-        await axios.put(`${apiUrl}/${currentFarm.farmId}`, farmData, {
+        await axios.put(`farm/${currentFarm.farmId}`, farmData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
