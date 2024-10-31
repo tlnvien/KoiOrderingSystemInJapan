@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { Form, Input, Button, Row, Col, message } from "antd";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Row, Col, message, Select } from "antd";
 import useGetParams from "../../../hooks/useGetParam";
 import "./CreateOrder.css";
 import api from "../../../config/axios";
+
+const { Option } = Select;
 
 function CreateOrder() {
   const params = useGetParams();
@@ -11,7 +13,8 @@ function CreateOrder() {
   const [description, setDescription] = useState();
   const [note, setNote] = useState();
   const [customerAddress, setcustomerAddress] = useState();
-  const [farmId, setFarmId] = useState(); // State for farmId
+  const [farmId, setFarmId] = useState();
+  const [koiSpeciesList, setKoiSpeciesList] = useState([]); // State for Koi species list
   const [orderDetails, setOrderDetails] = useState([
     {
       koiId: undefined,
@@ -20,6 +23,36 @@ function CreateOrder() {
       price: undefined,
     },
   ]);
+
+  // Function to format number with commas
+  const formatNumber = (value) => {
+    if (value === undefined || value === "") return "";
+    const number = Number(value);
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  // Function to fetch Koi species based on farmId
+  const fetchKoiSpecies = async (farmId) => {
+    try {
+      const response = await api.get(`koiFarm/listKoi/${farmId}`);
+      if (Array.isArray(response.data)) {
+        setKoiSpeciesList(response.data); // Lưu trữ danh sách giống cá
+      } else {
+        console.error("Dữ liệu trả về không phải là mảng:", response.data);
+        message.error("Không thể lấy danh sách giống cá.");
+      }
+      message.success(`Đã có giống cá của trang trại ${farmId}`);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách giống cá:", error);
+      message.error("Không thể lấy danh sách giống cá.");
+    }
+  };
+
+  // Handle farmId change and fetch Koi species
+  const handleFarmIdChange = (value) => {
+    setFarmId(value);
+    fetchKoiSpecies(value); // Call API when farmId changes
+  };
 
   // Handle order details change
   const handleOrderDetailsChange = (index, field, value) => {
@@ -30,20 +63,26 @@ function CreateOrder() {
 
   // Add new order detail row
   const addOrderDetail = () => {
-    setOrderDetails([
-      ...orderDetails,
-      {
-        koiId: undefined,
-        description: undefined,
-        quantity: undefined,
-        price: undefined,
-      },
-    ]);
+    const newOrderDetail = {
+      koiId: undefined,
+      description: undefined,
+      quantity: undefined,
+      price: undefined,
+    };
+    const updatedOrderDetails = [...orderDetails];
+    updatedOrderDetails.push(newOrderDetail);
+    setOrderDetails(updatedOrderDetails);
   };
 
   // Submit order data to the server
   const handleSubmit = async () => {
-    const orderData = { farmId, description, note, customerAddress, orderDetails }; // Include farmId here
+    const orderData = {
+      farmId,
+      description,
+      note,
+      customerAddress,
+      orderDetails,
+    };
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -89,7 +128,7 @@ function CreateOrder() {
           <Input
             value={farmId}
             placeholder="Nhập mã trang trại"
-            onChange={(e) => setFarmId(e.target.value)} // Update farmId state
+            onChange={(e) => handleFarmIdChange(e.target.value)} // Update farmId state and fetch species
             required
           />
         </Form.Item>
@@ -128,14 +167,22 @@ function CreateOrder() {
             style={{ marginBottom: "16px", borderBottom: "1px solid #f0f0f0" }}
           >
             <Col span={4}>
-              <Form.Item label="Mã Koi">
-                <Input
-                  value={detail.koiId}
-                  placeholder="Nhập mã Koi"
-                  onChange={(e) =>
-                    handleOrderDetailsChange(index, "koiId", e.target.value)
+              <Form.Item label="Giống Cá">
+                <Select
+                  placeholder="Chọn giống cá"
+                  value={detail.species}
+                  onChange={(value) =>
+                    handleOrderDetailsChange(index, "species", value)
                   }
-                />
+                >
+                  {/* Kiểm tra nếu koiSpeciesList là một mảng trước khi map */}
+                  {Array.isArray(koiSpeciesList) &&
+                    koiSpeciesList.map((species) => (
+                      <Option key={species.koiId} value={species.koiId}>
+                        {species.species}
+                      </Option>
+                    ))}
+                </Select>
               </Form.Item>
             </Col>
 
@@ -172,13 +219,13 @@ function CreateOrder() {
             <Col span={4}>
               <Form.Item label="Giá">
                 <Input
-                  type="number"
-                  min={0}
+                  type="text"
                   placeholder="Nhập giá"
-                  value={detail.price}
-                  onChange={(e) =>
-                    handleOrderDetailsChange(index, "price", e.target.value)
-                  }
+                  value={formatNumber(detail.price)}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\./g, ""); // Remove dots
+                    handleOrderDetailsChange(index, "price", value);
+                  }}
                 />
               </Form.Item>
             </Col>
@@ -190,7 +237,7 @@ function CreateOrder() {
           onClick={addOrderDetail}
           style={{ marginTop: 16 }}
         >
-          Thêm Chi Tiết Đơn Hàng
+          Thêm giống cá vào đơn hàng
         </Button>
 
         <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>

@@ -1,70 +1,152 @@
-import React, { useState } from "react";
-import { Form, Input, Button, message } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  message,
+  Card,
+  List,
+  Typography,
+  Divider,
+} from "antd";
 import api from "../../../config/axios";
+
+const { Title, Text } = Typography;
 
 function ReceivedOrder() {
   const [loading, setLoading] = useState(false);
+  const [tourId, setTourId] = useState();
+  const [orderData, setOrderData] = useState([]);
+  const token = localStorage.getItem("token");
+  const CHECKED_STATUS = "RECEIVED";
 
-  // Hàm xử lý khi người dùng submit form
-  const onFinish = async (values) => {
-    const { orderId, status } = values; 
-    const token = localStorage.getItem("token"); // Lấy token từ localStorage
-
-    // Nếu token không tồn tại, thông báo lỗi và dừng quá trình
-    if (!token) {
-      message.error("Authentication token is missing. Please login."); // Hiển thị lỗi yêu cầu đăng nhập
-      return;
-    }
-
-    setLoading(true); // Bật trạng thái loading để hiển thị biểu tượng đang xử lý
-
+  const fetchData = async (tourId) => {
+    setLoading(true);
     try {
-      await api.post(
-        `order/consulting/${orderId}?status=${status}`, 
+      const response = await api.get(`order/tour/${tourId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrderData(response.data);
+      message.success("Đã tải danh sách đơn hàng thành công!");
+    } catch (error) {
+      message.error(error.response?.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTourIdChange = (e) => {
+    setTourId(e.target.value);
+  };
+
+  const handleFetchOrders = () => {
+    if (tourId) {
+      fetchData(tourId);
+    } else {
+      message.warning("Vui lòng nhập mã tour hợp lệ.");
+    }
+  };
+
+  const handleReceiveOrder = async (orderId) => {
+    try {
+      const response = await api.post(
+        `order/consulting/${orderId}?status=${CHECKED_STATUS}`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` }, // Gửi token trong header để xác thực
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      message.success("Order status updated successfully!");
+      message.success("Cập nhật trạng thái đơn hàng thành công!");
+      fetchData(tourId);
     } catch (error) {
-      console.error("Error updating order status:", error); 
-      message.error("Failed to update order status."); 
-    } finally {
-      setLoading(false); // Tắt trạng thái loading sau khi hoàn thành yêu cầu API
+      message.error(error.response?.data);
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "20px" }}>
-      <h2>Cập nhật trạng thái đơn hàng</h2>
-      <Form
-        layout="vertical" // Bố cục form dọc
-        onFinish={onFinish} // Khi nhấn submit thì gọi hàm onFinish
-        initialValues={{ status: "RECEIVED" }} // Đặt giá trị mặc định cho status là 'RECEIVED'
-      >
-        <Form.Item
-          label="Order ID" // Nhãn của trường nhập liệu
-          name="orderId" // Tên của trường, dùng để lấy dữ liệu khi submit
-          rules={[{ required: true, message: "Vui lòng nhập Order ID!" }]} // Quy định trường này bắt buộc phải nhập
-        >
-          <Input placeholder="Nhập Order ID" /> 
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
+      <h2>Quản lý đơn hàng</h2>
+      <Form layout="inline" style={{ marginBottom: "20px" }}>
+        <Form.Item label="Mã Tour">
+          <Input
+            placeholder="Nhập mã Tour"
+            value={tourId}
+            onChange={handleTourIdChange}
+          />
         </Form.Item>
-
-        <Form.Item
-          label="Trạng thái" // Nhãn của trường nhập liệu
-          name="status" // Tên của trường, dùng để lấy dữ liệu khi submit
-        >
-          <Input placeholder="RECEIVED" disabled /> {/* Trường này có giá trị là 'RECEIVED' và không thể chỉnh sửa */}
-        </Form.Item>
-
         <Form.Item>
-          {/* Nút submit */}
-          <Button type="primary" htmlType="submit" loading={loading} block>
-            Cập nhật trạng thái
+          <Button type="primary" onClick={handleFetchOrders} loading={loading}>
+            Tải đơn hàng
           </Button>
         </Form.Item>
       </Form>
+
+      <List
+        dataSource={orderData}
+        renderItem={(order) => (
+          <Card style={{ marginBottom: "20px" }} bordered={false}>
+            <List.Item>
+              <div style={{ flex: 1 }}>
+                <Title level={4}>
+                  Khách hàng: {order.customerName} ({order.customerId})
+                </Title>
+                <Text strong>Mã Đơn Hàng:</Text> {order.orderId}
+                <br />
+                <Text strong>Mã Tour:</Text> {order.tourId} |{" "}
+                <Text strong>Mã Trang Trại:</Text> {order.farmId}
+                <br />
+                <Text strong>Ngày đặt:</Text> {order.orderDate}
+                <br />
+                <Text strong>Ngày giao:</Text>{" "}
+                {order.deliveredDate || "Chưa giao"}
+                <br />
+                <Text strong>Tổng tiền:</Text> {order.totalPrice}
+                <br />
+                <Text strong>Địa chỉ:</Text> {order.customerAddress}
+                <br />
+                <Text strong>Trạng thái:</Text> {order.status}
+                <br />
+                <Text strong>Ghi chú:</Text> {order.note}
+                <Divider orientation="left">Chi tiết đơn hàng</Divider>
+                <List
+                  dataSource={order.orderDetails}
+                  renderItem={(detail) => (
+                    <List.Item>
+                      <Card bordered={false} style={{ width: "100%" }}>
+                        <Text>
+                          <b>Mã Koi:</b> {detail.species}
+                        </Text>
+                        <br />
+                        <Text>
+                          <b>Mô tả:</b> {detail.description}
+                        </Text>
+                        <br />
+                        <Text>
+                          <b>Số lượng:</b> {detail.quantity}
+                        </Text>
+                        <br />
+                        <Text>
+                          <b>Giá:</b> {detail.price}
+                        </Text>
+                      </Card>
+                    </List.Item>
+                  )}
+                />
+                <Button
+                  type="primary"
+                  onClick={() => handleReceiveOrder(order.orderId)}
+                  disabled={order.status === CHECKED_STATUS}
+                  style={{ marginTop: "10px" }}
+                >
+                  {order.status === CHECKED_STATUS
+                    ? "Đơn đã được nhận"
+                    : "Nhận đơn"}
+                </Button>
+              </div>
+            </List.Item>
+          </Card>
+        )}
+      />
     </div>
   );
 }

@@ -3,12 +3,11 @@ import { Form, Input, Button, Card, Row, Col, message, Divider } from "antd";
 import api from "../../../config/axios";
 import "./ListOrder.css"; // Import file CSS
 
-const ListOrderC = () => {
+const ListOrder = () => {
   const [tourId, setTourId] = useState("");
   const [orders, setOrders] = useState([]);
   const [role, setRole] = useState(""); // User role
   const [token, setToken] = useState(""); // Token for API calls
-  const FIRST_PAYMENT = "FIRST_PAYMENT";
 
   // Get role and token from local storage
   useEffect(() => {
@@ -39,10 +38,10 @@ const ListOrderC = () => {
   };
 
   // Handle payment
-  const handlePayment = async (orderId) => {
+  const handlePayment = async (orderId, isFinalPayment) => {
     try {
       const response = await api.post(
-        `order/paymentUrl/${orderId}?isFinalPayment=${FIRST_PAYMENT}`,
+        `order/paymentUrl/${orderId}?isFinalPayment=${isFinalPayment}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Include token in the request
@@ -59,7 +58,7 @@ const ListOrderC = () => {
 
   return (
     <div>
-      <h2>Danh sách đơn hàng đã tạo theo tour</h2>
+      <h2>Xem Danh Sách Đơn Hàng</h2>
       <Form layout="inline" onFinish={loadOrders}>
         <Form.Item label="Mã Tour">
           <Input
@@ -94,10 +93,13 @@ const ListOrderC = () => {
                   <strong>Mã Khách Hàng:</strong> {order.customerId}
                 </Col>
                 <Col span={6}>
-                  <strong>Mã Tour:</strong> {order.tourId}
+                  <strong>Tên khách hàng:</strong> {order.customerName}
                 </Col>
                 <Col span={6}>
-                  <strong>Địa chỉ giao hàng:</strong> {order.customerAddress}
+                  <strong>Địa chỉ:</strong> {order.customerAddress}
+                </Col>
+                <Col span={6}>
+                  <strong>Mã Tour:</strong> {order.tourId}
                 </Col>
                 <Col span={6}>
                   <strong>Tổng Giá:</strong> {order.totalPrice.toLocaleString()}{" "}
@@ -135,13 +137,24 @@ const ListOrderC = () => {
                 </div>
               ))}
               {/* Conditional Payment Button */}
-              <Button
-                type="primary"
-                onClick={() => handlePayment(order.orderId)}
-                style={{ marginTop: 16 }}
-              >
-                Thanh Toán Tại Trang Trại
-              </Button>
+              {role === "CONSULTING" && (
+                <Button
+                  type="primary"
+                  onClick={() => handlePayment(order.orderId, "FIRST_PAYMENT")}
+                  style={{ marginTop: 16 }}
+                >
+                  Thanh Toán Tại Trang Trại
+                </Button>
+              )}
+              {role === "DELIVERING" && (
+                <Button
+                  type="primary"
+                  onClick={() => handlePayment(order.orderId, "FINAL_PAYMENT")}
+                  style={{ marginTop: 16 }}
+                >
+                  Thanh Toán Phần Còn Lại
+                </Button>
+              )}
             </Card>
           ))
         ) : (
@@ -152,4 +165,4 @@ const ListOrderC = () => {
   );
 };
 
-export default ListOrderC;
+export default ListOrder;

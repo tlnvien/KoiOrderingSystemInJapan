@@ -12,14 +12,11 @@ function CustomerInTour() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await api.get(
-          `http://localhost:8082/api/tour/customers/${tourId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get(`tour/customers/${tourId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setCustomers(response.data);
       } catch (error) {
         console.error("Error fetching customers:", error);

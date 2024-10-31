@@ -9,8 +9,6 @@ import {
   InputNumber,
   Modal,
   Select,
-  Space,
-  Table,
   Tag,
   Card,
   Image as AntImage,
@@ -108,7 +106,7 @@ function TourManagement() {
       setLoading(true);
       if (values.tourId) {
         await api.put(`/tour/${values.tourId}`, values);
-        toast.success("Tour updated successfully");
+        toast.success("Cập nhật tour thành công");
       } else {
         await api.post(`tour?tourType=${values.tourType}`, values, {
           headers: {
@@ -116,7 +114,7 @@ function TourManagement() {
             Authorization: `Bearer ${token}`,
           },
         });
-        toast.success("Tour created successfully");
+        toast.success("Tạo tour thành công");
       }
       form.resetFields();
       setFileList([]);

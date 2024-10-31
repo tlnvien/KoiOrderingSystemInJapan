@@ -39,3 +39,35 @@
     margin: 4px 0;
     color: #555;
 }
+
+.tour-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .start-button {
+    background-color: green;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 35px;
+    width: 100px;
+    margin-top: 215px;
+    margin-right: 5px;
+  }
+  
+  .end-button {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 35px;
+    width: 100px;
+    margin-top: 215px;
+    margin-right: 15px;
+  }

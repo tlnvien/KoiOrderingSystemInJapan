@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, message, Card, Typography, Divider } from "antd";
 import api from "../../../config/axios";
-import "./CreateDelivery.css"; 
+import "./CreateDelivery.css";
 
 const { Title, Text } = Typography;
 
@@ -57,7 +57,11 @@ const CreateDelivery = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="create-delivery-submit-btn">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="create-delivery-submit-btn"
+            >
               Tạo Đơn Hàng
             </Button>
           </Form.Item>
@@ -65,29 +69,33 @@ const CreateDelivery = () => {
       </Card>
 
       {responseData && (
-        <Card title="Thông Tin Đơn Giao Hàng" bordered className="delivery-info-card">
+        <Card
+          title="Thông Tin Đơn Giao Hàng"
+          bordered
+          className="delivery-info-card"
+        >
           <div>
-            <Text className="delivery-info-label">Mã Giao Hàng:</Text> 
+            <Text className="delivery-info-label">Mã Giao Hàng:</Text>
             <Text>{responseData.deliveringId}</Text>
           </div>
           <Divider className="delivery-info-divider" />
           <div>
-            <Text className="delivery-info-label">Mã Nhân Viên:</Text> 
+            <Text className="delivery-info-label">Mã Nhân Viên:</Text>
             <Text>{responseData.deliveringStaffId}</Text>
           </div>
           <Divider className="delivery-info-divider" />
           <div>
-            <Text className="delivery-info-label">Ngày Giao:</Text> 
+            <Text className="delivery-info-label">Ngày Giao:</Text>
             <Text>{responseData.deliverDate}</Text>
           </div>
           <Divider className="delivery-info-divider" />
           <div>
-            <Text className="delivery-info-label">Thông Tin:</Text> 
+            <Text className="delivery-info-label">Thông Tin:</Text>
             <Text>{responseData.information}</Text>
           </div>
           <Divider className="delivery-info-divider" />
           <div>
-            <Text className="delivery-info-label">Trạng Thái:</Text> 
+            <Text className="delivery-info-label">Trạng Thái:</Text>
             <Text>{responseData.status}</Text>
           </div>
         </Card>

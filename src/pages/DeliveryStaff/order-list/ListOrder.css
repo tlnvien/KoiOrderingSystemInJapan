@@ -1,20 +1,19 @@
 .order-list {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .order-card {
-    transition: transform 0.2s, box-shadow 0.2s; /* Thêm hiệu ứng chuyển tiếp */
-    border: 1px solid grey;
-    bo
-  }
-  
-  .order-card:hover {
-    transform: translateY(-5px); /* Di chuyển lên khi hover */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Tạo hiệu ứng đổ bóng */
-  }
-  
-  .order-detail {
-    margin-bottom: 16px; /* Thêm khoảng cách giữa các chi tiết */
-  }
-  
+  display: flex;
+  flex-direction: column;
+}
+
+.order-card {
+  transition: transform 0.2s, box-shadow 0.2s; /* Thêm hiệu ứng chuyển tiếp */
+  border: 1px solid grey;
+  bo
+}
+
+.order-card:hover {
+  transform: translateY(-5px); /* Di chuyển lên khi hover */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Tạo hiệu ứng đổ bóng */
+}
+
+.order-detail {
+  margin-bottom: 16px; /* Thêm khoảng cách giữa các chi tiết */
+}

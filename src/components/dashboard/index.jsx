@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   PieChartOutlined,
-  FileOutlined,
   TeamOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
+  LogoutOutlined,
+} from "@ant-design/icons"; // Import Logout icon
+import { Layout, Menu, Button, theme } from "antd";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
+import "./Dashboard.css";
 
-const { Header, Content, Sider, Footer } = Layout;
+const { Content, Sider, Footer } = Layout;
 
 function getItem(label, key, icon) {
   return { key, icon, label };
@@ -20,19 +22,23 @@ const Dashboard = () => {
   } = theme.useToken();
   const navigate = useNavigate();
 
-  // Lấy role từ localStorage hoặc API
+  // Get role from localStorage
   const role = localStorage.getItem("role");
 
-  // Tạo menu dựa trên role
+  // Menu items based on role
   const saleItems = [
-    getItem("Manage Tour", "/dashboard/sale/manage-tour", <PieChartOutlined />),
     getItem(
-      "Request from customer",
+      "Quản lý tour",
+      "/dashboard/sale/manage-tour",
+      <PieChartOutlined />
+    ),
+    getItem(
+      "Yêu cầu từ khách hàng",
       "/dashboard/sale/request-customer",
       <TeamOutlined />
     ),
     getItem(
-      "Associate Booking",
+      "Liên kết booking",
       "/dashboard/sale/associate-bookingtour",
       <PieChartOutlined />
     ),
@@ -40,33 +46,24 @@ const Dashboard = () => {
 
   const consultingItems = [
     getItem(
-      "List Tour",
+      "Danh sách tour",
       "/dashboard/consulting/tour-list",
       <PieChartOutlined />
     ),
-    getItem(
-      "Received Order",
-      "/dashboard/consulting/received-order",
-      <PieChartOutlined />
-    ),
+    getItem("Check-in", "/dashboard/consulting/checkin", <PieChartOutlined />),
     getItem(
       "Đơn đã tạo",
       "/dashboard/consulting/list-order",
       <PieChartOutlined />
     ),
     getItem(
-      "Checkin",
-      "/dashboard/consulting/checkin",
+      "Đơn đã nhận",
+      "/dashboard/consulting/received-order",
       <PieChartOutlined />
     ),
   ];
 
   const deliveryItems = [
-    getItem(
-      "Get Order",
-      "/dashboard/delivering/get-order",
-      <PieChartOutlined />
-    ),
     getItem(
       "List Order",
       "/dashboard/delivering/order-list",
@@ -77,25 +74,16 @@ const Dashboard = () => {
       "/dashboard/delivering/create-delivery",
       <PieChartOutlined />
     ),
-    getItem(
-      "Work",
-      "/dashboard/delivering/work",
-      <PieChartOutlined />
-    ),
+    getItem("Work", "/dashboard/delivering/work", <PieChartOutlined />),
     getItem(
       "Đơn đang giao",
       "/dashboard/delivering/starting",
       <PieChartOutlined />
     ),
-    getItem(
-      "Đơn đã giao",
-      "/dashboard/delivering/done",
-      <PieChartOutlined />
-    ),
+    getItem("Đơn đã giao", "/dashboard/delivering/done", <PieChartOutlined />),
   ];
 
   let items;
-
   if (role === "SALES") {
     items = saleItems;
   } else if (role === "DELIVERING") {
@@ -104,9 +92,16 @@ const Dashboard = () => {
     items = consultingItems;
   }
 
-  // Điều hướng khi chọn menu
+  // Handle menu item click
   const handleMenuClick = ({ key }) => {
     navigate(key);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    navigate("/login"); // Redirect to login page
   };
 
   return (
@@ -118,9 +113,34 @@ const Dashboard = () => {
           items={items}
           onClick={handleMenuClick}
         />
+        <Link
+          to="/staff-profile"
+          className="menu-items"
+          style={{ padding: "14px", display: "block", color: "#fff" }}
+        >
+          <FaUserCircle style={{ marginRight: "8px" }} />
+          Profile
+        </Link>
+        <Button
+          type="primary"
+          icon={<LogoutOutlined />}
+          onClick={handleLogout}
+          style={{ margin: "16px", width: "90%" }} // Style the button
+        >
+          Đăng xuất
+        </Button>
       </Sider>
+
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
+        {/* <Header
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        ></Header> */}
         <Content style={{ margin: "16px" }}>
           <div
             style={{
@@ -130,7 +150,7 @@ const Dashboard = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            <Outlet /> {/* Hiển thị nội dung các component con */}
+            <Outlet /> {/* Render child components */}
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>

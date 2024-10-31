@@ -43,75 +43,104 @@ function RequestCustomer() {
     fetchData(); // Tải dữ liệu lần đầu
   }, []);
 
-  const columns = [
-    {
-      title: "Booking ID",
-      dataIndex: "bookingId",
-      key: "bookingId",
-    },
-    {
-      title: "Customer Name",
-      dataIndex: "customerName",
-      key: "customerName",
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
-    },
-    {
-      title: "Tour ID",
-      dataIndex: "tourId",
-      render: (text) => (text ? text : "Chưa có tour"),
-    },
-    {
-      title: "Payment Status",
-      dataIndex: "paymentId",
-      render: (text) => (text === "Not Paid Yet!" ? "Chưa thanh toán" : text),
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Has Visa",
-      dataIndex: "hasVisa",
-      render: (text) => (text ? "Có" : "Không"),
-    },
-    {
-      title: "Number of Attendances",
-      dataIndex: "numberOfAttendances",
-    },
-    {
-      title: "Total Price",
-      dataIndex: "totalPrice",
-      render: (text) => `${text.toLocaleString()} VND`,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-    },
-    {
-      title: "Created Date",
-      dataIndex: "createdDate",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-    {
-      title: "Actions",
-      render: (record) => (
-        <Button type="primary" onClick={() => handleTakeRequest(record.bookingId)}>
-          Nhận yêu cầu
-        </Button>
-      ),
-    },
-  ];
-
   return (
     <div>
-      <h1>Request Customer</h1>
+      <h1>Yêu cầu từ khách hàng</h1>
       {dataSource.length > 0 ? (
-        <Table columns={columns} dataSource={dataSource} />
+        <Row gutter={[16, 16]}>
+          {dataSource.map((record) => (
+            <Col span={24} key={record.bookingId}>
+              <Card
+                title={`Booking ID: ${record.bookingId}`}
+                extra={<span>Trạng thái: {record.status}</span>}
+                style={{ width: "100%" }}
+              >
+                <Row gutter={[16, 8]}>
+                  <Col span={12}>
+                    <p>
+                      <strong>Họ và tên:</strong> {record.customerName}
+                    </p>
+                    <p>
+                      <strong>Sđt:</strong> {record.phone}
+                    </p>
+                    <p>
+                      <strong>Tour ID:</strong>{" "}
+                      {record.tourId || "Chưa có tour"}
+                    </p>
+                    <p>
+                      <strong>Trạng thái thanh toán:</strong>{" "}
+                      {record.paymentId === "Booking chưa được thanh toán!"
+                        ? "Chưa thanh toán"
+                        : record.paymentId}
+                    </p>
+                  </Col>
+                  <Col span={12}>
+                    <p>
+                      <strong>Yêu cầu về tour:</strong> {record.description}
+                    </p>
+                    <p>
+                      <strong>Visa:</strong> {record.hasVisa ? "Có" : "Không"}
+                    </p>
+                    <p>
+                      <strong>Số lượng người tham gia:</strong>{" "}
+                      {record.numberOfAttendances}
+                    </p>
+                    <p>
+                      <strong>Giá :</strong> {record.totalPrice}
+                    </p>
+                    <p>
+                      <strong>Created Date:</strong>{" "}
+                      {dayjs(record.createdDate, "DD-MM-YYYY HH:mm:ss").format(
+                        "DD/MM/YYYY HH:mm:ss"
+                      )}
+                    </p>
+                  </Col>
+                </Row>
+                {record.bookingDetailResponses &&
+                  record.bookingDetailResponses.length > 0 && (
+                    <div style={{ marginTop: "16px" }}>
+                      <h3>Thông tin người tham gia:</h3>
+                      {record.bookingDetailResponses.map((attendee, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            padding: "8px 0",
+                            borderBottom: "1px solid #f0f0f0",
+                          }}
+                        >
+                          <p>
+                            <strong>Họ và tên người tham gia:</strong>{" "}
+                            {attendee.customerName}
+                          </p>
+                          <p>
+                            <strong>Ngày sinh:</strong>{" "}
+                            {dayjs(attendee.dob, "DD-MM-YYYY").format(
+                              "DD/MM/YYYY"
+                            )}
+                          </p>
+                          <p>
+                            <strong>Giới tính:</strong>{" "}
+                            {attendee.gender === "MALE" ? "Nam" : "Nữ"}
+                          </p>
+                          <p>
+                            <strong>Sđt:</strong> {attendee.phone}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                <div style={{ textAlign: "right", marginTop: "20px" }}>
+                  <Button
+                    type="primary"
+                    onClick={() => handleTakeRequest(record.bookingId)}
+                  >
+                    Nhận yêu cầu
+                  </Button>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       ) : (
         <Empty description="Request is empty!" />
       )}

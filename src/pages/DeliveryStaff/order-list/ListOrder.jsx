@@ -5,20 +5,20 @@ import "./ListOrder.css"; // Import CSS file
 
 const ListOrderD = () => {
   const [orders, setOrders] = useState([]);
+  const [receivedOrders, setReceivedOrders] = useState([]); // Track received orders
   const token = localStorage.getItem("token");
-  const deliveringId = localStorage.getItem("deliveringId"); // Get deliveringId from local storage
+  const deliveringId = localStorage.getItem("deliveringId");
 
   // Function to fetch orders
   const fetchData = async () => {
     try {
       const response = await api.get(`order/list/received`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in the request
+          Authorization: `Bearer ${token}`,
         },
       });
       setOrders(response.data);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách đơn hàng:", error);
       message.error("Không thể tải danh sách đơn hàng.");
     }
   };
@@ -33,29 +33,29 @@ const ListOrderD = () => {
 
       const response = await api.post(
         `delivering/order/${deliveringId}?orderId=${orderId}`,
+        {},
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in the request
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       message.success(`Đơn hàng ${orderId} đã được nhận!`);
-      console.log("Response from receiving order:", response.data);
+      setReceivedOrders([...receivedOrders, orderId]); // Add orderId to received list
     } catch (error) {
-      console.error("Lỗi khi nhận đơn hàng:", error);
-      message.error("Không thể nhận đơn hàng.");
+      message.error(error.response?.data);
     }
   };
 
-  // Get role and token from local storage
+  // Fetch orders when component mounts
   useEffect(() => {
     fetchData();
   }, []);
 
   return (
     <div>
-      <h2>Xem Danh Sách Đơn Hàng</h2>
+      <h2>Danh Sách Đơn Hàng</h2>
 
       <div className="order-list" style={{ marginTop: 16 }}>
         {orders.length > 0 ? (
@@ -120,7 +120,8 @@ const ListOrderD = () => {
                 <Button
                   type="primary"
                   onClick={() => handleReceiveOrder(order.orderId)}
-                  style={{ marginRight: 8 }} // Adjust spacing
+                  disabled={receivedOrders.includes(order.orderId)} // Disable if already received
+                  style={{ marginRight: 8 }}
                 >
                   Nhận Đơn
                 </Button>

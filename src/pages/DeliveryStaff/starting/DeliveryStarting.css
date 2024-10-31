@@ -1,47 +1,46 @@
 .delivery-card {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 16px;
-    margin-bottom: 20px; /* Increased space between cards */
-    background-color: #f9f9f9; /* Light background for all cards */
-    transition: transform 0.2s, box-shadow 0.2s; /* Transition for hover effect */
-    border: 1px solid #3c37371b; /* Light border for cards */
-  }
-  
-  .delivery-card:hover {
-    transform: translateY(-2px); /* Slight lift on hover */
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
-  }
-  
-  .delivery-card:nth-child(odd) {
-    background-color: #ffffff; /* White background for odd cards */
-  }
-  
-  .delivery-card:nth-child(even) {
-    background-color: #f0f7ff; /* Light blue background for even cards */
-  }
-  
-  .delivery-info {
-    margin-bottom: 8px; /* Space between info items */
-  }
-  
-  .delivery-info strong {
-    color: #1890ff; /* Color for labels */
-  }
-  
-  .order-response {
-    border: 1px solid #f0f0f0; /* Light border for order details */
-    padding: 8px;
-    border-radius: 4px;
-    margin-bottom: 8px; /* Space between orders */
-    background-color: #fafafa; /* Light gray background for orders */
-  }
-  
-  .order-response strong {
-    color: #ff4d4f; /* Color for order labels */
-  }
-  .delivery-card:nth-child(odd) {
-    background-color: #ffffff;
-    border: 1px solid grey;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  margin-bottom: 20px; /* Increased space between cards */
+  background-color: #f9f9f9; /* Light background for all cards */
+  transition: transform 0.2s, box-shadow 0.2s; /* Transition for hover effect */
+  border: 1px solid #3c37371b; /* Light border for cards */
 }
-  
+
+.delivery-card:hover {
+  transform: translateY(-2px); /* Slight lift on hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.delivery-card:nth-child(odd) {
+  background-color: #ffffff; /* White background for odd cards */
+}
+
+.delivery-card:nth-child(even) {
+  background-color: #f0f7ff; /* Light blue background for even cards */
+}
+
+.delivery-info {
+  margin-bottom: 8px; /* Space between info items */
+}
+
+.delivery-info strong {
+  color: #1890ff; /* Color for labels */
+}
+
+.order-response {
+  border: 1px solid #f0f0f0; /* Light border for order details */
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px; /* Space between orders */
+  background-color: #fafafa; /* Light gray background for orders */
+}
+
+.order-response strong {
+  color: #ff4d4f; /* Color for order labels */
+}
+.delivery-card:nth-child(odd) {
+  background-color: #ffffff;
+  border: 1px solid grey;
+}

@@ -1,0 +1,6 @@
+element.style {
+    padding: 10px;
+    min-height: 360px;
+    background: rgb(255, 255, 255);
+    border-radius: 8px;
+}
