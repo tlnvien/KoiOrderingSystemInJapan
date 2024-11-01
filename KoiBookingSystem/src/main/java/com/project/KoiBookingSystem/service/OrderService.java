@@ -445,6 +445,7 @@ public class OrderService {
             throw new PaymentException("Thanh toán đơn hàng cho lần cuối cùng thất bại: " + e.getMessage());
         }
         order.setStatus(OrderStatus.DELIVERED);
+        order.setDeliveredDate(LocalDateTime.now());
         sendOrderDeliveredSuccessfully(order.getCustomer(), order);
         ordersRepository.save(order);
     }
@@ -637,9 +638,8 @@ public class OrderService {
 
     private List<OrderDetail> createOrderDetails(OrderRequest orderRequest, Tour tour, Orders order) {
         return orderRequest.getOrderDetails().stream().map(orderDetailRequest -> {
-            Koi koi = findKoi(orderDetailRequest.getKoiId());
+            Koi koi = findKoi(orderDetailRequest.getSpecies());
             validateKoiInFarm(order.getFarms(), koi);
-
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrders(order);
             orderDetail.setKoi(koi);
@@ -673,7 +673,7 @@ public class OrderService {
 
         List<OrderDetailResponse> orderDetailResponses = orders.getOrderDetails().stream().map(orderDetail -> {
             OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
-            orderDetailResponse.setKoiId(orderDetail.getKoi().getKoiId());
+            orderDetailResponse.setSpecies(orderDetail.getKoi().getSpecies());
             orderDetailResponse.setDescription(orderDetail.getDescription());
             orderDetailResponse.setQuantity(orderDetail.getQuantity());
 

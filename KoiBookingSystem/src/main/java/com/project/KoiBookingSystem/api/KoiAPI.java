@@ -74,7 +74,7 @@ public class KoiAPI {
         return ResponseEntity.ok(koiResponses);
     }
 
-    @DeleteMapping("/image/remove/{koiId}")
+    @DeleteMapping("/images/remove/{koiId}")
     @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity deleteKoiImage(@PathVariable String koiId, @RequestParam String imageLink) {
         KoiResponse koiResponse = koiService.deleteKoiImage(koiId, imageLink);

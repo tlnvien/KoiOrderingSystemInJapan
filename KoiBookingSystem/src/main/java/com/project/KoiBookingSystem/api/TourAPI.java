@@ -58,10 +58,11 @@ public class TourAPI {
     public ResponseEntity searchTours(@RequestParam(required = false) String tourName,
                                       @RequestParam(required = false) String farmName,
                                       @RequestParam(required = false) String koiSpecies,
-                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate,
+                                      @RequestParam(required = false) Integer departureMonth,
+                                      @RequestParam(required = false) Integer departureYear,
                                       @RequestParam(required = false) Double minPrice,
                                       @RequestParam(required = false) Double maxPrice) {
-        List<TourResponse> tourResponses = tourService.searchTours(tourName, farmName, koiSpecies, departureDate, minPrice, maxPrice);
+        List<TourResponse> tourResponses = tourService.searchTours(tourName, farmName, koiSpecies, departureMonth, departureYear, minPrice, maxPrice);
         return ResponseEntity.ok(tourResponses);
     }
 
@@ -131,7 +132,7 @@ public class TourAPI {
 
     @GetMapping("/list/{consultingId}")
     @PreAuthorize("hasAnyAuthority('CONSULTING', 'MANAGER', 'SALES')")
-    public ResponseEntity getTourByConsulting(String consultingId) {
+    public ResponseEntity getTourByConsulting(@PathVariable String consultingId) {
         List<TourResponse> tourResponses = tourService.getTourByConsulting(consultingId);
         return ResponseEntity.ok(tourResponses);
     }

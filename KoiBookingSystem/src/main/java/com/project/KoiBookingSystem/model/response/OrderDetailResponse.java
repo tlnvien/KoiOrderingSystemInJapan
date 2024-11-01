@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class OrderDetailResponse {
 
-    private String koiId;
+    private String species;
 
     private String description;
 

@@ -65,7 +65,7 @@ public class UserAPI {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'SALES', 'CONSULTING', 'DELIVERING')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'SALES', 'CONSULTING', 'DELIVERING', 'CUSTOMER')")
     public ResponseEntity getUserInfoByUserId(@PathVariable String userId) {
         UserResponse userResponse = userService.getAccountByUserId(userId);
         return ResponseEntity.ok(userResponse);

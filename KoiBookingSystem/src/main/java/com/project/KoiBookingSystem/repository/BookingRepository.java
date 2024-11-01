@@ -15,6 +15,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Booking findBookingByBookingId(String bookingId);
 
+    List<Booking> findBySales_UserId(String userId);
+
     List<Booking> findByIsExpiredFalse();
 
     List<Booking> findByIsExpiredTrue();

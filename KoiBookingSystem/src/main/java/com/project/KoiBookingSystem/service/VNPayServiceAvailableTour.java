@@ -36,7 +36,7 @@ public class VNPayServiceAvailableTour {
         String tmnCode = "K8GYRSRJ";
         String secretKey = "GZRDJNWZ5DZCJF1PF3WV4MP7YX7ZT8H6";
         String vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        String returnUrl = "https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox/?bookingID=" + booking.getBookingId();
+        String returnUrl = "http://localhost:5173/payment-success/?Id=" + booking.getBookingId();
         // trang thông báo thành công (font-end) làm
         // đính kèm Id cho orders (sản phẩm)
         String currCode = "VND";

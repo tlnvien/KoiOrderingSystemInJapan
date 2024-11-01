@@ -8,7 +8,7 @@ import lombok.Data;
 public class OrderDetailRequest {
 
     @NotBlank(message = "Id của cá Koi không được để trống!")
-    private String koiId;
+    private String species;
 
     private String description;
 

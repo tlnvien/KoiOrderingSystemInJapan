@@ -25,7 +25,7 @@ public class BookingAvailableAPI {
     VNPayServiceAvailableTour vnPayServiceAvailableTour;
 
     // tạo url
-    @PostMapping("/ticketByBanking")
+    @PostMapping("/payment")
     public ResponseEntity createNewBooking(@Valid @RequestBody BookingAvailableRequest bookingRequest) throws Exception {
         String vnPayURL = vnPayServiceAvailableTour.createUrl(bookingRequest);
         return ResponseEntity.ok(vnPayURL);

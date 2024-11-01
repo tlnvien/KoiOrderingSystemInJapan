@@ -69,6 +69,13 @@ public class BookingAPI {
         return ResponseEntity.ok(bookingResponse);
     }
 
+    @GetMapping("/list/{salesId}")
+    @PreAuthorize("hasAnyAuthority('SALES', 'MANAGER', 'CONSULTING')")
+    public ResponseEntity getBookingsBySales(@PathVariable String salesId) {
+        List<BookingResponse> bookingResponses = bookingService.getBookingsBySales(salesId);
+        return ResponseEntity.ok(bookingResponses);
+    }
+
     @PostMapping("/check/{bookingId}")
     @PreAuthorize("hasAuthority('CONSULTING')")
     public ResponseEntity checkInBooking(@PathVariable String bookingId, @RequestParam BookingStatus status) {

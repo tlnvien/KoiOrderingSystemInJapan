@@ -129,8 +129,8 @@ public class TourService {
         return convertToTourResponse(tour);
     }
 
-    public List<TourResponse> searchTours(String tourName, String farmName, String koiSpecies, LocalDate departureDate, Double minPrice, Double maxPrice) {
-        List<Tour> tours = tourRepository.searchTours(tourName, farmName, koiSpecies, departureDate, minPrice, maxPrice);
+    public List<TourResponse> searchTours(String tourName, String farmName, String koiSpecies, Integer departureMonth, Integer departureYear, Double minPrice, Double maxPrice) {
+        List<Tour> tours = tourRepository.searchTours(tourName, farmName, koiSpecies, departureMonth, departureYear, minPrice, maxPrice);
         checkEmptyTourList(tours);
         return tours.stream().map(this::convertToTourResponse).collect(Collectors.toList());
     }

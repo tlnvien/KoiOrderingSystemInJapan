@@ -12,7 +12,7 @@ services:
     image: nhatle123/swp391:v5
     container_name: swp391
     environment:
-      MYSQL_URL: "jdbc:mysql//127.0.0.1:3306/swp391"
+      MYSQL_URL: "jdbc:mysql//127.0.0.1:3306/orderingsystem"
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "12345"
     depends_on:
