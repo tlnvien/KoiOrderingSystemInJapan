@@ -1,4 +1,3 @@
-// DashboardPage.jsx
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Statistic, DatePicker, message } from "antd";
 import axios from "axios";
@@ -17,9 +16,16 @@ const DashboardPage = () => {
     ordersThisWeek: 0,
     ordersThisMonth: 0,
     ordersThisYear: 0,
+    completedOrderPayments: 0,
+    completedTourPayments: 0,
+    completedDeliveringPayments: 0,
   });
 
   const fetchData = async () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1; // Month is 0-based
+    const currentYear = currentDate.getFullYear();
+
     try {
       const [
         todayTours,
@@ -32,24 +38,37 @@ const DashboardPage = () => {
         weekOrders,
         monthOrders,
         yearOrders,
+        completedOrderPayments,
+        completedTourPayments,
+        completedDeliveringPayments,
       ] = await Promise.all([
         api.get("dashboard/countTour/today"),
         api.get("dashboard/countTour/week"),
         api.get("dashboard/countTour/month", {
           params: {
-            year: new Date().getFullYear(),
-            month: new Date().getMonth() + 1,
+            year: currentYear,
+            month: currentMonth,
           },
         }),
         api.get("dashboard/countTour/year", {
-          params: { year: new Date().getFullYear() },
+          params: { year: currentYear },
         }),
         api.get("dashboard/balance"),
         api.get("dashboard/countOrders/delivered"),
         api.get("dashboard/countOrders/today"),
         api.get("dashboard/countOrders/week"),
-        api.get("dashboard/countOrders/month"),
-        api.get("dashboard/countOrders/year"),
+        api.get("dashboard/countOrders/month", {
+          params: {
+            year: currentYear,
+            month: currentMonth,
+          },
+        }),
+        api.get("dashboard/countOrders/year", {
+          params: { year: currentYear },
+        }),
+        api.get("dashboard/count/completed/orders"),
+        api.get("dashboard/count/completed/tour"),
+        api.get("dashboard/count/completed/delivering"),
       ]);
 
       setData({
@@ -63,6 +82,9 @@ const DashboardPage = () => {
         ordersThisWeek: weekOrders.data,
         ordersThisMonth: monthOrders.data,
         ordersThisYear: yearOrders.data,
+        completedOrderPayments: completedOrderPayments.data,
+        completedTourPayments: completedTourPayments.data,
+        completedDeliveringPayments: completedDeliveringPayments.data,
       });
     } catch (error) {
       message.error("Failed to load dashboard data.");
@@ -70,11 +92,8 @@ const DashboardPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const handleMonthChange = async (date) => {
+    if (!date) return;
     const year = date.year();
     const month = date.month() + 1;
     try {
@@ -84,10 +103,12 @@ const DashboardPage = () => {
       setData((prev) => ({ ...prev, toursThisMonth: response.data }));
     } catch (error) {
       message.error("Failed to load monthly tour data.");
+      console.error("Error fetching monthly tour data:", error);
     }
   };
 
   const handleYearChange = async (date) => {
+    if (!date) return; // Guard clause for null date
     const year = date.year();
     try {
       const response = await api.get("dashboard/countTour/year", {
@@ -96,8 +117,42 @@ const DashboardPage = () => {
       setData((prev) => ({ ...prev, toursThisYear: response.data }));
     } catch (error) {
       message.error("Failed to load yearly tour data.");
+      console.error("Error fetching yearly tour data:", error);
     }
   };
+
+  const handleOrderMonthChange = async (date) => {
+    if (!date) return;
+    const year = date.year();
+    const month = date.month() + 1;
+    try {
+      const response = await api.get("dashboard/countOrders/month", {
+        params: { year, month },
+      });
+      setData((prev) => ({ ...prev, ordersThisMonth: response.data }));
+    } catch (error) {
+      message.error("Failed to load monthly order data.");
+      console.error("Error fetching monthly order data:", error);
+    }
+  };
+
+  const handleOrderYearChange = async (date) => {
+    if (!date) return;
+    const year = date.year();
+    try {
+      const response = await api.get("dashboard/countOrders/year", {
+        params: { year },
+      });
+      setData((prev) => ({ ...prev, ordersThisYear: response.data }));
+    } catch (error) {
+      message.error("Failed to load yearly order data.");
+      console.error("Error fetching yearly order data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="admin">
@@ -141,7 +196,10 @@ const DashboardPage = () => {
             <Card>
               <Statistic
                 title="System Balance"
-                value={`$${data.balance.toFixed(2)}`}
+                value={new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(data.balance)}
               />
             </Card>
           </Col>
@@ -172,6 +230,11 @@ const DashboardPage = () => {
                 title="Orders This Month"
                 value={data.ordersThisMonth}
               />
+              <DatePicker
+                onChange={handleOrderMonthChange}
+                picker="month"
+                style={{ marginTop: 8 }}
+              />
             </Card>
           </Col>
         </Row>
@@ -180,6 +243,38 @@ const DashboardPage = () => {
           <Col span={8}>
             <Card>
               <Statistic title="Orders This Year" value={data.ordersThisYear} />
+              <DatePicker
+                onChange={handleOrderYearChange}
+                picker="year"
+                style={{ marginTop: 8 }}
+              />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card>
+              <Statistic
+                title="Completed Order Payments"
+                value={data.completedOrderPayments}
+              />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card>
+              <Statistic
+                title="Completed Tour Payments"
+                value={data.completedTourPayments}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={16} style={{ marginTop: 20 }}>
+          <Col span={8}>
+            <Card>
+              <Statistic
+                title="Completed Delivering Payments"
+                value={data.completedDeliveringPayments}
+              />
             </Card>
           </Col>
         </Row>

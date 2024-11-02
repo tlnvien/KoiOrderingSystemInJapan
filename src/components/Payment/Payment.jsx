@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "./Payment.css"; // Import the CSS file
 import api from "../../config/axios";
+import { Spin, Typography } from "antd";
+
+const { Text } = Typography;
 
 const PaymentPage = () => {
-  const [loading, setLoading] = useState(false); // New state for loading
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
+  const bookingId = localStorage.getItem("bookingId"); // Get the bookingId from local storage
 
-  const bookingId = localStorage.getItem("bookingId");
-
-  // Function to initiate payment with bookingId
   const initiatePayment = async () => {
     try {
       setLoading(true); // Start loading
@@ -32,25 +32,20 @@ const PaymentPage = () => {
     }
   };
 
+  useEffect(() => {
+    initiatePayment();
+  }, []);
+
   return (
-    <div className="payment-container">
-      <h1 className="payment-title">Payment Page</h1>
-      <div>
-        <h2>Initiate Payment</h2>
-        <input
-          type="text"
-          className="payment-input" // Apply input field styles
-          placeholder="Booking ID"
-          value={bookingId}
-        />
-        <button
-          className="payment-button"
-          onClick={initiatePayment}
-          disabled={loading || !bookingId} // Disable button when loading or if bookingId is empty
-        >
-          {loading ? "Processing..." : "Tiến hành thanh toán"}
-        </button>
-      </div>
+    <div style={{ textAlign: "center", marginTop: "20px" }}>
+      {loading ? (
+        <>
+          <Spin size="large" /> {/* Loading icon */}
+          <Text style={{ display: "block", marginTop: "10px" }}>
+            Vui lòng chờ trong giây lát...
+          </Text>
+        </>
+      ) : null}
     </div>
   );
 };

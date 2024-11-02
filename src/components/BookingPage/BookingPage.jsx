@@ -43,6 +43,8 @@ const BookingPage = () => {
       form.setFieldsValue({
         fullName: userData.fullName || "",
         phone: userData.phone || "",
+        gender: userData.gender || "",
+        dob: userData.dob ? dayjs(userData.dob, "DD-MM-YYYY") : null,
       });
     } catch (error) {
       message.error("Không thể lấy thông tin người dùng!");
@@ -59,7 +61,7 @@ const BookingPage = () => {
       const newDetails = [...prevDetails];
 
       if (numberOfAttendees > prevDetails.length) {
-        for (let i = prevDetails.length; i < numberOfAttendees; i++) {
+        for (let i = prevDetails.length + 1; i < numberOfAttendees; i++) {
           newDetails.push({
             customerName: "",
             phone: "",
@@ -100,10 +102,13 @@ const BookingPage = () => {
       });
       message.success("Yêu cầu đặt tour thành công!");
       form.resetFields();
+      fetchData();
       setNumberOfAttendees(1);
       setBookingDetails([
         { customerName: "", phone: "", gender: "", dob: null },
       ]);
+      const { bookingId } = response.data;
+      localStorage.setItem("bookingId", bookingId);
     } catch (error) {
       message.error(error.response?.data || "Có lỗi xảy ra, vui lòng thử lại!");
     }
@@ -196,7 +201,7 @@ const BookingPage = () => {
                   {bookingDetails.map((attendee, index) => (
                     <div key={index}>
                       <Form.Item
-                        label={`Tên người tham gia: ${index + 1}`}
+                        label={`Tên người tham gia thứ ${index + 2}`}
                         name={["bookingDetailRequests", index, "customerName"]}
                         rules={[
                           { required: true, message: "Vui lòng nhập tên" },

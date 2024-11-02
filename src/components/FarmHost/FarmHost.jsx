@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Table, Select, Form, notification, Button } from "antd";
-import { useNavigate } from "react-router-dom"; // Đổi từ useHistory sang useNavigate
+import { useNavigate } from "react-router-dom";
 import api from "../../config/axios";
 
 const { Option } = Select;
@@ -12,32 +11,34 @@ const FarmHost = () => {
   const token = localStorage.getItem("token");
   const farmId = localStorage.getItem("farmId");
   const userId = localStorage.getItem("userId");
-  const apiUrl = `order/farmHost/${farmId}`;
-  const navigate = useNavigate(); // Sử dụng useNavigate
+  const check = "SHIPPING";
+
+  const navigate = useNavigate();
+
+  const fetchOrders = async () => {
+    setLoading(true); // Show loading spinner
+    try {
+      const response = await api.get(`order/farmHost`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false); // Hide loading spinner
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await api.get(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setOrders(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Lỗi khi lấy đơn hàng:", error);
-        setLoading(false);
-      }
-    };
-
     fetchOrders();
-  }, [apiUrl, token]);
+  }, [farmId, token]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await api.post(
-        `order/farmHost/${orderId}`,
+        `order/farmHost/${orderId}?status=${check}`,
         { status: newStatus },
         {
           headers: {
@@ -45,21 +46,17 @@ const FarmHost = () => {
           },
         }
       );
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order
-        )
-      );
       notification.success({
-        message: "Thành công",
-        description: "Cập nhật trạng thái đơn hàng thành công.",
+        message: "Success",
+        description: "Order status updated successfully.",
       });
+      fetchOrders();
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Cập nhật trạng thái đơn hàng thất bại.",
+        message: "Error",
+        description: "Failed to update order status.",
       });
-      console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
+      console.error("Error updating order status:", error);
     }
   };
 
@@ -67,44 +64,53 @@ const FarmHost = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("farmId");
     localStorage.removeItem("userId");
-    navigate("/login"); // Dùng navigate để chuyển hướng đến trang đăng nhập
+    navigate("/login");
+  };
+
+  const handleViewDetails = (orderId) => {
+    navigate(`/order/${orderId}`);
   };
 
   const columns = [
     {
-      title: "Mã Đơn Hàng",
+      title: "Order ID",
       dataIndex: "orderId",
       key: "orderId",
       render: (text) => <strong>#{text}</strong>,
     },
     {
-      title: "Tên Khách Hàng",
+      title: "Customer Name",
       dataIndex: "customerName",
       key: "customerName",
     },
     {
-      title: "Trạng Thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (text, record) => (
         <Form.Item>
           <Select
             value={text}
-            onChange={(value) => handleStatusChange(record.id, value)}
+            onChange={(value) => handleStatusChange(record.orderId, value)}
           >
-            {/* <Option value="PENDING">Chờ xử lý</Option> */}
-            {/* <Option value="CONFIRMED">Đã xác nhận</Option> */}
-            <Option value="SHIPPING">Đã giao hàng</Option>
-            {/* <Option value="COMPLETED">Hoàn thành</Option> */}
-            {/* <Option value="CANCELLED">Đã hủy</Option> */}
+            <Option value="SHIPPING">SHIPPING</Option>
           </Select>
         </Form.Item>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Button type="link" onClick={() => handleViewDetails(record.orderId)}>
+          Chi tiết
+        </Button>
       ),
     },
   ];
 
   if (loading) {
-    return <p>Đang tải đơn hàng...</p>;
+    return <p>Loading orders...</p>;
   }
 
   return (
@@ -116,13 +122,13 @@ const FarmHost = () => {
           alignItems: "center",
         }}
       >
-        <p style={{ color: "blue", fontSize: "26px" }}>Xin chào {userId}</p>
+        <p style={{ color: "blue", fontSize: "26px" }}>Hello, {userId}</p>
         <Button type="primary" onClick={handleLogout}>
-          Đăng xuất
+          Logout
         </Button>
       </div>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-        Quản lý đơn hàng của trang trại
+        Manage Farm Orders
       </h2>
       <Table
         columns={columns}

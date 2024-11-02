@@ -149,7 +149,7 @@ function TourManagement() {
                       objectFit: "cover",
                       objectPosition: "center",
                       width: "100%",
-                      height: "100%", // Đặt chiều cao 100%
+                      height: "100%",
                     }}
                   />
                 </div>
@@ -160,8 +160,7 @@ function TourManagement() {
                     <strong>Chủ đề:</strong> {tour.description}
                   </p>
                   <p>
-                    <strong>Ngày khởi hành:</strong>{" "}
-                    {dayjs(tour.departureDate).format("DD-MM-YYYY")}
+                    <strong>Ngày khởi hành:</strong> {tour.departureDate}
                   </p>
                   <p>
                     <strong>Số lượng:</strong> {tour.maxParticipants}
@@ -279,8 +278,8 @@ function TourManagement() {
               <Form.Item label="Mô tả" name="description">
                 <TextArea
                   placeholder="Description"
-                  autoSize={{ minRows: 3, maxRows: 10 }} // Tăng số dòng tối đa
-                  style={{ maxHeight: "120px", overflowY: "auto" }} // Thêm chiều cao tối đa và cuộn
+                  autoSize={{ minRows: 3, maxRows: 10 }}
+                  style={{ maxHeight: "120px", overflowY: "auto" }}
                 />
               </Form.Item>
 
@@ -319,9 +318,13 @@ function TourManagement() {
               >
                 <InputNumber
                   placeholder="Nhập giá"
-                  type="number"
                   min={0}
                   controls={false}
+                  formatter={(value) =>
+                    value.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                  style={{ width: "30%" }} // Make sure it has enough space
                 />
               </Form.Item>
 

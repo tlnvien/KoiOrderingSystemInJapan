@@ -61,6 +61,8 @@ import CreateDelivery from "./components/DeliveryStaff/create-delivery/CreateDel
 import Delivering from "./components/DeliveryStaff/work-day/Delivering";
 import DeliveryDone from "./components/DeliveryStaff/done/DeliveryDone";
 import DeliveryStarting from "./components/DeliveryStaff/starting/DeliveryStarting";
+import ListHistoryTour from "./components/HistoryPage/view-history-tour/ListHistoryTour";
+import HistoryDetail from "./components/HistoryPage/history-tour-detail/HistoryDetail";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -115,6 +117,11 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/farm-host" element={<FarmHost />} />
           <Route path="/staff-profile" element={<StaffProfile />} />
+          <Route path="/history-tour" element={<ListHistoryTour />} />
+          <Route
+            path="/history-tour-detail/:tourId"
+            element={<HistoryDetail />}
+          />
           <Route
             path="/admin/tour-request-from-sale"
             element={<TourRequestManager />}

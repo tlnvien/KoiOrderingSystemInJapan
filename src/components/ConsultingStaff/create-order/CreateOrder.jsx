@@ -17,7 +17,7 @@ function CreateOrder() {
   const [koiSpeciesList, setKoiSpeciesList] = useState([]); // State for Koi species list
   const [orderDetails, setOrderDetails] = useState([
     {
-      koiId: undefined,
+      species: undefined,
       description: undefined,
       quantity: undefined,
       price: undefined,
@@ -41,7 +41,6 @@ function CreateOrder() {
         console.error("Dữ liệu trả về không phải là mảng:", response.data);
         message.error("Không thể lấy danh sách giống cá.");
       }
-      message.success(`Đã có giống cá của trang trại ${farmId}`);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách giống cá:", error);
       message.error("Không thể lấy danh sách giống cá.");
@@ -64,7 +63,7 @@ function CreateOrder() {
   // Add new order detail row
   const addOrderDetail = () => {
     const newOrderDetail = {
-      koiId: undefined,
+      species: undefined,
       description: undefined,
       quantity: undefined,
       price: undefined,
@@ -178,7 +177,7 @@ function CreateOrder() {
                   {/* Kiểm tra nếu koiSpeciesList là một mảng trước khi map */}
                   {Array.isArray(koiSpeciesList) &&
                     koiSpeciesList.map((species) => (
-                      <Option key={species.koiId} value={species.koiId}>
+                      <Option key={species.species} value={species.species}>
                         {species.species}
                       </Option>
                     ))}

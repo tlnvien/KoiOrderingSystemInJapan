@@ -26,6 +26,7 @@ const BookingPageAvailable = () => {
   const [form] = useForm();
   const tourId = useGetParams()("tourId");
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
   const [numberOfAttendances, setNumberOfAttendances] = useState(1);
   const [customers, setCustomers] = useState([
     { fullName: "", phone: "", gender: "", dob: null },
@@ -48,10 +49,42 @@ const BookingPageAvailable = () => {
     });
   }, [numberOfAttendances, form]);
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await api.get(`info/user/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const userInfo = response.data;
+
+        // Cập nhật thông tin khách hàng 1
+        const updatedCustomers = [...customers];
+        updatedCustomers[0] = {
+          ...updatedCustomers[0],
+          fullName: userInfo.fullName,
+          phone: userInfo.phone,
+          gender: userInfo.gender,
+          dob: userInfo.dob ? dayjs(userInfo.dob, "DD-MM-YYYY") : null,
+        };
+        setCustomers(updatedCustomers);
+
+        // Điền thông tin vào form
+        form.setFieldsValue({
+          customers: updatedCustomers,
+        });
+      } catch (error) {
+        message.error("Không thể tải thông tin người dùng");
+      }
+    };
+
+    fetchUserInfo();
+  }, [userId, token, form]);
+
   const handleSubmit = async (values) => {
+    // Đảm bảo rằng không có khách hàng nào có ngày sinh là null
     const formattedCustomers = values.customers.map((customer) => ({
       ...customer,
-      dob: customer.dob ? dayjs(customer.dob).format("DD-MM-YYYY") : null,
+      dob: customer.dob ? dayjs(customer.dob).format("DD-MM-YYYY") : "",
     }));
 
     const submissionData = {
@@ -59,6 +92,7 @@ const BookingPageAvailable = () => {
       customers: formattedCustomers,
     };
 
+    // Gửi dữ liệu đến API
     try {
       const response = await api.post(
         "booking/available/payment",
@@ -180,11 +214,11 @@ const BookingPageAvailable = () => {
                   <Form.Item
                     label="Ngày Sinh"
                     name={["customers", index, "dob"]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập ngày sinh" },
+                    ]}
                   >
-                    <DatePicker
-                      style={{ width: "100%" }}
-                      format="DD-MM-YYYY" // Hiển thị định dạng này trên DatePicker
-                    />
+                    <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
                   </Form.Item>
                 </div>
               ))}

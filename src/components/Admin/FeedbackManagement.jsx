@@ -16,9 +16,9 @@ const FeedbackManagement = () => {
   const [tours, setTours] = useState([]); // List of tours
   const token = localStorage.getItem("token");
 
-  const apiUrl = "http://localhost:8082/api/feedback"; // Update with your API URL
-  const customersApiUrl = "http://localhost:8082/api/info"; // API URL for customers
-  const toursApiUrl = "http://localhost:8082/api/tour"; // API URL for tours
+  const apiUrl = "feedback";
+  const customersApiUrl = "info";
+  const toursApiUrl = "tour";
 
   useEffect(() => {
     const fetchFeedbacks = async () => {

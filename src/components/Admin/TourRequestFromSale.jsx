@@ -21,7 +21,18 @@ function TourRequestManager() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Fetched data:", response.data);
       setDataSource(Array.isArray(response.data) ? response.data : []);
+
+      // Cập nhật trạng thái của các tour đã phê duyệt và bị từ chối
+      const approved = response.data
+        .filter((tour) => tour.status === "CONFIRMED")
+        .map((tour) => tour.tourId);
+      const denied = response.data
+        .filter((tour) => tour.status === "DENIED")
+        .map((tour) => tour.tourId);
+      setApprovedTours(approved);
+      setDeniedTours(denied);
     } catch (error) {
       toast.error(error.response?.data || "Failed to fetch tour requests.");
     }
@@ -35,8 +46,8 @@ function TourRequestManager() {
         },
       });
       toast.success("Yêu cầu tour thành công!");
-      setApprovedTours((prev) => [...prev, tourId]); // Add tourId to approved list
-      fetchTourRequests(); // Refresh data after approval
+      setApprovedTours((prev) => [...prev, tourId]);
+      fetchTourRequests();
     } catch (error) {
       toast.error(error.response?.data || "Failed to approve tour request.");
     }
@@ -73,6 +84,11 @@ function TourRequestManager() {
       key: "tourName",
     },
     {
+      title: "Tour Type",
+      dataIndex: "tourType",
+      key: "tourType",
+    },
+    {
       title: "Requested By",
       dataIndex: "salesId",
       key: "salesId",
@@ -85,7 +101,14 @@ function TourRequestManager() {
     {
       title: "Departure Date",
       dataIndex: "departureDate",
-      render: (text) => new Date(text).toLocaleString(),
+      key: "departureDate",
+      // render: (text) => new Date(text).toLocaleString(),
+    },
+    {
+      title: "Duration",
+      dataIndex: "duration",
+      key: "duration",
+      // render: (text) => new Date(text).toLocaleString(),
     },
     {
       title: "Price (VND)",

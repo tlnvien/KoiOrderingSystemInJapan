@@ -41,14 +41,20 @@ const AssociateBookingTour = () => {
   const handleSubmit = async (values) => {
     setLoading(true);
 
+    // Thêm bookingId vào form values
+    const valuesWithBookingId = {
+      ...values,
+      bookingId: currentBookingId,
+    };
+
     try {
-      // Send request with bookingId and tourId from form values
+      // Gửi yêu cầu với bookingId và tourId
       const response = await api.post(
-        `booking/associate?bookingId=${values.bookingId}&tourId=${values.tourId}`,
-        {}, // body can be empty
+        `booking/associate?bookingId=${valuesWithBookingId.bookingId}&tourId=${valuesWithBookingId.tourId}`,
+        {},
         {
           headers: {
-            Accept: "*/*",
+            Accept: "/",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -56,8 +62,7 @@ const AssociateBookingTour = () => {
       message.success("Liên kết thành công: " + response.data.message);
       fetchData();
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng thử lại.";
+      const errorMessage = error.response?.data;
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -73,7 +78,7 @@ const AssociateBookingTour = () => {
 
   return (
     <div>
-      <h2>Danh sách Đơn Hàng</h2>
+      <h2>Danh sách booking đã nhận</h2>
       <List
         dataSource={bookings}
         renderItem={(booking) => (

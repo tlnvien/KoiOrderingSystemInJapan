@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -80,7 +80,7 @@ const TourDetailPage = () => {
                 <strong>Mô tả:</strong> {tour.description}
               </p>
               <div className="tour-price">
-                <strong>Giá:</strong> {tour.price.toLocaleString()} VND
+                <strong>Giá:</strong> {tour.price.toLocaleString()}
               </div>
               <button className="tour-button" onClick={handleBookingClick}>
                 Đặt Tour
@@ -104,6 +104,9 @@ const TourDetailPage = () => {
           ) : (
             <p>Chưa có lịch trình cho tour này.</p>
           )}
+          <Link to="/list-tour" className="back-button">
+            Quay lại danh sách
+          </Link>
         </div>
       </div>
       <Footer />

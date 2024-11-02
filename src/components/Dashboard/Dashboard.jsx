@@ -16,6 +16,8 @@ function getItem(label, key, icon) {
 
 const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const userId = localStorage.getItem("userId");
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -106,6 +108,9 @@ const Dashboard = () => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+        <div style={{ padding: "14px", color: "#fff", textAlign: "center" }}>
+          {userId && <p>Welcome, {userId}!</p>}
+        </div>
         <Menu
           theme="dark"
           mode="inline"
@@ -153,7 +158,7 @@ const Dashboard = () => {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+          Koi Booking System ©{new Date().getFullYear()}
         </Footer>
       </Layout>
     </Layout>

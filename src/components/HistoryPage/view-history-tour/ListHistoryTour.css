@@ -1,0 +1,48 @@
+.history-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  height: 1900px;
+}
+
+.history-card {
+  width: 80%; /* Chiều rộng của card */
+  margin: 15px 0; /* Khoảng cách giữa các card */
+  display: flex; /* Hiển thị card theo chiều ngang */
+  flex-direction: column; /* Thay đổi chiều dọc cho card */
+}
+
+.history-content {
+  display: flex; /* Đặt bố cục hình ảnh và chi tiết tour nằm ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.history-image {
+  width: 150px; /* Chiều rộng hình ảnh */
+  height: 100px; /* Chiều cao hình ảnh */
+  border-radius: 10px; /* Bo góc cho hình ảnh */
+  object-fit: cover; /* Giữ tỷ lệ cho hình ảnh */
+  margin-right: 20px; /* Khoảng cách giữa hình ảnh và thông tin tour */
+}
+
+.history-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Căn giữa thông tin tour theo chiều dọc */
+  margin-left: 20px; /* Giảm khoảng cách bên trái */
+  flex-grow: 1; /* Cho phép thông tin tour chiếm không gian còn lại */
+}
+
+.history-details h3 {
+  margin: 0; /* Xóa khoảng cách mặc định */
+  margin-bottom: 5px; /* Thêm khoảng cách nhỏ giữa tên tour và thông tin dưới */
+}
+
+:where(.css-dev-only-do-not-override-qnu6hi).ant-btn-primary {
+  color: #fff;
+  background: #1677ff;
+  box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
+  width: 140px;
+}

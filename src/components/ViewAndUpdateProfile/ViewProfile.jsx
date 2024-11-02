@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./Profile.css";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -12,7 +11,8 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import { DatePicker } from "antd";
-import moment from "moment";
+import api from "../../config/axios";
+import dayjs from "dayjs";
 
 const ViewProfile = () => {
   const [userData, setUserData] = useState({
@@ -29,7 +29,7 @@ const ViewProfile = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8082/api/info";
+  // const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();
@@ -37,14 +37,19 @@ const ViewProfile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`info/user/${userId}`, {
+      const response = await api.get(`info/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("User profile response:", response.data);
       if (response.data) {
-        setUserData(response.data);
+        setUserData({
+          ...response.data,
+          dob: response.data.dob
+            ? dayjs(response.data.dob, "DD-MM-YYYY")
+            : null,
+        });
         setIsLoading(false);
       }
     } catch (error) {
@@ -60,7 +65,12 @@ const ViewProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`info`, userData, {
+      const submissionData = {
+        ...userData,
+        dob: userData.dob ? userData.dob.format("DD-MM-YYYY") : "",
+      };
+
+      const response = await api.put(`info`, submissionData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -68,7 +78,12 @@ const ViewProfile = () => {
       });
 
       if (response.data) {
-        setUserData(response.data);
+        setUserData({
+          ...response.data,
+          dob: response.data.dob
+            ? dayjs(response.data.dob, "DD-MM-YYYY")
+            : null,
+        });
         setIsEditing(false);
         alert("Cập nhật thông tin thành công!");
       }
@@ -99,7 +114,7 @@ const ViewProfile = () => {
               <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
               hàng
             </li>
-            <li onClick={() => navigate("/feedback-page")}>
+            <li onClick={() => navigate("/history-tour")}>
               <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
             </li>
             <li onClick={() => navigate("/reset-password")}>
@@ -138,31 +153,18 @@ const ViewProfile = () => {
                 <option value="FEMALE">Nữ</option>
               </select>
             </div>
-            {/* <div className="form-group">
-              <label>Ngày sinh:</label>
-              <DatePicker
-                name="dob"
-                value={userData.dob ? moment(userData.dob, "DD-MM-YYYY") : null}
-                format="DD-MM-YYYY" // Desired format
-                onChange={(date, dateString) => {
-                  setUserData((prevData) => ({
-                    ...prevData,
-                    dob: dateString,
-                  }));
-                }}
-                disabled={!isEditing} 
-              />
-            </div> */}
-
             <div className="form-group">
               <label>Ngày sinh:</label>
-              <input
-                type="LocalDate"
-                format="DD-MM-YYYY"
-                name="dob"
+              <DatePicker
                 value={userData.dob}
-                onChange={handleChange}
-                readOnly={!isEditing}
+                format="DD-MM-YYYY"
+                onChange={(date) => {
+                  setUserData((prevData) => ({
+                    ...prevData,
+                    dob: date,
+                  }));
+                }}
+                disabled={!isEditing}
               />
             </div>
             <div className="form-group">
