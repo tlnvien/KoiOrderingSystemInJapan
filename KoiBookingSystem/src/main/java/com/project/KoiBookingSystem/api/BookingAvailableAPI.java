@@ -50,22 +50,22 @@ public class BookingAvailableAPI {
         return ResponseEntity.ok(ticket);
     }
 
-    // thanh toán bằng tiền mặt
-    @PostMapping("createTicketCast")
-    @PreAuthorize("hasAuthority('CUSTOMER')")
-    public ResponseEntity createTicketCast(@Valid @RequestBody BookingAvailableRequest bookingRequest) {
-        BookingAvailableResponse ticket = bookingService.createTicketCast(bookingRequest);
-        return ResponseEntity.ok(ticket);
-    }
+//    // thanh toán bằng tiền mặt
+//    @PostMapping("createTicketCast")
+//    @PreAuthorize("hasAuthority('CUSTOMER')")
+//    public ResponseEntity createTicketCast(@Valid @RequestBody BookingAvailableRequest bookingRequest) {
+//        BookingAvailableResponse ticket = bookingService.createTicketCast(bookingRequest);
+//        return ResponseEntity.ok(ticket);
+//    }
 
 
-    // update check tại sân bay
-    @PutMapping("/api/booking/checking/{bookingID}/{consultingID}")
-    @PreAuthorize("hasAuthority('CONSULTING')")
-    public ResponseEntity updateBooking(@PathVariable String bookingID, @PathVariable String consultingID) {
-        BookingAvailableResponse updateStatus = bookingService.confirm(bookingID, consultingID);
-        return ResponseEntity.ok(updateStatus);
-    }
+//    // update check tại sân bay
+//    @PutMapping("/api/booking/checking/{bookingID}/{consultingID}")
+//    @PreAuthorize("hasAuthority('CONSULTING')")
+//    public ResponseEntity updateBooking(@PathVariable String bookingID, @PathVariable String consultingID) {
+//        BookingAvailableResponse updateStatus = bookingService.confirm(bookingID, consultingID);
+//        return ResponseEntity.ok(updateStatus);
+//    }
 
     //danh sách vé của khách hàng
     @PutMapping("/api/booking/listBooking/{customerID}")
