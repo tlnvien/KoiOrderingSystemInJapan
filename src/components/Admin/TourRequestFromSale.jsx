@@ -24,7 +24,7 @@ function TourRequestManager() {
       console.log("Fetched data:", response.data);
       setDataSource(Array.isArray(response.data) ? response.data : []);
 
-      // Cập nhật trạng thái của các tour đã phê duyệt và bị từ chối
+      // Update the status of approved and denied tours
       const approved = response.data
         .filter((tour) => tour.status === "CONFIRMED")
         .map((tour) => tour.tourId);
@@ -46,8 +46,7 @@ function TourRequestManager() {
         },
       });
       toast.success("Yêu cầu tour thành công!");
-      setApprovedTours((prev) => [...prev, tourId]);
-      fetchTourRequests();
+      fetchTourRequests(); // Refresh data after approval
     } catch (error) {
       toast.error(error.response?.data || "Failed to approve tour request.");
     }
@@ -61,7 +60,6 @@ function TourRequestManager() {
         },
       });
       toast.success("Tour request denied successfully!");
-      setDeniedTours((prev) => [...prev, tourId]); // Add tourId to denied list
       fetchTourRequests(); // Refresh data after denial
     } catch (error) {
       toast.error(error.response?.data || "Failed to deny tour request.");
@@ -102,13 +100,11 @@ function TourRequestManager() {
       title: "Departure Date",
       dataIndex: "departureDate",
       key: "departureDate",
-      // render: (text) => new Date(text).toLocaleString(),
     },
     {
       title: "Duration",
       dataIndex: "duration",
       key: "duration",
-      // render: (text) => new Date(text).toLocaleString(),
     },
     {
       title: "Price (VND)",
@@ -120,6 +116,7 @@ function TourRequestManager() {
       render: (record) => {
         const isApproved = approvedTours.includes(record.tourId);
         const isDenied = deniedTours.includes(record.tourId);
+        const isCompleted = record.status === "COMPLETED";
 
         return (
           <div>
@@ -128,25 +125,25 @@ function TourRequestManager() {
               onClick={() => handleApprove(record.tourId)}
               style={{
                 marginRight: 8,
-                backgroundColor: isApproved ? "gray" : "",
-                borderColor: isApproved ? "gray" : "",
-                pointerEvents: isApproved ? "none" : "auto",
+                backgroundColor: isApproved || isCompleted ? "gray" : "",
+                borderColor: isApproved || isCompleted ? "gray" : "",
+                pointerEvents: isApproved || isCompleted ? "none" : "auto",
               }}
-              disabled={isApproved || isDenied}
+              disabled={isApproved || isDenied || isCompleted}
             >
-              Approve
+              Chấp nhận
             </Button>
             <Button
               type="danger"
               onClick={() => handleDeny(record.tourId)}
               style={{
-                backgroundColor: isDenied ? "gray" : "",
-                borderColor: isDenied ? "gray" : "",
-                pointerEvents: isDenied ? "none" : "auto",
+                backgroundColor: isDenied || isCompleted ? "gray" : "",
+                borderColor: isDenied || isCompleted ? "gray" : "",
+                pointerEvents: isDenied || isCompleted ? "none" : "auto",
               }}
-              disabled={isApproved || isDenied}
+              disabled={isApproved || isDenied || isCompleted}
             >
-              Deny
+              Từ chối
             </Button>
           </div>
         );
@@ -158,7 +155,7 @@ function TourRequestManager() {
     <div className="admin">
       <Sidebar />
       <div className="admin-content">
-        <h1>Tour Request Manager</h1>
+        <h1>Quản lý tour theo yêu cầu</h1>
         <ToastContainer />
         {dataSource.length > 0 ? (
           <Table columns={columns} dataSource={dataSource} rowKey="tourId" />

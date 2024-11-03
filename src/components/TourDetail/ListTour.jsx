@@ -74,6 +74,7 @@ function ListTour() {
         departureMonth: formattedDepartureDate,
         minPrice: formattedMinPrice,
         maxPrice: formattedMaxPrice,
+        tourType: "AVAILABLE_TOUR", // Chỉ lấy tour loại AVAILABLE_TOUR
       };
 
       const filteredParams = Object.fromEntries(
@@ -165,82 +166,81 @@ function ListTour() {
         </div>
         <div style={{ flex: 3 }}>
           <div>
-            {tours.map((tour) => {
-              // Use moment to parse the departure date
-              const tourDepartureDate = moment(
-                tour.departureDate,
-                "DD-MM-YYYY"
-              );
+            {tours
+              .filter(
+                (tour) =>
+                  tour.tourType === "AVAILABLE_TOUR" &&
+                  tour.status !== "IN_PROGRESS" &&
+                  tour.status !== "COMPLETED"
+              ) // Lọc các tour không hiển thị
+              .map((tour) => {
+                // Use moment to parse the departure date
+                const tourDepartureDate = moment(
+                  tour.departureDate,
+                  "DD-MM-YYYY"
+                );
 
-              // Check if the tour's departure date is in the past
-              const isDisabled = tourDepartureDate.isBefore(currentDate);
+                // Check if the tour's departure date is in the past
+                const isDisabled = tourDepartureDate.isBefore(currentDate);
 
-              // Debugging output
-              console.log(`Tour: ${tour.tourName}`);
-              console.log(
-                `Tour Departure Date: ${tourDepartureDate.format("DD-MM-YYYY")}`
-              );
-              console.log(`Current Date: ${currentDate.format("DD-MM-YYYY")}`);
-              console.log(`Is Disabled: ${isDisabled}`);
-
-              return (
-                <Row
-                  gutter={[16, 16]}
-                  key={tour.tourId}
-                  style={{ marginBottom: "20px" }}
-                >
-                  <Col
-                    span={8}
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                return (
+                  <Row
+                    gutter={[16, 16]}
+                    key={tour.tourId}
+                    style={{ marginBottom: "20px" }}
                   >
-                    <img
-                      src={tour.tourImage}
-                      alt={tour.tourName}
+                    <Col
+                      span={8}
                       style={{
-                        width: "100%",
-                        height: "auto",
-                        borderRadius: "10px",
-                        maxWidth: "90%",
-                        objectFit: "cover",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
-                    />
-                  </Col>
-                  <Col span={16}>
-                    <Card bordered={false}>
-                      <h3>{tour.tourName}</h3>
-                      <p>
-                        <strong>Mã tour:</strong> {tour.tourId}
-                      </p>
-                      <p>
-                        <strong>Ngày khởi hành:</strong> {tour.departureDate}
-                      </p>
-                      <p>
-                        <strong>Thời gian:</strong> {tour.duration}
-                      </p>
-                      <p>
-                        <strong>Số chỗ còn:</strong> {tour.remainSeat}
-                      </p>
-                      <p>
-                        <strong>Giá:</strong> {tour.price.toLocaleString()}
-                      </p>
-                      <Button type="primary" disabled={isDisabled}>
-                        <Link
-                          to={`/tour-detail/${tour.tourId}`}
-                          style={{ color: "black" }}
-                        >
-                          {isDisabled ? "Không thể đặt" : "Chi tiết"}
-                        </Link>
-                      </Button>
-                      {isDisabled}
-                    </Card>
-                  </Col>
-                </Row>
-              );
-            })}
+                    >
+                      <img
+                        src={tour.tourImage}
+                        alt={tour.tourName}
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          borderRadius: "10px",
+                          maxWidth: "90%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Col>
+                    <Col span={16}>
+                      <Card bordered={false}>
+                        <h3>{tour.tourName}</h3>
+                        <p>
+                          <strong>Mã tour:</strong> {tour.tourId}
+                        </p>
+                        <p>
+                          <strong>Ngày khởi hành:</strong> {tour.departureDate}
+                        </p>
+                        <p>
+                          <strong>Thời gian:</strong> {tour.duration}
+                        </p>
+                        <p>
+                          <strong>Số chỗ còn:</strong> {tour.remainSeat}
+                        </p>
+                        <p>
+                          <strong>Giá:</strong> {tour.price.toLocaleString()}
+                        </p>
+                        <Button type="primary" disabled={isDisabled}>
+                          <Link
+                            to={`/tour-detail/${tour.tourId}`}
+                            style={{ color: "black" }}
+                          >
+                            {isDisabled ? "Không thể đặt" : "Chi tiết"}
+                          </Link>
+                        </Button>
+                        {isDisabled}
+                      </Card>
+                    </Col>
+                  </Row>
+                );
+              })}
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@
   padding: 20px;
   border-radius: 8px; /* Bo góc cho sidebar */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-  height: calc(100vh);
+  height: 200px;
 
 }
 

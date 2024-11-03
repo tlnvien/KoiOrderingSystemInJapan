@@ -33,25 +33,6 @@ const PaymentSuccessPage = () => {
       console.log("Lỗi trong giao dịch đặt chỗ: " + error.response?.data);
     }
 
-    // Gọi API thứ hai
-    try {
-      const responseAvailable = await api.post(
-        `booking/available/transaction/${bookingId}`,
-        {}, // Request body trống
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Thông báo thành công khi call API thành công
-      message.success("Giao dịch kiểm tra khả dụng thành công!");
-    } catch (error) {
-      console.log(
-        "Lỗi trong giao dịch kiểm tra khả dụng: " + error.response?.data
-      );
-    }
-
     // Gọi API thứ ba
     try {
       const responseOrderFirst = await api.post(

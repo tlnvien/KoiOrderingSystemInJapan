@@ -39,11 +39,9 @@ function CreateOrder() {
         setKoiSpeciesList(response.data); // Lưu trữ danh sách giống cá
       } else {
         console.error("Dữ liệu trả về không phải là mảng:", response.data);
-        message.error("Không thể lấy danh sách giống cá.");
       }
     } catch (error) {
       console.error("Lỗi khi lấy danh sách giống cá:", error);
-      message.error("Không thể lấy danh sách giống cá.");
     }
   };
 
@@ -97,11 +95,10 @@ function CreateOrder() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      const { orderId } = response.data;
+      localStorage.setItem("orderId", orderId);
       message.success("Đơn hàng đã được tạo thành công!");
-      console.log("Đơn hàng đã được tạo:", response.data);
-      localStorage.setItem("orderId", response.data.orderId);
     } catch (error) {
-      console.error("Lỗi khi tạo đơn hàng:", error);
       message.error(error.response?.data);
     }
   };
@@ -222,7 +219,7 @@ function CreateOrder() {
                   placeholder="Nhập giá"
                   value={formatNumber(detail.price)}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\./g, ""); // Remove dots
+                    const value = e.target.value.replace(/\./g, "");
                     handleOrderDetailsChange(index, "price", value);
                   }}
                 />

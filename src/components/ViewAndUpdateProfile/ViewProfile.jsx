@@ -29,7 +29,6 @@ const ViewProfile = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
-  // const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();
@@ -107,18 +106,12 @@ const ViewProfile = () => {
       <div className="profile-content">
         <div className="sidebar-profile">
           <ul>
-            <li onClick={() => navigate("/profile")}>
-              <UserOutlined style={{ marginRight: "10px" }} /> Tài khoản
-            </li>
             <li onClick={() => navigate("/orders")}>
               <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
               hàng
             </li>
             <li onClick={() => navigate("/history-tour")}>
-              <StarOutlined style={{ marginRight: "10px" }} /> Đánh giá
-            </li>
-            <li onClick={() => navigate("/reset-password")}>
-              <LockOutlined style={{ marginRight: "10px" }} /> Đổi mật khẩu
+              <StarOutlined style={{ marginRight: "10px" }} /> Tour đã đi
             </li>
             {role === "MANAGER" && (
               <li onClick={() => navigate("/register/staff")}>

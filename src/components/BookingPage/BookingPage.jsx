@@ -24,7 +24,7 @@ const { Title } = Typography;
 const BookingPage = () => {
   const [form] = Form.useForm();
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId"); // Get userId from localStorage
+  const userId = localStorage.getItem("userId");
   const [numberOfAttendees, setNumberOfAttendees] = useState(1);
   const [bookingDetails, setBookingDetails] = useState([
     { customerName: "", phone: "", gender: "", dob: null },

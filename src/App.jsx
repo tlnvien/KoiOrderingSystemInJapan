@@ -63,6 +63,9 @@ import DeliveryDone from "./components/DeliveryStaff/done/DeliveryDone";
 import DeliveryStarting from "./components/DeliveryStaff/starting/DeliveryStarting";
 import ListHistoryTour from "./components/HistoryPage/view-history-tour/ListHistoryTour";
 import HistoryDetail from "./components/HistoryPage/history-tour-detail/HistoryDetail";
+import PaymentSuccessAvailable from "./components/Payment/PaymentSuccessAvailable";
+import OrderCus from "./components/OrderOfCustomer/OrderCus";
+import OrderDetail from "./components/OrderOfCustomer/OrderDetailCus";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -114,9 +117,15 @@ function App() {
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
+          <Route
+            path="/payment-available-success"
+            element={<PaymentSuccessAvailable />}
+          />
           <Route path="/contact" element={<Contact />} />
           <Route path="/farm-host" element={<FarmHost />} />
           <Route path="/staff-profile" element={<StaffProfile />} />
+          <Route path="/orders" element={<OrderCus />} />
+          <Route path="/orders/:orderId" element={<OrderDetail />} />
           <Route path="/history-tour" element={<ListHistoryTour />} />
           <Route
             path="/history-tour-detail/:tourId"

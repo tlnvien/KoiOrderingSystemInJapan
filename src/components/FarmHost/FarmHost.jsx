@@ -73,18 +73,18 @@ const FarmHost = () => {
 
   const columns = [
     {
-      title: "Order ID",
+      title: "Mã đơn hàng",
       dataIndex: "orderId",
       key: "orderId",
       render: (text) => <strong>#{text}</strong>,
     },
     {
-      title: "Customer Name",
+      title: "Tên khách hàng",
       dataIndex: "customerName",
       key: "customerName",
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (text, record) => (
@@ -98,15 +98,15 @@ const FarmHost = () => {
         </Form.Item>
       ),
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Button type="link" onClick={() => handleViewDetails(record.orderId)}>
-          Chi tiết
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, record) => (
+    //     <Button type="link" onClick={() => handleViewDetails(record.orderId)}>
+    //       Chi tiết
+    //     </Button>
+    //   ),
+    // },
   ];
 
   if (loading) {
@@ -124,11 +124,11 @@ const FarmHost = () => {
       >
         <p style={{ color: "blue", fontSize: "26px" }}>Hello, {userId}</p>
         <Button type="primary" onClick={handleLogout}>
-          Logout
+          Đăng xuất
         </Button>
       </div>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-        Manage Farm Orders
+        Quản lý đơn hàng của trang trại
       </h2>
       <Table
         columns={columns}

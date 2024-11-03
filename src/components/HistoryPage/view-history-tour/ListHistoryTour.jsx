@@ -70,9 +70,6 @@ const ListHistoryTour = () => {
       <div className="profile-content">
         <div className="sidebar-profile">
           <ul>
-            <li onClick={() => navigate("/profile")}>
-              <UserOutlined style={{ marginRight: "10px" }} /> Tài khoản
-            </li>
             <li onClick={() => navigate("/orders")}>
               <ShoppingCartOutlined style={{ marginRight: "10px" }} /> Đơn đặt
               hàng
