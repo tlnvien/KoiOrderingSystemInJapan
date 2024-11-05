@@ -5,10 +5,10 @@ import FarmVarierties2 from "./assets/farm2.jpg";
 import FarmVarierties3 from "./assets/farm3.jpg";
 import FarmVarierties4 from "./assets/farm4.jpg";
 import FarmVarierties5 from "./assets/farm5.jpg";
-import FarmVarierties6 from "./assets/farm2.jpg";
-import FarmVarierties7 from "./assets/farm1.jpg";
-import FarmVarierties8 from "./assets/farm4.jpg";
-import FarmVarierties9 from "./assets/farm3.jpg";
+import FarmVarierties6 from "./assets/farm2.jpg"; // Duplicate image, consider using unique images
+import FarmVarierties7 from "./assets/farm1.jpg"; // Duplicate image, consider using unique images
+import FarmVarierties8 from "./assets/farm4.jpg"; // Duplicate image, consider using unique images
+import FarmVarierties9 from "./assets/farm3.jpg"; // Duplicate image, consider using unique images
 
 const Slider = () => {
   const images = [
@@ -23,17 +23,17 @@ const Slider = () => {
     FarmVarierties9,
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsToShow = 3; // Số lượng ảnh hiển thị cùng lúc
+  const itemsToShow = 3;
 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - itemsToShow : prevIndex - itemsToShow
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
   const handleNextClick = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex >= images.length - itemsToShow ? 0 : prevIndex + itemsToShow
+      prevIndex >= images.length - 1 ? 0 : prevIndex + 1
     );
   };
 

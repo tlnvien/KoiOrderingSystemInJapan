@@ -9,8 +9,8 @@ const GoogleMapComponent = () => {
 
   // Tọa độ vị trí của công ty
   const center = {
-    lat: 10.875089, // Vĩ độ
-    lng: 106.80067, // Kinh độ
+    lat: 10.8411276, // Vĩ độ
+    lng: 106.8073081, // Kinh độ
   };
 
   return (

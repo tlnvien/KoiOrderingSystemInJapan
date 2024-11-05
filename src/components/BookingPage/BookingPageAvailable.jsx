@@ -25,6 +25,7 @@ const { Title } = Typography;
 const BookingPageAvailable = () => {
   const [form] = useForm();
   const tourId = useGetParams()("tourId");
+  console.log(tourId);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const [numberOfAttendances, setNumberOfAttendances] = useState(1);

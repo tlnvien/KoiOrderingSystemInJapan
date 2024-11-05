@@ -39,7 +39,7 @@ import Contact from "./components/Contact/Contact";
 import FarmHost from "./components/FarmHost/FarmHost";
 import Dashboard from "./components/Dashboard/Dashboard";
 import SaleStaff from "./components/SaleStaff/index";
-import RequestCustomer from "./components/SaleStaff/RequestCustomer/RequestCustomer";
+import RequestCustomer from "./components/SaleStaff/request-customer/RequestCustomer";
 import AssociateBookingTour from "./components/SaleStaff/associate-bookingtour/AssociateBookingTour";
 import ConsultingStaff from "./components/ConsultingStaff/ConsultingStaff";
 import TourList from "./components/ConsultingStaff/TourList/TourList";
@@ -66,7 +66,7 @@ import HistoryDetail from "./components/HistoryPage/history-tour-detail/HistoryD
 import PaymentSuccessAvailable from "./components/Payment/PaymentSuccessAvailable";
 import OrderCus from "./components/OrderOfCustomer/OrderCus";
 import OrderDetail from "./components/OrderOfCustomer/OrderDetailCus";
-
+import ListTourRequest from "./components/SaleStaff/tour-request/ListTourRequest";
 function App() {
   const userRole = localStorage.getItem("role");
   return (
@@ -125,7 +125,7 @@ function App() {
           <Route path="/farm-host" element={<FarmHost />} />
           <Route path="/staff-profile" element={<StaffProfile />} />
           <Route path="/orders" element={<OrderCus />} />
-          <Route path="/orders/:orderId" element={<OrderDetail />} />
+          <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
           <Route path="/history-tour" element={<ListHistoryTour />} />
           <Route
             path="/history-tour-detail/:tourId"
@@ -144,6 +144,7 @@ function App() {
                 path="associate-bookingtour"
                 element={<AssociateBookingTour />}
               />
+              <Route path="list-tour-request" element={<ListTourRequest />} />
             </Route>
 
             {/* Routes cho Consulting Staff */}

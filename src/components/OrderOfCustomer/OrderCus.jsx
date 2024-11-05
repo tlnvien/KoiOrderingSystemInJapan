@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
-import api from "../../config/axios"; // Adjust the import path as necessary
+import api from "../../config/axios";
 import { toast, ToastContainer } from "react-toastify";
 import { ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 
-// Sidebar component for navigation
 const Sidebar = () => {
   const navigate = useNavigate();
 
@@ -52,7 +51,6 @@ const OrderList = () => {
     fetchOrders();
   }, []);
 
-  // Define columns for the orders table
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -80,7 +78,7 @@ const OrderList = () => {
       render: (text, record) => (
         <Button
           type="primary"
-          onClick={() => navigate(`/orders/${record.orderId}`)}
+          onClick={() => navigate(`/order/orderDetail/${record.orderId}`)}
         >
           Xem chi tiết
         </Button>
@@ -89,21 +87,21 @@ const OrderList = () => {
   ];
 
   return (
-    <div style={{ display: "flex" }}>
-      <Sidebar />
-      <div style={{ padding: "20px", flexGrow: 1 }}>
-        <ToastContainer />
-        {isLoading ? (
-          <Spin tip="Đang tải danh sách đơn hàng..." />
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={orders}
-            rowKey="orderId" // Unique key for each order
-          />
-        )}
+    <>
+      <Header />
+      <div style={{ display: "flex" }}>
+        <Sidebar />
+        <div style={{ padding: "20px", flexGrow: 1 }}>
+          <ToastContainer />
+          {isLoading ? (
+            <Spin tip="Đang tải danh sách đơn hàng..." />
+          ) : (
+            <Table columns={columns} dataSource={orders} rowKey="orderId" />
+          )}
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

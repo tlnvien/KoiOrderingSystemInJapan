@@ -14,7 +14,7 @@ const PaymentSuccessPage = () => {
   const token = localStorage.getItem("token");
 
   const postBookingId = async () => {
-    const token = localStorage.getItem("token"); // Make sure you retrieve the token
+    const token = localStorage.getItem("token");
 
     // First API call
     try {
@@ -23,7 +23,7 @@ const PaymentSuccessPage = () => {
         {}, // Request body trống
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Đưa token vào headers
+            Authorization: `Bearer ${token}`,
           },
         }
       );

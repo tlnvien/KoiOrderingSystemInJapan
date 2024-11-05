@@ -68,7 +68,7 @@ const FarmHost = () => {
   };
 
   const handleViewDetails = (orderId) => {
-    navigate(`/order/${orderId}`);
+    navigate(`/order/orderDetail/${orderId}`);
   };
 
   const columns = [
@@ -76,7 +76,7 @@ const FarmHost = () => {
       title: "Mã đơn hàng",
       dataIndex: "orderId",
       key: "orderId",
-      render: (text) => <strong>#{text}</strong>,
+      // render: (text) => <strong>#{text}</strong>,
     },
     {
       title: "Tên khách hàng",
@@ -98,15 +98,15 @@ const FarmHost = () => {
         </Form.Item>
       ),
     },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <Button type="link" onClick={() => handleViewDetails(record.orderId)}>
-    //       Chi tiết
-    //     </Button>
-    //   ),
-    // },
+    {
+      title: "Hành động", // Action column header
+      key: "action",
+      render: (_, record) => (
+        <Button type="link" onClick={() => handleViewDetails(record.orderId)}>
+          Chi tiết
+        </Button>
+      ),
+    },
   ];
 
   if (loading) {

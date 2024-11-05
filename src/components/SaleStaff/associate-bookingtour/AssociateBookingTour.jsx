@@ -26,8 +26,33 @@ const AssociateBookingTour = () => {
 
   const fetchData = async () => {
     try {
-      const response = await api.get(`booking/list/${userId}`);
-      setBookings(response.data);
+      const response = await api.get(
+        `booking/list/${userId}`,
+        {},
+        {
+          headers: {
+            Accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const bookingsWithStatus = response.data.map((booking) => ({
+        ...booking,
+        isLinked: booking.isLinked || false,
+      }));
+
+      // Cập nhật trạng thái isLinked cho các booking đã liên kết
+      const updatedBookings = bookingsWithStatus.map((booking) => {
+        if (bookings.find((b) => b.bookingId === booking.bookingId)) {
+          return {
+            ...booking,
+            isLinked: true, // Giả sử nếu đã có trong danh sách cũ, nó đã được liên kết
+          };
+        }
+        return booking;
+      });
+
+      setBookings(updatedBookings);
     } catch (error) {
       message.error(error.response?.data);
     }
@@ -41,25 +66,32 @@ const AssociateBookingTour = () => {
   const handleSubmit = async (values) => {
     setLoading(true);
 
-    // Thêm bookingId vào form values
     const valuesWithBookingId = {
       ...values,
       bookingId: currentBookingId,
     };
 
     try {
-      // Gửi yêu cầu với bookingId và tourId
       const response = await api.post(
         `booking/associate?bookingId=${valuesWithBookingId.bookingId}&tourId=${valuesWithBookingId.tourId}`,
         {},
         {
           headers: {
-            Accept: "/",
+            Accept: "*/*",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      message.success("Liên kết thành công: " + response.data.message);
+      message.success("Liên kết thành công");
+
+      // Cập nhật trạng thái của booking sau khi liên kết
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.bookingId === currentBookingId
+            ? { ...booking, isLinked: true }
+            : booking
+        )
+      );
       fetchData();
     } catch (error) {
       const errorMessage = error.response?.data;
@@ -97,7 +129,6 @@ const AssociateBookingTour = () => {
                 Trạng thái booking: {booking.status}
               </Typography.Text>
               <Row gutter={[16, 16]} align="top">
-                {/* Left Column: Basic Information */}
                 <Col span={12}>
                   <Descriptions
                     column={1}
@@ -119,8 +150,6 @@ const AssociateBookingTour = () => {
                     </Descriptions.Item>
                   </Descriptions>
                 </Col>
-
-                {/* Right Column: Additional Details */}
                 <Col span={12}>
                   <Descriptions column={1} size="small" bordered>
                     <Descriptions.Item label="Trạng thái thanh toán">
@@ -129,7 +158,6 @@ const AssociateBookingTour = () => {
                     <Descriptions.Item label="Giá tổng">
                       {booking.totalPrice}
                     </Descriptions.Item>
-
                     <Descriptions.Item label="Số người tham gia">
                       {booking.numberOfAttendances}
                     </Descriptions.Item>
@@ -139,8 +167,6 @@ const AssociateBookingTour = () => {
                   </Descriptions>
                 </Col>
               </Row>
-
-              {/* Attendee Details Section - Below the two columns */}
               {booking.bookingDetailResponses.length > 0 && (
                 <div style={{ marginTop: "16px" }}>
                   <Typography.Title level={5}>
@@ -159,8 +185,6 @@ const AssociateBookingTour = () => {
                   />
                 </div>
               )}
-
-              {/* Link Button */}
               <div
                 style={{
                   display: "flex",
@@ -171,8 +195,9 @@ const AssociateBookingTour = () => {
                 <Button
                   type="primary"
                   onClick={() => openLinkModal(booking.bookingId)}
+                  disabled={booking.isLinked} // Vô hiệu hóa nút nếu đã liên kết
                 >
-                  Liên Kết Tour
+                  {booking.isLinked ? "Đã Liên Kết" : "Liên Kết Tour"}
                 </Button>
               </div>
             </Card>

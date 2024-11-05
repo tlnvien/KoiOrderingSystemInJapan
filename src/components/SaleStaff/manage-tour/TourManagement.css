@@ -38,6 +38,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 676.522px;
+
 }
 
 .tour-info h3 {
@@ -102,3 +104,5 @@
 .create-tour-btn:focus {
   outline: none; /* Bỏ viền khi nút được chọn */
 }
+
+

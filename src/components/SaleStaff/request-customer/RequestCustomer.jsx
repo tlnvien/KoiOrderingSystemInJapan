@@ -1,4 +1,4 @@
-import { Table, Button, Empty, Row, Col, Card } from "antd";
+import { Card, Button, Row, Col, Empty } from "antd";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
@@ -8,17 +8,16 @@ function RequestCustomer() {
   const [dataSource, setDataSource] = useState([]);
   const token = localStorage.getItem("token");
 
-  const fetchData = async (values) => {
+  const fetchData = async () => {
     try {
       if (!token) {
         throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
       }
-      const response = await api.get("booking/requests", values, {
+      const response = await api.get("booking/requests", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
       // Ensure response.data is an array
       setDataSource(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
@@ -28,7 +27,7 @@ function RequestCustomer() {
 
   const handleTakeRequest = async (bookingId) => {
     try {
-      const response = await api.post(`booking/take/${bookingId}`, null, {
+      await api.post(`booking/take/${bookingId}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

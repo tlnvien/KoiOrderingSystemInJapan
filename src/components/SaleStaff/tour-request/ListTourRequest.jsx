@@ -19,41 +19,32 @@ import {
   message,
 } from "antd";
 import dayjs from "dayjs";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  AntDesignOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
-import "./TourManagement.css"; // Đưa file CSS riêng
 import { useForm } from "antd/es/form/Form";
 import upLoadFile from "../../../utils/file";
 
-function TourManagement() {
-  const [datas, setDatas] = useState([]);
+function ListTourRequest() {
+  const [tourRequest, setTourRequest] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = useForm();
+
   const token = localStorage.getItem("token");
 
-  const fetchData = async (values) => {
+  const fetchData = async (value) => {
     try {
-      if (!token) {
-        throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
-      }
-
-      const response = await api.get("tour", values, {
-        headers: {
-          Accept: "*/*",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response.data);
-      setDatas(response.data);
+      const response = await api.get(`tour/list/requested`);
+      setTourRequest(response.data);
     } catch (error) {
-      // Cải thiện cách hiển thị lỗi
-      const errorMessage =
-        error.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu.";
-      toast.error(errorMessage);
+      message.error(error.response?.data || "Failed to fetch tour requests");
     }
   };
 
@@ -61,8 +52,22 @@ function TourManagement() {
     fetchData();
   }, []);
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
+  const handleOpenModal = (tour) => {
+    setTourRequest(tour); // Set selected tour as the current tour data
+    form.setFieldsValue({
+      tourId: tour.tourId,
+      tourName: tour.tourName,
+      maxParticipants: tour.maxParticipants,
+      departureDate: dayjs(tour.departureDate, "DD-MM-YYYY"), // Format the date if necessary
+      duration: tour.duration,
+      description: tour.description,
+      consulting: tour.consultingId,
+      tourType: tour.tourType,
+      price: tour.price,
+      tourImage: tour.tourImage,
+      tourSchedules: tour.tourSchedules || [], // Ensure it's not null
+    });
+    setOpenModal(true); // Open the modal
   };
 
   const handleCloseModal = () => {
@@ -72,9 +77,12 @@ function TourManagement() {
   };
 
   const handleOk = () => {
-    form.submit();
+    Modal.confirm({
+      title: "Xác nhận cập nhật tour",
+      content: "Bạn có chắc chắn muốn cập nhật thông tin tour này?",
+      onOk: () => form.submit(), // If confirmed, submit the form
+    });
   };
-
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -91,7 +99,7 @@ function TourManagement() {
     </button>
   );
 
-  const handleSubmit = async (values) => {
+  const handleUpdate = async (values) => {
     values.departureDate = dayjs(values.departureDate).format("DD-MM-YYYY");
     values.tourSchedules = values.tourSchedules.map((schedule) => ({
       ...schedule,
@@ -104,65 +112,29 @@ function TourManagement() {
       values.tourImage = url;
     }
     try {
-      const response = await api.post(
-        `tour?tourType=${values.tourType}`,
-        values,
-        {
-          headers: {
-            Accept: "*/*",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toast.success("Tạo tour thành công");
-      form.resetFields();
-      setFileList([]);
-      handleCloseModal(false);
-    } catch (error) {
-      message.error(error.response?.data); // Hiển thị lỗi từ API nếu có
-    } finally {
-      setLoading(false);
-      fetchData();
-    }
-  };
-
-  const handleCancel = async (value) => {
-    try {
-      const response = await api.delete(`tour/${value}`, value, {
+      const response = await api.put(`tour/${values.tourId}`, values, {
         headers: {
           Accept: "*/*",
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("Tour đã được hủy");
+      toast.success("Cập nhật tour thành công");
+      form.resetFields();
+      setFileList([]);
+      handleCloseModal();
     } catch (error) {
-      message.error(error.response?.data); // Hiển thị lỗi từ API nếu có
+      message.error(error.response?.data || "Đã xảy ra lỗi khi cập nhật tour");
     } finally {
       setLoading(false);
       fetchData();
     }
   };
 
-  const confirmCancel = (event, tourId) => {
-    event.stopPropagation(); // Ngăn ngừa sự kiện click của card
-    Modal.confirm({
-      title: "Xác nhận kết thúc tour",
-      content: "Bạn có chắc chắn muốn kết thúc tour này?",
-      onOk: () => handleCancel(tourId),
-    });
-  };
-
   return (
     <div>
-      <h1>Quản lí tour</h1>
-      <button className="create-tour-btn" onClick={handleOpenModal}>
-        Tạo tour mới
-      </button>
-
-      {/* Hiển thị thẻ thay vì bảng */}
       <div className="tour-card-container">
-        {datas.length > 0 ? (
-          datas.map((tour) => (
+        {tourRequest.length > 0 ? (
+          tourRequest.map((tour) => (
             <Card key={tour.tourId} className="tour-card">
               <div className="tour-card-content">
                 <div className="image-container">
@@ -173,7 +145,7 @@ function TourManagement() {
                       objectFit: "cover",
                       objectPosition: "center",
                       width: "100%",
-                      height: "100%", // Đặt chiều cao 100%
+                      height: "100%",
                     }}
                   />
                 </div>
@@ -184,14 +156,7 @@ function TourManagement() {
                     <strong>Chủ đề:</strong> {tour.description}
                   </p>
                   <p>
-                    <strong>Loại tour:</strong>{" "}
-                    {(() => {
-                      if (tour.tourType === "AVAILABLE_TOUR") {
-                        return "Có sẵn";
-                      } else if (tour.tourType === "REQUESTED_TOUR") {
-                        return "Yêu cầu";
-                      }
-                    })()}
+                    <strong>Loại tour:</strong> {"Yêu cầu"}
                   </p>
                   <p>
                     <strong>Nhân viên tư vấn:</strong> {tour.consultingName}
@@ -213,10 +178,11 @@ function TourManagement() {
                   </p>
                   <Button
                     type="primary"
-                    danger
-                    onClick={(event) => confirmCancel(event, tour.tourId)}
+                    size="large"
+                    icon={<AntDesignOutlined />}
+                    onClick={() => handleOpenModal(tour)}
                   >
-                    Hủy
+                    Cập nhập
                   </Button>
                 </div>
               </div>
@@ -249,19 +215,14 @@ function TourManagement() {
         onOk={handleOk}
         width={1200} // Chỉnh sửa kích thước modal ở đây
       >
-        <Form
-          form={form}
-          onFinish={handleSubmit}
-          layout="vertical"
-          initialValues={{
-            datas,
-            tourSchedules: [],
-          }}
-        >
+        <Form form={form} onFinish={handleUpdate} layout="vertical">
           {/* Nội dung modal */}
           <Row gutter={16}>
             <Col span={12}>
               <Divider orientation="left">Thông tin tour</Divider>
+              <Form.Item label="Mã tour" name="tourId">
+                <Input value={tourRequest.tourId} disabled />
+              </Form.Item>
               <Form.Item
                 label="Tên tour"
                 name="tourName"
@@ -376,7 +337,7 @@ function TourManagement() {
 
               <Form.Item label="Ảnh" name="tourImage">
                 <Upload
-                  action={`http://localhost:8080/api/tour?tourType=${datas.tourType}`}
+                  action={`http://localhost:8080/api/tour?tourType=${tourRequest.tourType}`}
                   listType="picture-card"
                   fileList={fileList}
                   onPreview={handlePreview}
@@ -491,4 +452,4 @@ function TourManagement() {
   );
 }
 
-export default TourManagement;
+export default ListTourRequest;

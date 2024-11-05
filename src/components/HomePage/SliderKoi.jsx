@@ -23,17 +23,17 @@ const Slider = () => {
     FarmVarierties9,
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsToShow = 3; // Số lượng ảnh hiển thị cùng lúc
+  const itemsToShow = 3;
 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - itemsToShow : prevIndex - itemsToShow
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
   const handleNextClick = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex >= images.length - itemsToShow ? 0 : prevIndex + itemsToShow
+      prevIndex >= images.length - 1 ? 0 : prevIndex + 1
     );
   };
 

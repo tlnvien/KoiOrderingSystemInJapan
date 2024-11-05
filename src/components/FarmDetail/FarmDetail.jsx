@@ -13,13 +13,13 @@ const Slider = ({ images }) => {
 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - itemsToShow : prevIndex - itemsToShow
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
   const handleNextClick = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex >= images.length - itemsToShow ? 0 : prevIndex + itemsToShow
+      prevIndex >= images.length - 1 ? 0 : prevIndex + 1
     );
   };
 
