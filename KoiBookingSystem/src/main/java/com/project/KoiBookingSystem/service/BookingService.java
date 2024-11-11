@@ -11,7 +11,6 @@ import com.project.KoiBookingSystem.model.response.CustomerOfBookingResponse;
 import com.project.KoiBookingSystem.model.response.EmailDetail;
 import com.project.KoiBookingSystem.repository.*;
 import jakarta.transaction.Transactional;
-import org.checkerframework.checker.units.qual.A;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -384,19 +383,6 @@ public class BookingService {
     }
 
 
-//    private Tour getAvailableTour(String tourId, int numberOfAttendees) {
-//        Tour tour = tourRepository.findTourByTourId(tourId);
-//        if (tour == null) {
-//            throw new NotFoundException("Tour Not Found!");
-//        }
-//        if (!tour.getType().equals(TourType.AVAILABLE_TOUR)) {
-//            throw new ActionException("Tour is not available for booking!");
-//        }
-//        if (tour.getRemainSeat() < numberOfAttendees) {
-//            throw new ActionException("Not enough available seat for this tour!");
-//        }
-//        return tour;
-//    }
 
     private Tour getRequestTour(String tourId) {
         Tour tour = tourRepository.findTourByTourId(tourId);
@@ -562,23 +548,23 @@ public class BookingService {
     }
 
 
-    private void validateAgeRequirement(List<CustomerOfBookingResponse> customers) {
-        boolean isAdultPresent = customers.stream()
-                .filter(customer -> customer.getDob() != null) // Kiểm tra rằng dob không phải là null
-                .anyMatch(customer -> CheckAgeForBooking(customer.getDob()));
-
-        if (!isAdultPresent) {
-            throw new NotFoundException("Ít nhất một khách hàng phải đủ 18 tuổi để đặt vé cho gia đình!");
-        }
-    }
-
-    private boolean CheckAgeForBooking(LocalDate dob) {
-        if (dob == null) {
-            throw new NotFoundException("Ngày sinh của khách hàng không được để trống!");
-        }
-        Period age = Period.between(dob, LocalDate.now());
-        return age.getYears() >= 18;
-    }
+//    private void validateAgeRequirement(List<CustomerOfBookingResponse> customers) {
+//        boolean isAdultPresent = customers.stream()
+//                .filter(customer -> customer.getDob() != null) // Kiểm tra rằng dob không phải là null
+//                .anyMatch(customer -> CheckAgeForBooking(customer.getDob()));
+//
+//        if (!isAdultPresent) {
+//            throw new NotFoundException("Ít nhất một khách hàng phải đủ 18 tuổi để đặt vé cho gia đình!");
+//        }
+//    }
+//
+//    private boolean CheckAgeForBooking(LocalDate dob) {
+//        if (dob == null) {
+//            throw new NotFoundException("Ngày sinh của khách hàng không được để trống!");
+//        }
+//        Period age = Period.between(dob, LocalDate.now());
+//        return age.getYears() >= 18;
+//    }
 
     private void validateCustomerInfo(List<CustomerOfBookingResponse> customers, Account currentCustomer, int numberOfAttendances) {
         try {
