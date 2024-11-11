@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "./KoiFishDetail.css"; // Import CSS riêng cho trang này
+import "./KoiFishDetail.css";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import api from "../../config/axios";
 
 const KoiDetails = () => {
   const [koiVarieties, setKoiVarieties] = useState([]);
-  // const getApi = "http://localhost:8082/api/koi/list";
   const token = localStorage.getItem("token");
 
   useEffect(() => {

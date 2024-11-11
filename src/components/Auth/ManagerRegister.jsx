@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-import { jwtDecode } from "jwt-decode";
-import facebookLogo from "./assets/facebook-logo.png";
-import logo from "./assets/logo.jpg";
-import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../config/axios";
+import "./Auth.css";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +15,7 @@ const Register = () => {
     phone: "",
     fullName: "",
     gender: "",
-    dob: "",
+    dob: null,
   });
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -34,6 +31,13 @@ const Register = () => {
     });
   };
 
+  const handleDateChange = (date) => {
+    setFormData({
+      ...formData,
+      dob: date,
+    });
+  };
+
   const handleCheckboxChange = (e) => {
     setAgreeToTerms(e.target.checked);
   };
@@ -43,7 +47,6 @@ const Register = () => {
     if (value.trimStart().length !== value.length)
       return "Ký tự đầu tiên không được có khoảng trắng";
     if (/[\d]/.test(value)) return "Không được phép có số";
-    if (/[^a-zA-Z\s]/.test(value)) return "Không được phép có ký tự đặc biệt";
     return "";
   };
 
@@ -119,9 +122,6 @@ const Register = () => {
       case "dob":
         error = validateDateOfBirth(value);
         break;
-      // case "gender":
-      //   error = validateGender(value);
-      //   break;
       default:
         break;
     }
@@ -164,11 +164,13 @@ const Register = () => {
     }
 
     try {
+      const formattedDob = dayjs(formData.dob).format("DD-MM-YYYY");
       const response = await api.post("register/manager", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        ...formData,
+        dob: formattedDob,
       });
 
       if (response.status === 200) {
@@ -179,23 +181,6 @@ const Register = () => {
     } catch (error) {
       console.error("Lỗi khi đăng ký:", error);
       alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-    }
-  };
-
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log("Người dùng Google:", decoded);
-  };
-
-  const handleGoogleLoginFailure = (error) => {
-    console.error("Đăng nhập Google thất bại:", error);
-  };
-
-  const handleFacebookLogin = (response) => {
-    if (response.accessToken) {
-      console.log("Người dùng Facebook:", response);
-    } else {
-      console.error("Đăng nhập Facebook thất bại");
     }
   };
 
@@ -215,10 +200,11 @@ const Register = () => {
               required
             />
             <div className="error-container">
-              {errors.fullname && (
+              {errors.fullName && (
                 <span className="error">{errors.fullName}</span>
               )}
             </div>
+
             <label>Giới tính:</label>
             <select
               name="gender"
@@ -229,17 +215,16 @@ const Register = () => {
               <option value="">Chọn giới tính</option>
               <option value="MALE">Nam</option>
               <option value="FEMALE">Nữ</option>
+              <option value="OTHER">Khác</option>
             </select>
 
-            <label>Ngày sinh (dd-MM-yyyy):</label>
-            <input
-              type="text"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              placeholder="dd-MM-yyyy"
+            <label>Ngày sinh:</label>
+            <DatePicker
+              selected={formData.dob}
+              onChange={handleDateChange}
+              dateFormat="dd-MM-yyyy"
+              placeholderText="Chọn ngày sinh"
+              className="datepicker"
             />
             <div className="error-container">
               {errors.dob && <span className="error">{errors.dob}</span>}
@@ -272,6 +257,7 @@ const Register = () => {
                 <span className="error">{errors.username}</span>
               )}
             </div>
+
             <label>Số điện thoại:</label>
             <input
               type="tel"
@@ -341,44 +327,20 @@ const Register = () => {
                 onChange={handleCheckboxChange}
               />
               <label htmlFor="agreeToTerms">
-                Tôi đồng ý với điều khoản và chính sách sử dụng
+                Tôi đồng ý với điều khoản và chính sách bảo mật
               </label>
             </div>
+
             <button type="submit" className="auth-btn">
               Đăng ký
             </button>
-            <div className="auth-links">
-              <Link to="/login" className="auth-link1">
-                Bạn đã có tài khoản? Đăng nhập ngay
-              </Link>
-            </div>
           </form>
-        </div>
-        <div className="social-login-section">
-          <div className="or-login">
-            <p>Hoặc đăng nhập bằng</p>
-          </div>
-          <div className="social-login1">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginFailure}
-              useOneTap
-            />
-            <FacebookLogin
-              appId="875093550843749"
-              callback={handleFacebookLogin}
-              render={(renderProps) => (
-                <button onClick={renderProps.onClick} className="social-btn1">
-                  <span className="social-text1">Facebook</span>
-                  <img
-                    src={facebookLogo}
-                    alt="Facebook Logo"
-                    className="social-logo1"
-                  />
-                </button>
-              )}
-            />
-          </div>
+          <p className="footer-text">
+            Bạn đã có tài khoản?{" "}
+            <Link to="/login" className="auth-link1">
+              Đăng nhập
+            </Link>
+          </p>
         </div>
       </div>
     </div>

@@ -90,7 +90,7 @@ const DeliveryStarting = () => {
                     onClick={() => handlePayment(order.orderId)}
                     style={{ position: "relative", bottom: 0, right: 0 }}
                   >
-                    Thanh Toán Phần Còn Lại
+                    Thanh Toán
                   </Button>
                 </div>
               ))}

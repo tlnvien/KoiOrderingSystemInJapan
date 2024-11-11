@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import "./TourDetail.css";
@@ -32,9 +32,10 @@ const TourDetailPage = () => {
     const fetchComboTours = async () => {
       try {
         const response = await api.get("tour/list/available");
-        // Filter out the current tour from the combo tour list
+        // Filter out the current tour and include only those with status 'NOT_YET'
         const filteredComboTours = response.data.filter(
-          (comboTour) => comboTour.tourId !== tourId
+          (comboTour) =>
+            comboTour.tourId !== tourId && comboTour.status === "NOT_YET"
         );
         setComboTours(filteredComboTours);
       } catch (error) {
@@ -73,7 +74,11 @@ const TourDetailPage = () => {
   return (
     <div className="tour-detail-container" key={tourId}>
       <Header />
+
       <div className="tour-main-content">
+        <Link to="/list-tour" className="back-button">
+          Quay lại danh sách
+        </Link>
         <div className="tour-detail-header">
           <h1 className="tour-title">Thông tin chi tiết</h1>
         </div>

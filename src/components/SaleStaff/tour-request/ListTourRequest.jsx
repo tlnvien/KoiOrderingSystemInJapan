@@ -182,7 +182,7 @@ function ListTourRequest() {
                     icon={<AntDesignOutlined />}
                     onClick={() => handleOpenModal(tour)}
                   >
-                    Cập nhập
+                    Cập nhật
                   </Button>
                 </div>
               </div>

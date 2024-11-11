@@ -9,7 +9,6 @@ const FarmManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentFarm, setCurrentFarm] = useState(null);
   const [form] = Form.useForm();
-  const apiUrl = "http://localhost:8082/api/farm";
   const token = localStorage.getItem("token");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -79,11 +78,11 @@ const FarmManagement = () => {
       };
 
       if (currentFarm) {
-        await axios.put(`farm/${currentFarm.farmId}`, farmData, {
+        await api.put(`farm/${currentFarm.farmId}`, farmData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post(apiUrl, farmData, {
+        await api.post("farm", farmData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -190,13 +189,13 @@ const FarmManagement = () => {
                               marginRight: "8px",
                             }}
                           />
-                          <Button
+                          {/* <Button
                             type="link"
                             danger
                             onClick={() => handleImageDelete(image.imageLink)}
                           >
                             Xóa
-                          </Button>
+                          </Button> */}
                         </div>
                       ))
                     : "Không có ảnh"}

@@ -1,16 +1,12 @@
-import React, { useState } from "react";
 import "./Admin.css"; // Tùy chỉnh CSS cho layout
 import { Link, Navigate } from "react-router-dom";
 import {
   UserOutlined,
-  FundViewOutlined,
-  FileTextOutlined,
   StarOutlined,
   DashboardOutlined,
-  TeamOutlined,
 } from "@ant-design/icons";
 import { FaFish, FaLink, FaUserCircle } from "react-icons/fa";
-import { GiFarmer, GiFarmTractor, GiHouse } from "react-icons/gi";
+import { GiHouse } from "react-icons/gi";
 
 const Admin = () => {
   const role = localStorage.getItem("role");
@@ -35,7 +31,7 @@ const Admin = () => {
           <li>
             <Link to="/admin/feedback" className="menu-items">
               <StarOutlined style={{ marginRight: "8px" }} />
-              Quản lý Đánh giá
+              Quản lý đánh giá
             </Link>
           </li>
           <li>
@@ -78,12 +74,14 @@ const Admin = () => {
             </Link>
           </li>
 
-          <li>
-            <Link to="/register/staff" className="menu-items">
-              <FaUserCircle style={{ marginRight: "8px" }} />
-              Đăng ký tài khoản cho nhân viên
-            </Link>
-          </li>
+          {role === "MANAGER" && (
+            <li>
+              <Link to="/register/staff" className="menu-items">
+                <FaUserCircle style={{ marginRight: "8px" }} />
+                Đăng ký tài khoản cho nhân viên
+              </Link>
+            </li>
+          )}
 
           <li>
             <Link to="/login" onClick={handleLogout} className="menu-items">

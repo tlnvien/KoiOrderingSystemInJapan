@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Sidebar from "../Admin/Admin.jsx";
 import { DatePicker } from "antd";
-import moment from "moment";
 import api from "../../config/axios.js";
+import dayjs from "dayjs";
 
 const ManaProfile = () => {
   const [userData, setUserData] = useState({
     fullName: "",
     email: "",
     gender: "",
-    dob: "",
+    dob: null,
     address: "",
   });
 
@@ -19,9 +18,6 @@ const ManaProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-  const navigate = useNavigate();
-  // const apiUrl = "http://localhost:8082/api/info";
 
   useEffect(() => {
     fetchUserProfile();
@@ -36,7 +32,12 @@ const ManaProfile = () => {
       });
 
       if (response.data) {
-        setUserData(response.data);
+        setUserData({
+          ...response.data,
+          dob: response.data.dob
+            ? dayjs(response.data.dob, "DD-MM-YYYY")
+            : null,
+        });
         setIsLoading(false);
       }
     } catch (error) {
@@ -109,30 +110,22 @@ const ManaProfile = () => {
               >
                 <option value="MALE">Nam</option>
                 <option value="FEMALE">Nữ</option>
+                <option value="OTHER">Khác</option>
               </select>
             </div>
-            {/* <div className="form-group">
-              <label>Ngày sinh:</label>
-              <DatePicker
-                value={userData.dob ? moment(userData.dob, "DD-MM-YYYY") : null}
-                format="DD-MM-YYYY"
-                onChange={(date, dateString) => {
-                  handleChange({
-                    target: { name: "dob", value: dateString },
-                  });
-                }}
-                disabled={!isEditing}
-              />
-            </div> */}
+
             <div className="form-group">
               <label>Ngày sinh:</label>
-              <input
-                type="LocalDate"
-                format="yyyy-MM-dd"
-                name="dob"
+              <DatePicker
                 value={userData.dob}
-                onChange={handleChange}
-                readOnly={!isEditing}
+                format="DD-MM-YYYY"
+                onChange={(date) => {
+                  setUserData((prevData) => ({
+                    ...prevData,
+                    dob: date,
+                  }));
+                }}
+                disabled={!isEditing}
               />
             </div>
             <div className="form-group">

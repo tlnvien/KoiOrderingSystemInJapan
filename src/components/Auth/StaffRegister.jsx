@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-import { jwtDecode } from "jwt-decode";
-import facebookLogo from "./assets/facebook-logo.png";
-import logo from "./assets/logo.jpg";
-import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../config/axios";
+import "./Auth.css";
 import dayjs from "dayjs";
+import { DatePicker } from "antd";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +15,7 @@ const Register = () => {
     phone: "",
     fullName: "",
     gender: "",
-    dob: "",
+    dob: null,
   });
   const [errors, setErrors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -37,6 +33,10 @@ const Register = () => {
     });
   };
 
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, dob: date });
+  };
+
   const handleCheckboxChange = (e) => {
     setAgreeToTerms(e.target.checked);
   };
@@ -46,7 +46,6 @@ const Register = () => {
     if (value.trimStart().length !== value.length)
       return "Ký tự đầu tiên không được có khoảng trắng";
     if (/[\d]/.test(value)) return "Không được phép có số";
-    if (/[^a-zA-Z\s]/.test(value)) return "Không được phép có ký tự đặc biệt";
     return "";
   };
 
@@ -89,19 +88,15 @@ const Register = () => {
     return "";
   };
 
-  const validateDateOfBirth = (value) => {
-    if (!value) return "Ngày sinh không được để trống";
-    const regex = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/;
-    if (!regex.test(value)) return "Ngày sinh phải đúng định dạng dd-MM-yyyy";
-    return "";
-  };
-
   const handleBlur = (e) => {
     const { name, value } = e.target;
     let error = "";
 
     switch (name) {
-      case "fullName":
+      case "firstName":
+        error = validateFullName(value);
+        break;
+      case "lastName":
         error = validateFullName(value);
         break;
       case "phone":
@@ -118,9 +113,6 @@ const Register = () => {
         break;
       case "username":
         error = validateUsername(value);
-        break;
-      case "dob":
-        error = validateDateOfBirth(value);
         break;
       default:
         break;
@@ -141,6 +133,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate fields
     const newErrors = {};
     newErrors.fullName = validateFullName(formData.fullName);
     newErrors.username = validateUsername(formData.username);
@@ -151,25 +144,31 @@ const Register = () => {
       formData.password,
       formData.confirmPassword
     );
-    newErrors.dob = validateDateOfBirth(formData.dob);
+    if (!formData.dob) {
+      newErrors.dob = "Ngày sinh không được để trống";
+    }
     if (!agreeToTerms) {
       alert("Bạn phải đồng ý với điều khoản và chính sách.");
       return;
     }
 
-    if (Object.keys(errors).length > 0) {
+    if (Object.values(newErrors).some((error) => error)) {
+      setErrors(newErrors);
       alert("Vui lòng sửa các lỗi trước khi gửi.");
-      console.log(errors);
       return;
     }
 
     try {
-      e.dob = dayjs(e.dob).format("DD-MM-YYYY");
-      const response = await api.post(`register/staff?role=${role}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const formattedDob = dayjs(formData.dob).format("DD-MM-YYYY");
+      const response = await api.post(
+        `register/staff?role=${role}`,
+        { ...formData, dob: formattedDob },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         navigate("/login", {});
@@ -179,23 +178,6 @@ const Register = () => {
     } catch (error) {
       console.error("Lỗi khi đăng ký:", error);
       alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-    }
-  };
-
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log("Người dùng Google:", decoded);
-  };
-
-  const handleGoogleLoginFailure = (error) => {
-    console.error("Đăng nhập Google thất bại:", error);
-  };
-
-  const handleFacebookLogin = (response) => {
-    if (response.accessToken) {
-      console.log("Người dùng Facebook:", response);
-    } else {
-      console.error("Đăng nhập Facebook thất bại");
     }
   };
 
@@ -223,10 +205,11 @@ const Register = () => {
               required
             />
             <div className="error-container">
-              {errors.fullname && (
+              {errors.fullName && (
                 <span className="error">{errors.fullName}</span>
               )}
             </div>
+
             <label>Giới tính:</label>
             <select
               name="gender"
@@ -237,17 +220,15 @@ const Register = () => {
               <option value="">Chọn giới tính</option>
               <option value="MALE">Nam</option>
               <option value="FEMALE">Nữ</option>
+              <option value="OTHER">Khác</option>
             </select>
 
-            <label>Ngày sinh (dd-MM-yyyy):</label>
-            <input
-              type="text"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              placeholder="DD-MM-YYYY"
+            <label>Ngày sinh:</label>
+            <DatePicker
+              selected={formData.dob}
+              onChange={handleDateChange}
+              dateFormat="dd-MM-yyyy"
+              placeholderText="DD-MM-YYYY"
             />
             <div className="error-container">
               {errors.dob && <span className="error">{errors.dob}</span>}
@@ -309,7 +290,7 @@ const Register = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="toggle-password-btn"
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             <div className="error-container">
@@ -333,7 +314,7 @@ const Register = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="toggle-password-btn"
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             <div className="error-container">
@@ -350,7 +331,7 @@ const Register = () => {
                 onChange={handleCheckboxChange}
               />
               <label htmlFor="agreeToTerms">
-                Tôi đồng ý với điều khoản và chính sách sử dụng
+                Tôi đồng ý với điều khoản và chính sách bảo mật
               </label>
             </div>
 
@@ -363,33 +344,6 @@ const Register = () => {
               </Link>
             </div>
           </form>
-
-          <div className="social-login-section">
-            <div className="or-login">
-              <p>Hoặc đăng nhập bằng</p>
-            </div>
-            <div className="social-login1">
-              <GoogleLogin
-                onSuccess={handleGoogleLoginSuccess}
-                onError={handleGoogleLoginFailure}
-                useOneTap
-              />
-              <FacebookLogin
-                appId="875093550843749"
-                callback={handleFacebookLogin}
-                render={(renderProps) => (
-                  <button onClick={renderProps.onClick} className="social-btn1">
-                    <span className="social-text1">Facebook</span>
-                    <img
-                      src={facebookLogo}
-                      alt="Facebook Logo"
-                      className="social-logo1"
-                    />
-                  </button>
-                )}
-              />
-            </div>
-          </div>
         </div>
       </div>
     </div>

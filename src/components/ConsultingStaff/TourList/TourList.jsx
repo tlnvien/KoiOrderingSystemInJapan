@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "./TourList.css";
 import api from "../../../config/axios";
 import { message } from "antd";

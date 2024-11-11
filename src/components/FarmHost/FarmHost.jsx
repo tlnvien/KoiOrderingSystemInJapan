@@ -122,7 +122,7 @@ const FarmHost = () => {
           alignItems: "center",
         }}
       >
-        <p style={{ color: "blue", fontSize: "26px" }}>Hello, {userId}</p>
+        <p style={{ color: "blue", fontSize: "26px" }}>Welcome, {userId}</p>
         <Button type="primary" onClick={handleLogout}>
           Đăng xuất
         </Button>

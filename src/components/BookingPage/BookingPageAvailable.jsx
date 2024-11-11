@@ -25,7 +25,6 @@ const { Title } = Typography;
 const BookingPageAvailable = () => {
   const [form] = useForm();
   const tourId = useGetParams()("tourId");
-  console.log(tourId);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const [numberOfAttendances, setNumberOfAttendances] = useState(1);
@@ -62,9 +61,9 @@ const BookingPageAvailable = () => {
         const updatedCustomers = [...customers];
         updatedCustomers[0] = {
           ...updatedCustomers[0],
-          fullName: userInfo.fullName,
-          phone: userInfo.phone,
-          gender: userInfo.gender,
+          fullName: userInfo.fullName || " ",
+          phone: userInfo.phone || " ",
+          gender: userInfo.gender || " ",
           dob: userInfo.dob ? dayjs(userInfo.dob, "DD-MM-YYYY") : null,
         };
         setCustomers(updatedCustomers);
@@ -85,7 +84,7 @@ const BookingPageAvailable = () => {
     // Đảm bảo rằng không có khách hàng nào có ngày sinh là null
     const formattedCustomers = values.customers.map((customer) => ({
       ...customer,
-      dob: customer.dob ? dayjs(customer.dob).format("DD-MM-YYYY") : "",
+      dob: customer.dob ? dayjs(customer.dob).format("DD-MM-YYYY") : "", // Đặt giá trị mặc định là "" thay vì null
     }));
 
     const submissionData = {
@@ -216,10 +215,13 @@ const BookingPageAvailable = () => {
                     label="Ngày Sinh"
                     name={["customers", index, "dob"]}
                     rules={[
-                      { required: true, message: "Vui lòng nhập ngày sinh" },
+                      {
+                        required: true,
+                        message: "Vui lòng nhập ngày sinh",
+                      },
                     ]}
                   >
-                    <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
+                    <DatePicker format="DD-MM-YYYY" style={{ width: "100%" }} />
                   </Form.Item>
                 </div>
               ))}

@@ -143,7 +143,7 @@ const ListOrder = () => {
                   onClick={() => handlePayment(order.orderId, "FIRST_PAYMENT")}
                   style={{ marginTop: 16 }}
                 >
-                  Thanh Toán Tại Trang Trại
+                  Thanh Toán
                 </Button>
               )}
               {role === "DELIVERING" && (
@@ -152,7 +152,7 @@ const ListOrder = () => {
                   onClick={() => handlePayment(order.orderId, "FINAL_PAYMENT")}
                   style={{ marginTop: 16 }}
                 >
-                  Thanh Toán Phần Còn Lại
+                  Thanh Toán
                 </Button>
               )}
             </Card>

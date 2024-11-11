@@ -1,24 +1,20 @@
 import React, { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-import { jwtDecode } from "jwt-decode";
-import facebookLogo from "./assets/facebook-logo.png";
-import logo from "./assets/logo.jpg";
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import dayjs from "dayjs";
-import { DatePicker } from "antd";
 import api from "../../config/axios";
+import { DatePicker } from "antd";
 
 const Register = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
+    fullName: "",
     password: "",
     confirmPassword: "",
     phone: "",
-    dob: "",
+    dob: null,
     gender: "",
   });
   const [errors, setErrors] = useState({});
@@ -34,6 +30,13 @@ const Register = () => {
     });
   };
 
+  const handleDateChange = (date) => {
+    setFormData({
+      ...formData,
+      dob: date,
+    });
+  };
+
   const handleCheckboxChange = (e) => {
     setAgreeToTerms(e.target.checked);
   };
@@ -43,7 +46,6 @@ const Register = () => {
     if (value.trimStart().length !== value.length)
       return "Ký tự đầu tiên không được có khoảng trắng";
     if (/[\d]/.test(value)) return "Không được phép có số";
-    if (/[^a-zA-Z\s]/.test(value)) return "Không được phép có ký tự đặc biệt";
     return "";
   };
 
@@ -91,10 +93,7 @@ const Register = () => {
     let error = "";
 
     switch (name) {
-      case "firstName":
-        error = validateFullName(value);
-        break;
-      case "lastName":
+      case "fullName":
         error = validateFullName(value);
         break;
       case "phone":
@@ -142,15 +141,13 @@ const Register = () => {
     }
 
     try {
-      e.dob = dayjs(e.dob).format("DD-MM-YYYY");
+      const formattedDob = dayjs(formData.dob).format("DD-MM-YYYY");
       const response = await api.post("register", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        ...formData,
+        dob: formattedDob,
       });
 
-      if (response.ok) {
+      if (response.statusCode === 200) {
         navigate("/verify-code", { state: { email: formData.email } });
       } else {
         alert("Đăng ký thất bại. Vui lòng thử lại.");
@@ -158,23 +155,6 @@ const Register = () => {
     } catch (error) {
       console.error("Lỗi khi đăng ký người dùng:", error);
       alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-    }
-  };
-
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log("Người dùng Google:", decoded);
-  };
-
-  const handleGoogleLoginFailure = (error) => {
-    console.error("Đăng nhập Google thất bại:", error);
-  };
-
-  const handleFacebookLogin = (response) => {
-    if (response.accessToken) {
-      console.log("Người dùng Facebook:", response);
-    } else {
-      console.error("Đăng nhập Facebook thất bại");
     }
   };
 
@@ -234,17 +214,16 @@ const Register = () => {
               <option value="">Chọn giới tính</option>
               <option value="MALE">Nam</option>
               <option value="FEMALE">Nữ</option>
+              <option value="OTHER">Khác</option>
             </select>
 
-            <label>Ngày sinh (dd-MM-yyyy):</label>
-            <input
-              type="text"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              placeholder="dd-MM-yyyy"
+            <label>Ngày sinh:</label>
+            <DatePicker
+              selected={formData.dob}
+              onChange={handleDateChange}
+              dateFormat="dd-MM-yyyy"
+              placeholderText="Chọn ngày sinh"
+              className="date-picker"
             />
             <div className="error-container">
               {errors.dob && <span className="error">{errors.dob}</span>}
@@ -306,45 +285,20 @@ const Register = () => {
                 onChange={handleCheckboxChange}
               />
               <label htmlFor="agreeToTerms">
-                Tôi đồng ý với điều khoản và chính sách sử dụng
+                Tôi đồng ý với điều khoản và chính sách bảo mật
               </label>
             </div>
+
             <button type="submit" className="auth-btn">
               Đăng ký
             </button>
-            <div className="auth-links">
-              <Link className="auth-link" to="/login">
-                Bạn đã có tài khoản? Đăng nhập
+            <p>
+              Đã có tài khoản?{" "}
+              <Link to="/login" className="auth-link1">
+                Đăng nhập ngay
               </Link>
-            </div>
+            </p>
           </form>
-        </div>
-
-        <div className="social-login-section">
-          <div className="or-login">
-            <p>Hoặc đăng nhập bằng</p>
-          </div>
-          <div className="social-login1">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginFailure}
-              useOneTap
-            />
-            <FacebookLogin
-              appId="875093550843749"
-              callback={handleFacebookLogin}
-              render={(renderProps) => (
-                <button onClick={renderProps.onClick} className="social-btn1">
-                  <span className="social-text1">Facebook</span>
-                  <img
-                    src={facebookLogo}
-                    alt="Facebook Logo"
-                    className="social-logo1"
-                  />
-                </button>
-              )}
-            />
-          </div>
         </div>
       </div>
     </div>

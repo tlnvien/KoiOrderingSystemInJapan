@@ -3,11 +3,7 @@ import { Card, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import Header from "../../Header/Header";
-import {
-  UserOutlined,
-  ShoppingCartOutlined,
-  StarOutlined,
-} from "@ant-design/icons";
+import { ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
 import "./ListHistoryTour.css"; // Import custom CSS for styling
 
 const ListHistoryTour = () => {

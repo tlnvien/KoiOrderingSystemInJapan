@@ -1,5 +1,4 @@
 import { Button, message, Result } from "antd";
-import axios from "axios";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGetParams from "../../hooks/useGetParam";
@@ -8,10 +7,8 @@ import api from "../../config/axios";
 const PaymentSuccessAvailable = () => {
   const params = useGetParams();
   const bookingId = params("Id");
-  const orderId = params("Id");
   const vnp_TransactionStatus = params("vnp_TransactionStatus");
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const postBookingId = async () => {
     const token = localStorage.getItem("token"); // Make sure you retrieve the token

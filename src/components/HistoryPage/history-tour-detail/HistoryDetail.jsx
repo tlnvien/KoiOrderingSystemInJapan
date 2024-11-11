@@ -11,6 +11,7 @@ function HistoryDetail() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
+  const [editingFeedbackId, setEditingFeedbackId] = useState(null);
   const { tourId } = useParams();
   const token = localStorage.getItem("token");
 
@@ -18,7 +19,7 @@ function HistoryDetail() {
   useEffect(() => {
     const fetchTourDetails = async () => {
       try {
-        const response = await api.get(`/tour/search/${tourId}`, {
+        const response = await api.get(`tour/search/${tourId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -36,7 +37,7 @@ function HistoryDetail() {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await api.get(`/feedback/tour/${tourId}`, {
+        const response = await api.get(`feedback/tour/${tourId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,16 +51,63 @@ function HistoryDetail() {
     if (tourId) fetchFeedbacks();
   }, [tourId]);
 
-  // Submit feedback
+  const handleEditFeedback = (feedback) => {
+    setComment(feedback.comment);
+    setRating(feedback.rating);
+    setEditingFeedbackId(feedback.feedbackId);
+  };
+
+  // Form submission for feedback
   const handleFeedbackSubmit = async () => {
     if (rating === 0 || !comment) {
       message.warning("Vui lòng cho điểm và nhập nhận xét.");
       return;
     }
 
+    if (editingFeedbackId) {
+      handleUpdateFeedback();
+    } else {
+      try {
+        const response = await api.post(
+          `feedback?tourId=${tourId}`,
+          { comment, rating },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        message.success("Gửi đánh giá thành công!");
+        setComment("");
+        setRating(0);
+
+        // Cập nhật danh sách feedbacks mà không cần tải lại từ server
+        setFeedbacks([
+          ...feedbacks,
+          {
+            feedbackId: response.data.feedbackId, // Ensure new feedback ID is included
+            comment,
+            rating,
+            feedbackDate: new Date().toLocaleString(),
+          },
+        ]);
+      } catch (error) {
+        console.error("Lỗi khi gửi đánh giá:", error);
+        message.error("Gửi đánh giá thất bại.");
+      }
+    }
+  };
+
+  // Cập nhật sau khi chỉnh sửa đánh giá
+  const handleUpdateFeedback = async () => {
+    if (rating === 0 || !comment) {
+      message.warning("Vui lòng cho điểm và nhập nhận xét.");
+      return;
+    }
+
     try {
-      await api.post(
-        `/feedback?tourId=${tourId}`,
+      await api.put(
+        `feedback/${editingFeedbackId}`,
         { comment, rating },
         {
           headers: {
@@ -67,20 +115,26 @@ function HistoryDetail() {
           },
         }
       );
-      message.success("Gửi đánh giá thành công!");
+      message.success("Chỉnh sửa đánh giá thành công!");
       setComment("");
       setRating(0);
+      setEditingFeedbackId(null);
 
-      // Refresh feedback list after submission
-      const response = await api.get(`/feedback/tour/${tourId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setFeedbacks(Array.isArray(response.data) ? response.data : []);
+      // Cập nhật lại danh sách feedbacks mà không cần tải lại từ server
+      const updatedFeedbacks = feedbacks.map((fb) =>
+        fb.feedbackId === editingFeedbackId
+          ? {
+              ...fb,
+              comment,
+              rating,
+              feedbackDate: new Date().toLocaleString(),
+            }
+          : fb
+      );
+      setFeedbacks(updatedFeedbacks);
     } catch (error) {
-      console.error("Lỗi khi gửi đánh giá:", error);
-      message.error("Gửi đánh giá thất bại.");
+      console.error("Lỗi khi chỉnh sửa đánh giá:", error);
+      message.error("Chỉnh sửa đánh giá thất bại.");
     }
   };
 
@@ -185,10 +239,14 @@ function HistoryDetail() {
                 <Form.Item>
                   <Button
                     type="primary"
-                    onClick={handleFeedbackSubmit}
+                    onClick={
+                      editingFeedbackId
+                        ? handleUpdateFeedback
+                        : handleFeedbackSubmit
+                    }
                     style={{ width: "100%" }}
                   >
-                    Gửi đánh giá
+                    {editingFeedbackId ? "Cập nhật đánh giá" : "Gửi đánh giá"}
                   </Button>
                 </Form.Item>
               </Form>
@@ -214,18 +272,26 @@ function HistoryDetail() {
                     <strong>Nhận xét:</strong> {fb.comment}
                   </p>
                   <p>
-                    <strong>Điểm:</strong>{" "}
-                    <Rate disabled defaultValue={fb.rating} />
+                    <strong>Điểm:</strong>
+                    {""}
+                    <Rate defaultValue={fb.rating} />
                   </p>
                   <p>
                     <strong>Ngày:</strong> {fb.feedbackDate}
                   </p>
+                  <Button
+                    type="link"
+                    onClick={() => handleEditFeedback(fb)}
+                    style={{ marginTop: "10px" }}
+                  >
+                    Chỉnh sửa
+                  </Button>
                 </div>
               ))}
             </div>
           </>
         ) : (
-          <p>Đang tải thông tin tour...</p>
+          <div>Loading tour details...</div>
         )}
       </div>
     </div>

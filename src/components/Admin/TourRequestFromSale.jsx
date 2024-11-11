@@ -46,7 +46,10 @@ function TourRequestManager() {
         },
       });
       toast.success("Yêu cầu tour thành công!");
-      fetchTourRequests(); // Refresh data after approval
+
+      // Update approvedTours state after approval
+      setApprovedTours((prev) => [...prev, tourId]);
+      fetchTourRequests(); // Refresh data after approval, though it's now redundant
     } catch (error) {
       toast.error(error.response?.data || "Failed to approve tour request.");
     }
@@ -60,14 +63,17 @@ function TourRequestManager() {
         },
       });
       toast.success("Tour request denied successfully!");
-      fetchTourRequests(); // Refresh data after denial
+
+      // Update deniedTours state after denial
+      setDeniedTours((prev) => [...prev, tourId]);
+      fetchTourRequests(); // Refresh data after denial, though it's now redundant
     } catch (error) {
       toast.error(error.response?.data || "Failed to deny tour request.");
     }
   };
 
   useEffect(() => {
-    fetchTourRequests(); // Fetch data on component mount
+    fetchTourRequests();
   }, []);
 
   const columns = [
@@ -127,7 +133,6 @@ function TourRequestManager() {
                 marginRight: 8,
                 backgroundColor: isApproved || isCompleted ? "gray" : "",
                 borderColor: isApproved || isCompleted ? "gray" : "",
-                pointerEvents: isApproved || isCompleted ? "none" : "auto",
               }}
               disabled={isApproved || isDenied || isCompleted}
             >
@@ -139,7 +144,6 @@ function TourRequestManager() {
               style={{
                 backgroundColor: isDenied || isCompleted ? "gray" : "",
                 borderColor: isDenied || isCompleted ? "gray" : "",
-                pointerEvents: isDenied || isCompleted ? "none" : "auto",
               }}
               disabled={isApproved || isDenied || isCompleted}
             >

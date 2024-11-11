@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, message, Divider, Spin } from "antd";
+import { Card, Row, Col, Divider, Spin } from "antd";
 import api from "../../../config/axios";
 import "./DeliveryDone.css";
 

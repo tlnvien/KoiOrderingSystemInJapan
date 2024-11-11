@@ -43,6 +43,11 @@ const Dashboard = () => {
       "/dashboard/sale/associate-bookingtour",
       <PieChartOutlined />
     ),
+    getItem(
+      "Danh sách tour yêu cầu",
+      "/dashboard/sale/list-tour-request",
+      <PieChartOutlined />
+    ),
   ];
 
   const consultingItems = [

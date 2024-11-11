@@ -51,22 +51,6 @@ const VerifyCode = () => {
     }
   };
 
-  // const handleResendCode = async () => {
-  //   const resendApi = "http://localhost:8082/api/register/resend";
-
-  //   try {
-  //     const response = await axios.post(resendApi, { email });
-  //     if (response.data.success) {
-  //       setSuccessMessage("Mã xác minh đã được gửi lại!");
-  //     } else {
-  //       setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
-  //     }
-  //   } catch (error) {
-  //     setErrorMessage("Đã xảy ra lỗi khi gửi mã xác minh. Vui lòng thử lại.");
-  //     console.error("Resend code error:", error);
-  //   }
-  // };
-
   return (
     <div className="forgot-password-container">
       <div className="form-section">
@@ -100,11 +84,6 @@ const VerifyCode = () => {
             {successMessage}
           </p>
         )}
-
-        {/* <p>Không nhận được mã?</p>
-        <button onClick={handleResendCode} className="search-btn">
-          Gửi lại mã
-        </button> */}
 
         <Link to="/register/customer" className="back-link">
           Quay lại trang đăng ký

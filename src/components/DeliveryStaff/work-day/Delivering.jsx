@@ -127,10 +127,10 @@ const Delivering = () => {
         )}
       </div>
       <Button type="primary" onClick={startWorkday} style={{ marginRight: 8 }}>
-        Bắt Đầu Ngày Làm Việc
+        Bắt đầu làm việc
       </Button>
       <Button danger onClick={endWorkday}>
-        Kết Thúc Ngày Làm Việc
+        Kết thúc làm việc
       </Button>
     </div>
   );

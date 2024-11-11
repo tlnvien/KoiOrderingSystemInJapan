@@ -8,7 +8,6 @@ import {
   DatePicker,
   InputNumber,
 } from "antd";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment"; // Import moment for date handling

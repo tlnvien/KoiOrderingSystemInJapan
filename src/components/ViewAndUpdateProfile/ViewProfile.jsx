@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
-import {
-  UserOutlined,
-  ShoppingCartOutlined,
-  StarOutlined,
-  LockOutlined,
-  TeamOutlined,
-} from "@ant-design/icons";
+import { ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
 import { DatePicker } from "antd";
 import api from "../../config/axios";
 import dayjs from "dayjs";
@@ -19,7 +13,7 @@ const ViewProfile = () => {
     fullName: "",
     email: "",
     gender: "",
-    dob: "",
+    dob: null,
     address: "",
   });
 
@@ -27,7 +21,6 @@ const ViewProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,12 +106,6 @@ const ViewProfile = () => {
             <li onClick={() => navigate("/history-tour")}>
               <StarOutlined style={{ marginRight: "10px" }} /> Tour đã đi
             </li>
-            {role === "MANAGER" && (
-              <li onClick={() => navigate("/register/staff")}>
-                <TeamOutlined style={{ marginRight: "10px" }} /> Đăng ký tài
-                khoản cho staff
-              </li>
-            )}
           </ul>
         </div>
         <div className="profile-form">
@@ -144,6 +131,7 @@ const ViewProfile = () => {
               >
                 <option value="MALE">Nam</option>
                 <option value="FEMALE">Nữ</option>
+                <option value="OTHER">Khác</option>
               </select>
             </div>
             <div className="form-group">

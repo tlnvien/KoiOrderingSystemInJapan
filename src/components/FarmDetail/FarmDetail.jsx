@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "./FarmDetail.css";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
-import "./Slider.css";
 import { useParams, Link } from "react-router-dom";
 import api from "../../config/axios";
 

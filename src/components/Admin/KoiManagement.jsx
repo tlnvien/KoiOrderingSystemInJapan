@@ -11,7 +11,6 @@ const KoiManagement = () => {
   const [form] = Form.useForm();
   const apiUrl = "koi";
   const getApi = "koi/list"; // API URL của bạn
-  const apiImage = "koi/images";
   const token = localStorage.getItem("token");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -48,9 +47,16 @@ const KoiManagement = () => {
   };
 
   const deleteImage = async (imageLink) => {
+    if (!currentKoi) {
+      notification.error({
+        message: "Không tìm thấy cá koi hiện tại để xóa ảnh",
+      });
+      return;
+    }
+
     try {
       await api.delete(
-        `${apiImage}/remove/${currentKoi.koiId}?imageLink=${imageLink}`,
+        `koi/images/remove/${currentKoi.koiId}?imageLink=${imageLink}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +67,7 @@ const KoiManagement = () => {
         }
       );
       notification.success({ message: "Xóa ảnh thành công" });
-      fetchKoiList(); // Refresh the koi list
+      fetchKoiList(); // Lấy lại danh sách koi sau khi xóa ảnh
     } catch (error) {
       notification.error({ message: "Không thể xóa ảnh" });
       console.error("Error deleting image:", error);
@@ -76,29 +82,13 @@ const KoiManagement = () => {
       cancelText: "Không",
       onOk: async () => {
         try {
-          // Delete all associated images
-          // if (Array.isArray(imageLinks) && imageLinks.length > 0) {
-          //   for (let imageLink of imageLinks) {
-          //     await api.delete(`${apiImage}/${koiId}`, {
-          //       headers: {
-          //         Authorization: `Bearer ${token}`,
-          //       },
-          //       data: {
-          //         koiId: koiId,
-          //         imageLink: imageLink,
-          //       },
-          //     });
-          //   }
-          // }
-
-          // Delete the koi after deleting images
           await api.delete(`${apiUrl}/${koiId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
 
-          // Refresh the koi list after deletion
+          // Lấy lại danh sách koi sau khi xóa
           fetchKoiList();
           notification.success({ message: "Xóa koi thành công" });
         } catch (error) {
@@ -219,13 +209,13 @@ const KoiManagement = () => {
                               marginRight: "8px",
                             }}
                           />
-                          <Button
+                          {/* <Button
                             type="link"
                             danger
                             onClick={() => deleteImage(image.imageLink)}
                           >
                             Xóa
-                          </Button>
+                          </Button> */}
                         </div>
                       ))
                     : "Không có ảnh"}
