@@ -368,6 +368,9 @@ public class BookingService {
             bookingDetail.setBooking(booking);
             bookingDetail.setCustomerName(bookingDetailRequest.getCustomerName());
             bookingDetail.setDob(bookingDetailRequest.getDob());
+            if (!isMoreThanOrEquals18YearsOld(bookingDetail.getDob())) {
+                throw new InvalidRequestException("Danh sách hành khách yêu cầu của bạn có thành viên chưa đủ 18 tuổi!");
+            }
             bookingDetail.setGender(bookingDetailRequest.getGender());
             bookingDetail.setPhone(bookingDetailRequest.getPhone());
 
@@ -421,7 +424,7 @@ public class BookingService {
         Booking booking = new Booking();
         booking.setBookingId(generateBookingId());
         if (!isMoreThanOrEquals18YearsOld(customer.getDob())) {
-            throw new InvalidRequestException("Bạn chưa đủ 18 tuổi để thực hiện việc đặt tour! Để có thể đặt tour, bạn cần phải đi kèm với người lớn!");
+            throw new InvalidRequestException("Bạn chưa đủ 18 tuổi để thực hiện việc đặt tour!");
         }
         booking.setCustomer(customer);
         booking.setTour(tour);
